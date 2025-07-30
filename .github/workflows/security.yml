@@ -289,7 +289,7 @@ jobs:
 
       - name: Create Pull Request
         if: env.go_updated == 'true' || env.python_updated == 'true' || env.nodejs_updated == 'true'
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: |
