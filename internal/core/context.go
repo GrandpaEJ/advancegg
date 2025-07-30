@@ -9,9 +9,11 @@ import (
 	"image/png"
 	"io"
 	"math"
+	"os"
 	"strings"
 
 	"github.com/golang/freetype/raster"
+	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/draw"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/basicfont"
@@ -821,6 +823,51 @@ func (dc *Context) LoadFontFace(path string, points float64) error {
 	if err == nil {
 		dc.fontFace = face
 		dc.fontHeight = points * 72 / 96
+	}
+	return err
+}
+
+// LoadTTFFace loads a TTF font file and sets it as the current font face.
+func (dc *Context) LoadTTFFace(path string, points float64) error {
+	face, err := LoadTTFFace(path, points)
+	if err == nil {
+		dc.fontFace = face
+		dc.fontHeight = points * 72 / 96
+	}
+	return err
+}
+
+// LoadOTFFace loads an OTF font file and sets it as the current font face.
+func (dc *Context) LoadOTFFace(path string, points float64) error {
+	face, err := LoadOTFFace(path, points)
+	if err == nil {
+		dc.fontFace = face
+		dc.fontHeight = points * 72 / 96
+	}
+	return err
+}
+
+// LoadFontFaceFromBytes loads a font from byte data and sets it as the current font face.
+// Supports both TTF and OTF formats.
+func (dc *Context) LoadFontFaceFromBytes(fontBytes []byte, points float64) error {
+	face, err := ParseFontFace(fontBytes, points)
+	if err == nil {
+		dc.fontFace = face
+		dc.fontHeight = points * 72 / 96
+	}
+	return err
+}
+
+// LoadFontFaceWithOptions loads a font with custom truetype options.
+func (dc *Context) LoadFontFaceWithOptions(path string, options *truetype.Options) error {
+	fontBytes, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	face, err := ParseFontFaceWithOptions(fontBytes, options)
+	if err == nil {
+		dc.fontFace = face
+		dc.fontHeight = options.Size * 72 / 96
 	}
 	return err
 }
