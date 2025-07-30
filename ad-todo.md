@@ -5,9 +5,9 @@
 
 ### 🔥 High Priority (Critical/Powerful)
 
-* [ ] **Layer System** – Multi-layered drawing (like Photoshop layers)
-* [ ] **Non-destructive Editing** – Filters/transformations as reversible states
-* [ ] **Smart Guides & Alignment** – Snap to grid, guides, center, baseline
+* [x] **Layer System** – Multi-layered drawing (like Photoshop layers) ✅ COMPLETED
+* [x] **Non-destructive Editing** – Filters/transformations as reversible states ✅ COMPLETED
+* [x] **Smart Guides & Alignment** – Snap to grid, guides, center, baseline ✅ COMPLETED
 * [ ] **Unicode Shaping Support** – Indic, RTL, complex scripts
 * [ ] **Emoji Rendering** – Color emoji font + fallback
 * [ ] **Color Profiles (ICC)** – Accurate color conversion for print-ready files

@@ -90,8 +90,8 @@
 | **Transformations** | ✅ | ✅ | Equal |
 | **Image Manipulation** | ✅ | ✅ | Equal |
 | **Path2D Support** | ✅ | ✅ | Equal |
-| **Canvas Filters** | ❌ | ✅ | Missing |
-| **ImageData Manipulation** | ❌ | ✅ | Missing |
+| **Canvas Filters** | ✅ (CSS-like filters) | ✅ | Equal |
+| **ImageData Manipulation** | ✅ (Full API) | ✅ | Equal |
 | **Performance** | ✅ (Native Go) | ⚠️ (Native + JS) | Better |
 | **Memory Usage** | ✅ (Lower) | ⚠️ (Higher) | Better |
 | **Deployment** | ✅ (Single binary) | ❌ (Node + deps) | Better |
@@ -122,11 +122,12 @@
 - [x] **Shadow Effects** - Drop shadows for shapes and text ✅ COMPLETED
 - [x] **Text Metrics** - Advanced text measurement and layout ✅ COMPLETED
 - [x] **CSS-like Effects** - Modern filter chains and patterns ✅ COMPLETED
-- [ ] **Text Metrics** - Advanced text measurement
-- [ ] **Shadow Effects** - Drop shadows for shapes/text
+- [x] **Layer System** - Multi-layered drawing with blend modes ✅ COMPLETED
+- [x] **Non-destructive Editing** - Reversible filters and transformations ✅ COMPLETED
+- [x] **Smart Guides & Alignment** - Snap to grid, guides, alignment tools ✅ COMPLETED
 
 ### Medium Priority 📋
-- [ ] **Canvas Filters** - CSS-like filter effects
+- [x] **Canvas Filters** - CSS-like filter effects ✅ COMPLETED
 - [ ] **Pattern Transforms** - Transform patterns independently
 - [ ] **Composite Operations** - Blend modes (multiply, overlay, etc)
 - [ ] **Hit Testing** - Point-in-path detection

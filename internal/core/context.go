@@ -84,6 +84,13 @@ type Context struct {
 	shadowOffsetX float64
 	shadowOffsetY float64
 	shadowBlur    float64
+	// Layer system
+	layerManager   *LayerManager
+	useLayerSystem bool
+	// Non-destructive editing
+	editStack *EditStack
+	// Guides and alignment
+	guideManager *GuideManager
 }
 
 // NewContext creates a new image.RGBA with the specified width and height
@@ -366,6 +373,68 @@ func (dc *Context) ClearShadow() {
 // HasShadow returns true if shadow is enabled
 func (dc *Context) HasShadow() bool {
 	return dc.shadowColor != nil && (dc.shadowOffsetX != 0 || dc.shadowOffsetY != 0 || dc.shadowBlur > 0)
+}
+
+// Layer system methods
+
+// EnableLayers enables the layer system
+func (dc *Context) EnableLayers() {
+	if dc.layerManager == nil {
+		dc.layerManager = NewLayerManager(dc.width, dc.height)
+	}
+	dc.useLayerSystem = true
+}
+
+// DisableLayers disables the layer system
+func (dc *Context) DisableLayers() {
+	dc.useLayerSystem = false
+}
+
+// GetLayerManager returns the layer manager
+func (dc *Context) GetLayerManager() *LayerManager {
+	return dc.layerManager
+}
+
+// AddLayer adds a new layer
+func (dc *Context) AddLayer(name string) *Layer {
+	if dc.layerManager == nil {
+		dc.EnableLayers()
+	}
+	return dc.layerManager.AddLayer(name)
+}
+
+// SetActiveLayer sets the active layer
+func (dc *Context) SetActiveLayer(index int) bool {
+	if dc.layerManager == nil {
+		return false
+	}
+	return dc.layerManager.SetActiveLayer(index)
+}
+
+// SetActiveLayerByName sets the active layer by name
+func (dc *Context) SetActiveLayerByName(name string) bool {
+	if dc.layerManager == nil {
+		return false
+	}
+	return dc.layerManager.SetActiveLayerByName(name)
+}
+
+// GetActiveLayer returns the active layer
+func (dc *Context) GetActiveLayer() *Layer {
+	if dc.layerManager == nil {
+		return nil
+	}
+	return dc.layerManager.GetActiveLayer()
+}
+
+// CompositeToImage renders all layers to the main image
+func (dc *Context) CompositeToImage() {
+	if dc.layerManager == nil || !dc.useLayerSystem {
+		return
+	}
+
+	composited := dc.layerManager.Composite()
+	dc.im = composited
 }
 
 // SetRGBA255 sets the current color. r, g, b, a values should be between 0 and
@@ -1344,4 +1413,63 @@ func (dc *Context) Pop() {
 	dc.start = before.start
 	dc.current = before.current
 	dc.hasCurrent = before.hasCurrent
+}
+
+// Non-destructive editing methods
+
+// EnableNonDestructiveEditing enables non-destructive editing
+func (dc *Context) EnableNonDestructiveEditing() {
+	if dc.editStack == nil {
+		dc.editStack = NewEditStack(dc.im)
+	}
+}
+
+// AddEditOperation adds a non-destructive edit operation
+func (dc *Context) AddEditOperation(op EditOperation) {
+	if dc.editStack == nil {
+		dc.EnableNonDestructiveEditing()
+	}
+	dc.editStack.AddOperation(op)
+}
+
+// ApplyNonDestructiveEdits applies all non-destructive edits to the image
+func (dc *Context) ApplyNonDestructiveEdits() {
+	if dc.editStack != nil {
+		dc.im = dc.editStack.GetResult()
+	}
+}
+
+// GetEditStack returns the edit stack
+func (dc *Context) GetEditStack() *EditStack {
+	return dc.editStack
+}
+
+// Guide system methods
+
+// EnableGuides enables the guide system
+func (dc *Context) EnableGuides() {
+	if dc.guideManager == nil {
+		dc.guideManager = NewGuideManager()
+	}
+}
+
+// GetGuideManager returns the guide manager
+func (dc *Context) GetGuideManager() *GuideManager {
+	if dc.guideManager == nil {
+		dc.EnableGuides()
+	}
+	return dc.guideManager
+}
+
+// AddGuide adds a guide
+func (dc *Context) AddGuide(position float64, orientation GuideOrientation) *Guide {
+	return dc.GetGuideManager().AddGuide(position, orientation)
+}
+
+// SnapPoint snaps a point to guides or grid
+func (dc *Context) SnapPoint(x, y float64) (float64, float64) {
+	if dc.guideManager == nil {
+		return x, y
+	}
+	return dc.guideManager.SnapPoint(x, y)
 }

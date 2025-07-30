@@ -177,3 +177,76 @@ var (
 	NewImageData          = core.NewImageData
 	NewImageDataFromImage = core.NewImageDataFromImage
 )
+
+// Layer system exports
+type Layer = core.Layer
+type LayerManager = core.LayerManager
+type BlendMode = core.BlendMode
+
+const (
+	BlendModeNormal     = core.BlendModeNormal
+	BlendModeMultiply   = core.BlendModeMultiply
+	BlendModeScreen     = core.BlendModeScreen
+	BlendModeOverlay    = core.BlendModeOverlay
+	BlendModeSoftLight  = core.BlendModeSoftLight
+	BlendModeHardLight  = core.BlendModeHardLight
+	BlendModeColorDodge = core.BlendModeColorDodge
+	BlendModeColorBurn  = core.BlendModeColorBurn
+	BlendModeDarken     = core.BlendModeDarken
+	BlendModeLighten    = core.BlendModeLighten
+	BlendModeDifference = core.BlendModeDifference
+	BlendModeExclusion  = core.BlendModeExclusion
+	BlendModeHue        = core.BlendModeHue
+	BlendModeSaturation = core.BlendModeSaturation
+	BlendModeColor      = core.BlendModeColor
+	BlendModeLuminosity = core.BlendModeLuminosity
+)
+
+var (
+	NewLayerManager = core.NewLayerManager
+)
+
+// Non-destructive editing exports
+type EditOperation = core.EditOperation
+type EditStack = core.EditStack
+type BrightnessOperation = core.BrightnessOperation
+type ContrastOperation = core.ContrastOperation
+type BlurOperation = core.BlurOperation
+type CropOperation = core.CropOperation
+
+var (
+	NewEditStack = core.NewEditStack
+)
+
+// Guides and alignment exports
+type Guide = core.Guide
+type GuideManager = core.GuideManager
+type GuideType = core.GuideType
+type GuideOrientation = core.GuideOrientation
+type AlignmentTarget = core.AlignmentTarget
+type Margins = core.Margins
+
+const (
+	GuideTypeManual   = core.GuideTypeManual
+	GuideTypeGrid     = core.GuideTypeGrid
+	GuideTypeCenter   = core.GuideTypeCenter
+	GuideTypeBaseline = core.GuideTypeBaseline
+	GuideTypeMargin   = core.GuideTypeMargin
+
+	GuideHorizontal = core.GuideHorizontal
+	GuideVertical   = core.GuideVertical
+)
+
+var (
+	NewGuideManager = core.NewGuideManager
+
+	// Alignment functions
+	AlignTargetsLeft             = core.AlignTargetsLeft
+	AlignTargetsRight            = core.AlignTargetsRight
+	AlignTargetsTop              = core.AlignTargetsTop
+	AlignTargetsBottom           = core.AlignTargetsBottom
+	AlignTargetsCenterHorizontal = core.AlignTargetsCenterHorizontal
+	AlignTargetsCenterVertical   = core.AlignTargetsCenterVertical
+	DistributeHorizontally       = core.DistributeHorizontally
+	DistributeVertically         = core.DistributeVertically
+)
