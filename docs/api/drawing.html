@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drawing API - AdvanceGG Documentation</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../../index.html">
+                <i class="bi bi-palette"></i> AdvanceGG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="../../index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../getting-started.html">Getting Started</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="index.html">API Reference</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../examples/">Examples</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid" style="margin-top: 76px;">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <div class="col-lg-3">
+                <div class="doc-nav p-3">
+                    <h6 class="text-muted mb-3">API Reference</h6>
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="index.html">Overview</a>
+                        <a class="nav-link active" href="drawing.html">Drawing</a>
+                        <a class="nav-link" href="paths.html">Paths</a>
+                        <a class="nav-link" href="text.html">Text</a>
+                        <a class="nav-link" href="images.html">Images</a>
+                        <a class="nav-link" href="colors.html">Colors</a>
+                        <a class="nav-link" href="layers.html">Layers</a>
+                        <a class="nav-link" href="filters.html">Filters</a>
+                        <a class="nav-link" href="performance.html">Performance</a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <div class="doc-content">
+                    <h1><i class="bi bi-brush text-primary"></i> Drawing API</h1>
+                    <p class="lead">Complete reference for drawing shapes, lines, and basic graphics operations.</p>
+
+                    <!-- Basic Shapes -->
+                    <section id="basic-shapes" class="mb-5">
+                        <h2>Basic Shapes</h2>
+                        
+                        <h4>Rectangles</h4>
+                        <pre><code class="language-go">// Draw rectangle
+dc.DrawRectangle(x, y, width, height)
+
+// Draw rounded rectangle
+dc.DrawRoundedRectangle(x, y, width, height, radius)
+
+// Example
+dc.SetRGB(0.2, 0.4, 0.8)
+dc.DrawRectangle(100, 100, 200, 150)
+dc.Fill()
+
+dc.SetRGB(0.8, 0.2, 0.4)
+dc.DrawRoundedRectangle(350, 100, 200, 150, 20)
+dc.Fill()</code></pre>
+
+                        <h4>Circles and Ellipses</h4>
+                        <pre><code class="language-go">// Draw circle
+dc.DrawCircle(centerX, centerY, radius)
+
+// Draw ellipse
+dc.DrawEllipse(centerX, centerY, radiusX, radiusY)
+
+// Example
+dc.SetRGB(1, 0.5, 0)
+dc.DrawCircle(200, 300, 80)
+dc.Fill()
+
+dc.SetRGB(0.5, 1, 0.2)
+dc.DrawEllipse(500, 300, 120, 60)
+dc.Fill()</code></pre>
+
+                        <h4>Lines</h4>
+                        <pre><code class="language-go">// Draw line
+dc.DrawLine(x1, y1, x2, y2)
+
+// Example with styling
+dc.SetRGB(0, 0, 0)
+dc.SetLineWidth(3)
+dc.DrawLine(50, 50, 750, 550)
+dc.Stroke()</code></pre>
+
+                        <h4>Polygons</h4>
+                        <pre><code class="language-go">// Draw regular polygon
+dc.DrawRegularPolygon(sides, centerX, centerY, radius, rotation)
+
+// Examples
+dc.SetRGB(0.8, 0.2, 0.8)
+dc.DrawRegularPolygon(6, 200, 200, 80, 0) // Hexagon
+dc.Fill()
+
+dc.SetRGB(0.2, 0.8, 0.8)
+dc.DrawRegularPolygon(5, 500, 200, 80, math.Pi/10) // Pentagon
+dc.Fill()</code></pre>
+                    </section>
+
+                    <!-- Fill and Stroke -->
+                    <section id="fill-stroke" class="mb-5">
+                        <h2>Fill and Stroke Operations</h2>
+                        
+                        <h4>Basic Operations</h4>
+                        <pre><code class="language-go">// Fill - fills the current path and clears it
+dc.Fill()
+
+// Stroke - strokes the current path and clears it
+dc.Stroke()
+
+// FillPreserve - fills but keeps the path
+dc.FillPreserve()
+
+// StrokePreserve - strokes but keeps the path
+dc.StrokePreserve()
+
+// Combined fill and stroke
+dc.SetRGB(1, 0, 0)
+dc.DrawCircle(200, 200, 50)
+dc.FillPreserve()
+
+dc.SetRGB(0, 0, 0)
+dc.SetLineWidth(3)
+dc.Stroke()</code></pre>
+
+                        <h4>Fill Rules</h4>
+                        <pre><code class="language-go">// Set fill rule for complex paths
+dc.SetFillRule(advancegg.FillRuleWinding)    // Default
+dc.SetFillRule(advancegg.FillRuleEvenOdd)    // Alternative</code></pre>
+                    </section>
+
+                    <!-- Line Styles -->
+                    <section id="line-styles" class="mb-5">
+                        <h2>Line Styles</h2>
+                        
+                        <h4>Line Width</h4>
+                        <pre><code class="language-go">// Set line width
+dc.SetLineWidth(width)
+
+// Examples
+dc.SetLineWidth(1)   // Thin line
+dc.SetLineWidth(5)   // Medium line
+dc.SetLineWidth(10)  // Thick line</code></pre>
+
+                        <h4>Line Caps</h4>
+                        <pre><code class="language-go">// Line cap styles
+dc.SetLineCap(advancegg.LineCapButt)    // Square end
+dc.SetLineCap(advancegg.LineCapRound)   // Rounded end
+dc.SetLineCap(advancegg.LineCapSquare)  // Extended square end
+
+// Example
+dc.SetLineWidth(20)
+dc.SetLineCap(advancegg.LineCapRound)
+dc.DrawLine(100, 100, 300, 100)
+dc.Stroke()</code></pre>
+
+                        <h4>Line Joins</h4>
+                        <pre><code class="language-go">// Line join styles
+dc.SetLineJoin(advancegg.LineJoinMiter)  // Sharp corner
+dc.SetLineJoin(advancegg.LineJoinRound)  // Rounded corner
+dc.SetLineJoin(advancegg.LineJoinBevel)  // Beveled corner
+
+// Miter limit for sharp corners
+dc.SetMiterLimit(10.0)
+
+// Example
+dc.SetLineWidth(15)
+dc.SetLineJoin(advancegg.LineJoinRound)
+dc.MoveTo(100, 200)
+dc.LineTo(200, 100)
+dc.LineTo(300, 200)
+dc.Stroke()</code></pre>
+
+                        <h4>Dash Patterns</h4>
+                        <pre><code class="language-go">// Set dash pattern
+dc.SetDash(dashLength, gapLength)
+
+// Complex dash patterns
+dc.SetDashPattern([]float64{10, 5, 2, 5}) // dash, gap, dash, gap
+
+// Set dash offset
+dc.SetDashOffset(5.0)
+
+// Clear dash pattern
+dc.ClearDash()
+
+// Examples
+dc.SetDash(10, 5)  // 10 pixels on, 5 pixels off
+dc.DrawLine(100, 300, 500, 300)
+dc.Stroke()
+
+dc.SetDashPattern([]float64{20, 5, 5, 5})
+dc.DrawLine(100, 350, 500, 350)
+dc.Stroke()</code></pre>
+                    </section>
+
+                    <!-- Advanced Drawing -->
+                    <section id="advanced-drawing" class="mb-5">
+                        <h2>Advanced Drawing</h2>
+                        
+                        <h4>Clipping</h4>
+                        <pre><code class="language-go">// Set clipping region
+dc.DrawCircle(400, 300, 100)
+dc.Clip()
+
+// All subsequent drawing will be clipped to this circle
+dc.SetRGB(1, 0, 0)
+dc.DrawRectangle(350, 250, 100, 100)
+dc.Fill()
+
+// Reset clipping
+dc.ResetClip()</code></pre>
+
+                        <h4>Masks</h4>
+                        <pre><code class="language-go">// Create mask from current path
+dc.DrawCircle(200, 200, 80)
+mask := dc.AsMask()
+
+// Apply mask to drawing operations
+dc.SetMask(mask)
+dc.SetRGB(0, 1, 0)
+dc.DrawRectangle(150, 150, 100, 100)
+dc.Fill()
+
+// Clear mask
+dc.ClearMask()</code></pre>
+
+                        <h4>Composite Operations</h4>
+                        <pre><code class="language-go">// Set composite operation
+dc.SetCompositeOperation(advancegg.CompositeOperationSourceOver)  // Default
+dc.SetCompositeOperation(advancegg.CompositeOperationMultiply)
+dc.SetCompositeOperation(advancegg.CompositeOperationScreen)
+dc.SetCompositeOperation(advancegg.CompositeOperationOverlay)</code></pre>
+                    </section>
+
+                    <!-- Examples -->
+                    <section id="examples" class="mb-5">
+                        <h2>Complete Examples</h2>
+                        
+                        <h4>Basic Shapes Gallery</h4>
+                        <pre><code class="language-go">package main
+
+import "github.com/GrandpaEJ/advancegg"
+
+func main() {
+    dc := advancegg.NewContext(800, 600)
+    
+    // Background
+    dc.SetRGB(0.95, 0.95, 0.98)
+    dc.Clear()
+    
+    // Rectangle
+    dc.SetRGB(0.2, 0.4, 0.8)
+    dc.DrawRectangle(50, 50, 150, 100)
+    dc.Fill()
+    
+    // Rounded rectangle
+    dc.SetRGB(0.8, 0.2, 0.4)
+    dc.DrawRoundedRectangle(250, 50, 150, 100, 20)
+    dc.Fill()
+    
+    // Circle
+    dc.SetRGB(0.2, 0.8, 0.2)
+    dc.DrawCircle(125, 250, 60)
+    dc.Fill()
+    
+    // Ellipse
+    dc.SetRGB(0.8, 0.5, 0.2)
+    dc.DrawEllipse(325, 250, 80, 50)
+    dc.Fill()
+    
+    // Polygon
+    dc.SetRGB(0.6, 0.2, 0.8)
+    dc.DrawRegularPolygon(6, 125, 400, 60, 0)
+    dc.Fill()
+    
+    // Star (custom polygon)
+    dc.SetRGB(1, 0.8, 0.2)
+    drawStar(dc, 325, 400, 60, 30, 5)
+    dc.Fill()
+    
+    dc.SavePNG("shapes-gallery.png")
+}
+
+func drawStar(dc *advancegg.Context, centerX, centerY, outerRadius, innerRadius float64, points int) {
+    angle := 2 * math.Pi / float64(points*2)
+    
+    dc.MoveTo(centerX+outerRadius, centerY)
+    
+    for i := 1; i < points*2; i++ {
+        radius := outerRadius
+        if i%2 == 1 {
+            radius = innerRadius
+        }
+        
+        x := centerX + radius*math.Cos(float64(i)*angle)
+        y := centerY + radius*math.Sin(float64(i)*angle)
+        dc.LineTo(x, y)
+    }
+    
+    dc.ClosePath()
+}</code></pre>
+                    </section>
+
+                    <!-- Reference Table -->
+                    <section id="reference" class="mb-5">
+                        <h2>Quick Reference</h2>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Function</th>
+                                        <th>Description</th>
+                                        <th>Parameters</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>DrawRectangle</code></td>
+                                        <td>Draw a rectangle</td>
+                                        <td>x, y, width, height</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>DrawRoundedRectangle</code></td>
+                                        <td>Draw a rounded rectangle</td>
+                                        <td>x, y, width, height, radius</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>DrawCircle</code></td>
+                                        <td>Draw a circle</td>
+                                        <td>centerX, centerY, radius</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>DrawEllipse</code></td>
+                                        <td>Draw an ellipse</td>
+                                        <td>centerX, centerY, radiusX, radiusY</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>DrawLine</code></td>
+                                        <td>Draw a line</td>
+                                        <td>x1, y1, x2, y2</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>DrawRegularPolygon</code></td>
+                                        <td>Draw a regular polygon</td>
+                                        <td>sides, centerX, centerY, radius, rotation</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Fill</code></td>
+                                        <td>Fill current path</td>
+                                        <td>none</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Stroke</code></td>
+                                        <td>Stroke current path</td>
+                                        <td>none</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>SetLineWidth</code></td>
+                                        <td>Set line width</td>
+                                        <td>width</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>SetLineCap</code></td>
+                                        <td>Set line cap style</td>
+                                        <td>cap style</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script src="../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+{
+  "name": "advancegg-wasm",
+  "version": "1.0.0",
+  "description": "AdvanceGG 2D Graphics Library for Node.js via WebAssembly",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "build": "go build -o advancegg.wasm main.go",
+    "build-wasm": "GOOS=js GOARCH=wasm go build -o advancegg.wasm main.go",
+    "test": "node test/test.js",
+    "example": "node examples/basic-drawing.js",
+    "dev": "nodemon examples/express-charts.js"
+  },
+  "keywords": [
+    "graphics",
+    "2d",
+    "canvas",
+    "drawing",
+    "visualization",
+    "charts",
+    "image-processing",
+    "webassembly",
+    "wasm",
+    "golang",
+    "performance"
+  ],
+  "author": "AdvanceGG Contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GrandpaEJ/advancegg.git",
+    "directory": "ecosystem/nodejs"
+  },
+  "bugs": {
+    "url": "https://github.com/GrandpaEJ/advancegg/issues"
+  },
+  "homepage": "https://github.com/GrandpaEJ/advancegg#readme",
+  "dependencies": {
+    "fs-extra": "^11.1.1"
+  },
+  "devDependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
+    "nodemon": "^3.0.1",
+    "@types/node": "^20.5.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "advancegg.wasm",
+    "wasm_exec.js",
+    "examples/",
+    "README.md"
+  ],
+  "browser": {
+    "fs": false,
+    "path": false
+  }
+}

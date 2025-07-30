@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text API - AdvanceGG Documentation</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../../index.html">
+                <i class="bi bi-palette"></i> AdvanceGG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="../../index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../getting-started.html">Getting Started</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="index.html">API Reference</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../examples/">Examples</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid" style="margin-top: 76px;">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <div class="col-lg-3">
+                <div class="doc-nav p-3">
+                    <h6 class="text-muted mb-3">API Reference</h6>
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="index.html">Overview</a>
+                        <a class="nav-link" href="drawing.html">Drawing</a>
+                        <a class="nav-link" href="paths.html">Paths</a>
+                        <a class="nav-link active" href="text.html">Text</a>
+                        <a class="nav-link" href="images.html">Images</a>
+                        <a class="nav-link" href="colors.html">Colors</a>
+                        <a class="nav-link" href="layers.html">Layers</a>
+                        <a class="nav-link" href="filters.html">Filters</a>
+                        <a class="nav-link" href="performance.html">Performance</a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <div class="doc-content">
+                    <h1><i class="bi bi-type text-primary"></i> Text API</h1>
+                    <p class="lead">Advanced text rendering, typography, and Unicode support.</p>
+
+                    <!-- Font Management -->
+                    <section id="font-management" class="mb-5">
+                        <h2>Font Management</h2>
+                        
+                        <h4>Loading Fonts</h4>
+                        <pre><code class="language-go">// Load font from file
+dc.LoadFontFace("fonts/arial.ttf", 24)
+
+// Load font from bytes
+fontData, err := ioutil.ReadFile("fonts/custom.ttf")
+if err == nil {
+    dc.LoadFontFaceFromBytes(fontData, 24)
+}
+
+// Load system fonts (platform-specific)
+dc.LoadSystemFont("Arial", 24)
+dc.LoadSystemFont("Times New Roman", 18)
+
+// Set font size for existing font
+dc.SetFontSize(32)</code></pre>
+
+                        <h4>Font Properties</h4>
+                        <pre><code class="language-go">// Get font metrics
+metrics := dc.GetFontMetrics()
+fmt.Printf("Ascent: %f\n", metrics.Ascent)
+fmt.Printf("Descent: %f\n", metrics.Descent)
+fmt.Printf("Height: %f\n", metrics.Height)
+
+// Check if font supports character
+supported := dc.FontSupportsChar('€')
+fmt.Printf("Euro symbol supported: %v\n", supported)
+
+// Get available font families
+families := advancegg.GetSystemFontFamilies()
+for _, family := range families {
+    fmt.Println("Available font:", family)
+}</code></pre>
+                    </section>
+
+                    <!-- Basic Text Rendering -->
+                    <section id="basic-text" class="mb-5">
+                        <h2>Basic Text Rendering</h2>
+                        
+                        <h4>Simple Text Drawing</h4>
+                        <pre><code class="language-go">// Draw text at position
+dc.DrawString("Hello World", 100, 100)
+
+// Draw text with anchor positioning
+dc.DrawStringAnchored("Centered Text", 400, 300, 0.5, 0.5)
+// ax, ay: 0=left/top, 0.5=center, 1=right/bottom
+
+// Draw text with rotation
+dc.Push()
+dc.Translate(200, 200)
+dc.Rotate(math.Pi / 4) // 45 degrees
+dc.DrawString("Rotated Text", 0, 0)
+dc.Pop()</code></pre>
+
+                        <h4>Text Measurement</h4>
+                        <pre><code class="language-go">// Measure text dimensions
+width, height := dc.MeasureString("Sample Text")
+fmt.Printf("Text size: %fx%f\n", width, height)
+
+// Get text bounds (more detailed)
+bounds := dc.GetStringBounds("Sample Text")
+fmt.Printf("Bounds: %v\n", bounds)
+
+// Measure multiline text
+lines := []string{"Line 1", "Line 2", "Line 3"}
+totalHeight := dc.MeasureMultilineString(lines, 1.2) // 1.2 = line spacing</code></pre>
+                    </section>
+
+                    <!-- Advanced Text Layout -->
+                    <section id="text-layout" class="mb-5">
+                        <h2>Advanced Text Layout</h2>
+                        
+                        <h4>Word Wrapping</h4>
+                        <pre><code class="language-go">// Wrap text to fit width
+text := "This is a long text that needs to be wrapped to fit within a specific width."
+lines := dc.WordWrap(text, 300) // 300 pixels wide
+
+// Draw wrapped text
+lineHeight := 1.2
+for i, line := range lines {
+    y := 100 + float64(i)*dc.FontHeight()*lineHeight
+    dc.DrawString(line, 50, y)
+}
+
+// Advanced word wrapping with alignment
+dc.DrawStringWrapped(text, 50, 100, 0, 0, 300, lineHeight, advancegg.AlignLeft)
+dc.DrawStringWrapped(text, 50, 200, 0, 0, 300, lineHeight, advancegg.AlignCenter)
+dc.DrawStringWrapped(text, 50, 300, 0, 0, 300, lineHeight, advancegg.AlignRight)
+dc.DrawStringWrapped(text, 50, 400, 0, 0, 300, lineHeight, advancegg.AlignJustify)</code></pre>
+
+                        <h4>Text Alignment</h4>
+                        <pre><code class="language-go">// Text alignment constants
+const (
+    AlignLeft    = advancegg.AlignLeft
+    AlignCenter  = advancegg.AlignCenter
+    AlignRight   = advancegg.AlignRight
+    AlignJustify = advancegg.AlignJustify
+)
+
+// Draw aligned text in a box
+boxX, boxY := 100.0, 100.0
+boxWidth, boxHeight := 300.0, 200.0
+
+// Draw box outline
+dc.SetRGB(0.8, 0.8, 0.8)
+dc.DrawRectangle(boxX, boxY, boxWidth, boxHeight)
+dc.Stroke()
+
+// Draw text with different alignments
+dc.SetRGB(0, 0, 0)
+dc.DrawStringInBox("Left aligned text", boxX, boxY, boxWidth, boxHeight, AlignLeft)
+dc.DrawStringInBox("Center aligned text", boxX, boxY+50, boxWidth, boxHeight, AlignCenter)
+dc.DrawStringInBox("Right aligned text", boxX, boxY+100, boxWidth, boxHeight, AlignRight)</code></pre>
+                    </section>
+
+                    <!-- Unicode and International Text -->
+                    <section id="unicode" class="mb-5">
+                        <h2>Unicode and International Text</h2>
+                        
+                        <h4>Unicode Support</h4>
+                        <pre><code class="language-go">// Unicode text rendering
+dc.DrawString("Hello 世界", 100, 100)           // Chinese
+dc.DrawString("مرحبا بالعالم", 100, 130)        // Arabic
+dc.DrawString("Здравствуй мир", 100, 160)      // Russian
+dc.DrawString("नमस्ते दुनिया", 100, 190)         // Hindi
+dc.DrawString("こんにちは世界", 100, 220)          // Japanese
+
+// Complex script shaping (automatic)
+dc.EnableTextShaping(true) // Enable for complex scripts
+dc.DrawString("مرحبا بالعالم", 100, 250) // Properly shaped Arabic</code></pre>
+
+                        <h4>Emoji Rendering</h4>
+                        <pre><code class="language-go">// Color emoji support
+dc.DrawString("Hello 👋 World 🌍", 100, 100)
+dc.DrawString("🎨 Graphics 📊 Charts 🎮 Games", 100, 130)
+
+// Emoji with fallback
+dc.SetEmojiFont("fonts/NotoColorEmoji.ttf")
+dc.DrawString("Emoji: 😀 🎉 🚀 ⭐ 💖", 100, 160)
+
+// Check emoji support
+if dc.SupportsEmoji() {
+    dc.DrawString("Emoji supported! 🎉", 100, 190)
+} else {
+    dc.DrawString("Emoji not supported", 100, 190)
+}</code></pre>
+
+                        <h4>Text Direction</h4>
+                        <pre><code class="language-go">// Set text direction
+dc.SetTextDirection(advancegg.TextDirectionLTR) // Left-to-right (default)
+dc.SetTextDirection(advancegg.TextDirectionRTL) // Right-to-left
+dc.SetTextDirection(advancegg.TextDirectionTTB) // Top-to-bottom
+
+// Bidirectional text (automatic detection)
+dc.EnableBidirectionalText(true)
+dc.DrawString("English النص العربي English", 100, 100)</code></pre>
+                    </section>
+
+                    <!-- Text Effects -->
+                    <section id="text-effects" class="mb-5">
+                        <h2>Text Effects</h2>
+                        
+                        <h4>Text Shadows</h4>
+                        <pre><code class="language-go">// Simple shadow
+dc.SetTextShadow(2, 2, 0, color.RGBA{0, 0, 0, 128})
+dc.SetRGB(1, 1, 1)
+dc.DrawString("Text with Shadow", 100, 100)
+
+// Blur shadow
+dc.SetTextShadow(3, 3, 5, color.RGBA{0, 0, 0, 100})
+dc.DrawString("Blurred Shadow", 100, 150)
+
+// Multiple shadows
+shadows := []advancegg.TextShadow{
+    {OffsetX: 1, OffsetY: 1, Blur: 0, Color: color.RGBA{255, 0, 0, 128}},
+    {OffsetX: -1, OffsetY: -1, Blur: 0, Color: color.RGBA{0, 0, 255, 128}},
+}
+dc.SetTextShadows(shadows)
+dc.DrawString("Multiple Shadows", 100, 200)
+
+// Clear shadows
+dc.ClearTextShadow()</code></pre>
+
+                        <h4>Text Outlines</h4>
+                        <pre><code class="language-go">// Text with outline
+dc.SetTextOutline(2, color.RGBA{0, 0, 0, 255})
+dc.SetRGB(1, 1, 1)
+dc.DrawString("Outlined Text", 100, 100)
+
+// Gradient outline
+outlineGradient := advancegg.NewLinearGradient(0, 0, 100, 0)
+outlineGradient.AddColorStop(0, color.RGBA{255, 0, 0, 255})
+outlineGradient.AddColorStop(1, color.RGBA{0, 0, 255, 255})
+dc.SetTextOutlineGradient(3, outlineGradient)
+dc.DrawString("Gradient Outline", 100, 150)</code></pre>
+
+                        <h4>Text Gradients</h4>
+                        <pre><code class="language-go">// Gradient text fill
+gradient := advancegg.NewLinearGradient(0, 0, 200, 0)
+gradient.AddColorStop(0, color.RGBA{255, 0, 0, 255})
+gradient.AddColorStop(0.5, color.RGBA{255, 255, 0, 255})
+gradient.AddColorStop(1, color.RGBA{0, 255, 0, 255})
+
+dc.SetTextFillGradient(gradient)
+dc.DrawString("Gradient Text", 100, 100)
+
+// Radial gradient text
+radialGradient := advancegg.NewRadialGradient(100, 50, 0, 100, 50, 50)
+radialGradient.AddColorStop(0, color.RGBA{255, 255, 255, 255})
+radialGradient.AddColorStop(1, color.RGBA{0, 0, 0, 255})
+
+dc.SetTextFillGradient(radialGradient)
+dc.DrawString("Radial Gradient", 100, 150)</code></pre>
+                    </section>
+
+                    <!-- Text on Path -->
+                    <section id="text-on-path" class="mb-5">
+                        <h2>Text on Path</h2>
+                        
+                        <h4>Text on Circle</h4>
+                        <pre><code class="language-go">// Text following a circle
+advancegg.DrawTextOnCircle(dc, "Circular Text Example", 400, 300, 150)
+
+// Text on arc
+advancegg.DrawTextOnArc(dc, "Arc Text", 400, 300, 150, 0, math.Pi)
+
+// Upside-down circular text
+advancegg.DrawTextOnCircle(dc, "Upside Down Text", 400, 300, 120, true)</code></pre>
+
+                        <h4>Text on Custom Path</h4>
+                        <pre><code class="language-go">// Create a custom path
+path := advancegg.NewPath2D()
+path.MoveTo(100, 200)
+path.CubicTo(200, 100, 400, 100, 500, 200)
+path.CubicTo(600, 300, 400, 300, 300, 200)
+
+// Draw text along the path
+advancegg.DrawTextOnPath(dc, "Text following custom path", path)
+
+// Text with offset along path
+advancegg.DrawTextOnPathWithOffset(dc, "Offset text", path, 50) // 50 pixels offset</code></pre>
+
+                        <h4>Text on Wave</h4>
+                        <pre><code class="language-go">// Text following a sine wave
+advancegg.DrawTextOnWave(dc, "Wavy Text Example", 100, 200, 400, 30, 3)
+// Parameters: text, startX, startY, width, amplitude, frequency
+
+// Text on custom wave function
+waveFunc := func(x float64) float64 {
+    return 30 * math.Sin(x*0.02) + 20 * math.Cos(x*0.03)
+}
+advancegg.DrawTextOnCustomWave(dc, "Custom Wave", 100, 300, 400, waveFunc)</code></pre>
+                    </section>
+
+                    <!-- Advanced Typography -->
+                    <section id="typography" class="mb-5">
+                        <h2>Advanced Typography</h2>
+                        
+                        <h4>Kerning and Spacing</h4>
+                        <pre><code class="language-go">// Enable/disable kerning
+dc.SetKerning(true)  // Enable kerning (default)
+dc.SetKerning(false) // Disable kerning
+
+// Letter spacing
+dc.SetLetterSpacing(2.0) // 2 pixels between letters
+dc.DrawString("Spaced Text", 100, 100)
+
+// Word spacing
+dc.SetWordSpacing(10.0) // 10 pixels between words
+dc.DrawString("Word Spaced Text", 100, 150)
+
+// Line height
+dc.SetLineHeight(1.5) // 1.5x font size
+multilineText := "Line 1\nLine 2\nLine 3"
+dc.DrawString(multilineText, 100, 200)</code></pre>
+
+                        <h4>Text Decoration</h4>
+                        <pre><code class="language-go">// Underline
+dc.SetTextDecoration(advancegg.TextDecorationUnderline)
+dc.DrawString("Underlined Text", 100, 100)
+
+// Strikethrough
+dc.SetTextDecoration(advancegg.TextDecorationStrikethrough)
+dc.DrawString("Strikethrough Text", 100, 150)
+
+// Overline
+dc.SetTextDecoration(advancegg.TextDecorationOverline)
+dc.DrawString("Overlined Text", 100, 200)
+
+// Multiple decorations
+dc.SetTextDecoration(advancegg.TextDecorationUnderline | advancegg.TextDecorationStrikethrough)
+dc.DrawString("Multiple Decorations", 100, 250)
+
+// Custom decoration style
+dc.SetUnderlineStyle(advancegg.UnderlineStyleDotted, 2.0, color.RGBA{255, 0, 0, 255})
+dc.DrawString("Custom Underline", 100, 300)</code></pre>
+
+                        <h4>Font Variants</h4>
+                        <pre><code class="language-go">// Small caps
+dc.SetFontVariant(advancegg.FontVariantSmallCaps)
+dc.DrawString("Small Caps Text", 100, 100)
+
+// Subscript and superscript
+dc.SetFontVariant(advancegg.FontVariantSubscript)
+dc.DrawString("H₂O", 100, 150)
+
+dc.SetFontVariant(advancegg.FontVariantSuperscript)
+dc.DrawString("E=mc²", 150, 150)
+
+// Reset to normal
+dc.SetFontVariant(advancegg.FontVariantNormal)</code></pre>
+                    </section>
+
+                    <!-- Examples -->
+                    <section id="examples" class="mb-5">
+                        <h2>Complete Examples</h2>
+                        
+                        <h4>Typography Showcase</h4>
+                        <pre><code class="language-go">package main
+
+import (
+    "image/color"
+    "math"
+    "github.com/GrandpaEJ/advancegg"
+)
+
+func main() {
+    dc := advancegg.NewContext(1200, 800)
+    
+    // Background
+    dc.SetRGB(0.95, 0.95, 0.98)
+    dc.Clear()
+    
+    // Title with gradient
+    dc.LoadFontFace("fonts/arial-bold.ttf", 48)
+    gradient := advancegg.NewLinearGradient(0, 0, 400, 0)
+    gradient.AddColorStop(0, color.RGBA{255, 0, 100, 255})
+    gradient.AddColorStop(1, color.RGBA{100, 0, 255, 255})
+    dc.SetTextFillGradient(gradient)
+    dc.DrawStringAnchored("Typography Showcase", 600, 80, 0.5, 0.5)
+    
+    // Subtitle with shadow
+    dc.LoadFontFace("fonts/arial.ttf", 24)
+    dc.SetTextShadow(2, 2, 3, color.RGBA{0, 0, 0, 100})
+    dc.SetRGB(0.2, 0.2, 0.4)
+    dc.DrawStringAnchored("Advanced Text Rendering with AdvanceGG", 600, 130, 0.5, 0.5)
+    dc.ClearTextShadow()
+    
+    // International text
+    dc.LoadFontFace("fonts/noto-sans.ttf", 20)
+    dc.SetRGB(0.1, 0.1, 0.2)
+    
+    texts := []struct {
+        text string
+        lang string
+    }{
+        {"Hello World", "English"},
+        {"Bonjour le monde", "French"},
+        {"Hola Mundo", "Spanish"},
+        {"Hallo Welt", "German"},
+        {"Ciao Mondo", "Italian"},
+        {"Olá Mundo", "Portuguese"},
+        {"Привет мир", "Russian"},
+        {"你好世界", "Chinese"},
+        {"こんにちは世界", "Japanese"},
+        {"안녕하세요 세계", "Korean"},
+    }
+    
+    for i, item := range texts {
+        x := 100 + float64(i%5)*220
+        y := 200 + float64(i/5)*40
+        dc.DrawString(item.text, x, y)
+        
+        // Language label
+        dc.LoadFontFace("fonts/arial.ttf", 12)
+        dc.SetRGB(0.5, 0.5, 0.5)
+        dc.DrawString(item.lang, x, y+20)
+        dc.LoadFontFace("fonts/noto-sans.ttf", 20)
+        dc.SetRGB(0.1, 0.1, 0.2)
+    }
+    
+    // Text effects demonstration
+    y := 350.0
+    
+    // Outlined text
+    dc.LoadFontFace("fonts/arial-bold.ttf", 32)
+    dc.SetTextOutline(3, color.RGBA{0, 0, 0, 255})
+    dc.SetRGB(1, 1, 1)
+    dc.DrawString("Outlined Text", 100, y)
+    
+    // Gradient text
+    textGradient := advancegg.NewLinearGradient(0, 0, 200, 0)
+    textGradient.AddColorStop(0, color.RGBA{255, 100, 0, 255})
+    textGradient.AddColorStop(1, color.RGBA{255, 200, 0, 255})
+    dc.SetTextFillGradient(textGradient)
+    dc.ClearTextOutline()
+    dc.DrawString("Gradient Text", 400, y)
+    
+    // Text on circle
+    dc.SetRGB(0.2, 0.4, 0.8)
+    dc.LoadFontFace("fonts/arial.ttf", 18)
+    advancegg.DrawTextOnCircle(dc, "Text following a circular path around the center", 600, 550, 120)
+    
+    // Emoji text
+    dc.LoadFontFace("fonts/noto-emoji.ttf", 24)
+    dc.SetRGB(0.1, 0.1, 0.2)
+    dc.DrawString("Emoji support: 🎨 📊 🎮 🚀 ⭐ 💖 🌍", 100, 650)
+    
+    // Word wrapped text
+    dc.LoadFontFace("fonts/arial.ttf", 16)
+    longText := "This is a demonstration of word wrapping functionality. The text will automatically wrap to fit within the specified width, maintaining proper spacing and alignment."
+    dc.DrawStringWrapped(longText, 100, 700, 0, 0, 400, 1.3, advancegg.AlignJustify)
+    
+    dc.SavePNG("typography-showcase.png")
+}</code></pre>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script src="../js/main.js"></script>
+</body>
+</html>

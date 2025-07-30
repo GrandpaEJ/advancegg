@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paths API - AdvanceGG Documentation</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../../index.html">
+                <i class="bi bi-palette"></i> AdvanceGG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="../../index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../getting-started.html">Getting Started</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="index.html">API Reference</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../examples/">Examples</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid" style="margin-top: 76px;">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <div class="col-lg-3">
+                <div class="doc-nav p-3">
+                    <h6 class="text-muted mb-3">API Reference</h6>
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="index.html">Overview</a>
+                        <a class="nav-link" href="drawing.html">Drawing</a>
+                        <a class="nav-link active" href="paths.html">Paths</a>
+                        <a class="nav-link" href="text.html">Text</a>
+                        <a class="nav-link" href="images.html">Images</a>
+                        <a class="nav-link" href="colors.html">Colors</a>
+                        <a class="nav-link" href="layers.html">Layers</a>
+                        <a class="nav-link" href="filters.html">Filters</a>
+                        <a class="nav-link" href="performance.html">Performance</a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <div class="doc-content">
+                    <h1><i class="bi bi-bezier text-primary"></i> Paths API</h1>
+                    <p class="lead">Advanced path operations, Bézier curves, and vector graphics.</p>
+
+                    <!-- Basic Path Operations -->
+                    <section id="basic-paths" class="mb-5">
+                        <h2>Basic Path Operations</h2>
+                        
+                        <h4>Path Creation</h4>
+                        <pre><code class="language-go">// Start a new path
+dc.NewPath()
+
+// Move to a point without drawing
+dc.MoveTo(x, y)
+
+// Draw a line to a point
+dc.LineTo(x, y)
+
+// Close the current path
+dc.ClosePath()
+
+// Example: Triangle
+dc.NewPath()
+dc.MoveTo(100, 100)
+dc.LineTo(200, 100)
+dc.LineTo(150, 50)
+dc.ClosePath()
+dc.Fill()</code></pre>
+
+                        <h4>Arcs and Circles</h4>
+                        <pre><code class="language-go">// Draw arc (clockwise)
+dc.Arc(centerX, centerY, radius, startAngle, endAngle)
+
+// Draw arc (counter-clockwise)
+dc.ArcNegative(centerX, centerY, radius, startAngle, endAngle)
+
+// Example: Pac-Man shape
+dc.MoveTo(200, 200)
+dc.Arc(200, 200, 80, math.Pi/6, -math.Pi/6)
+dc.ClosePath()
+dc.Fill()</code></pre>
+                    </section>
+
+                    <!-- Bézier Curves -->
+                    <section id="bezier-curves" class="mb-5">
+                        <h2>Bézier Curves</h2>
+                        
+                        <h4>Quadratic Bézier Curves</h4>
+                        <pre><code class="language-go">// Quadratic Bézier curve (one control point)
+dc.QuadraticTo(controlX, controlY, endX, endY)
+
+// Example: Smooth curve
+dc.MoveTo(100, 300)
+dc.QuadraticTo(200, 100, 300, 300)
+dc.Stroke()</code></pre>
+
+                        <h4>Cubic Bézier Curves</h4>
+                        <pre><code class="language-go">// Cubic Bézier curve (two control points)
+dc.CubicTo(control1X, control1Y, control2X, control2Y, endX, endY)
+
+// Example: S-curve
+dc.MoveTo(100, 400)
+dc.CubicTo(200, 300, 300, 500, 400, 400)
+dc.Stroke()</code></pre>
+
+                        <h4>Smooth Curves</h4>
+                        <pre><code class="language-go">// Create smooth curves through points
+points := []Point{
+    {100, 200}, {200, 100}, {300, 250}, {400, 150}, {500, 200},
+}
+
+dc.MoveTo(points[0].X, points[0].Y)
+for i := 1; i < len(points)-2; i++ {
+    // Calculate control points for smooth curve
+    cp1x := points[i].X + (points[i+1].X - points[i-1].X) / 6
+    cp1y := points[i].Y + (points[i+1].Y - points[i-1].Y) / 6
+    cp2x := points[i+1].X - (points[i+2].X - points[i].X) / 6
+    cp2y := points[i+1].Y - (points[i+2].Y - points[i].Y) / 6
+    
+    dc.CubicTo(cp1x, cp1y, cp2x, cp2y, points[i+1].X, points[i+1].Y)
+}
+dc.Stroke()</code></pre>
+                    </section>
+
+                    <!-- Path2D Support -->
+                    <section id="path2d" class="mb-5">
+                        <h2>Path2D Support</h2>
+                        
+                        <h4>Creating Path2D Objects</h4>
+                        <pre><code class="language-go">// Create a new Path2D object
+path := advancegg.NewPath2D()
+
+// Build the path
+path.MoveTo(100, 100)
+path.LineTo(200, 100)
+path.LineTo(200, 200)
+path.LineTo(100, 200)
+path.ClosePath()
+
+// Use the path with context
+dc.DrawPath(path)
+dc.Fill()</code></pre>
+
+                        <h4>Path Operations</h4>
+                        <pre><code class="language-go">// Get path bounds
+bounds := path.GetBounds()
+fmt.Printf("Bounds: %v\n", bounds)
+
+// Check if point is inside path
+contains := path.Contains(150, 150)
+fmt.Printf("Contains point: %v\n", contains)
+
+// Get path length
+length := path.GetLength()
+fmt.Printf("Path length: %f\n", length)
+
+// Sample point at distance along path
+point := path.GetPointAtDistance(length * 0.5) // Midpoint</code></pre>
+
+                        <h4>Path Transformations</h4>
+                        <pre><code class="language-go">// Transform path
+matrix := advancegg.Identity()
+matrix = matrix.Scale(2, 2)
+matrix = matrix.Rotate(math.Pi / 4)
+matrix = matrix.Translate(100, 100)
+
+path.Transform(matrix)
+
+// Or use individual transformations
+path.Scale(2, 2)
+path.Rotate(math.Pi / 4)
+path.Translate(100, 100)</code></pre>
+
+                        <h4>Path Combining</h4>
+                        <pre><code class="language-go">// Combine paths
+path1 := advancegg.NewPath2D()
+path1.MoveTo(100, 100)
+path1.LineTo(200, 200)
+
+path2 := advancegg.NewPath2D()
+path2.MoveTo(300, 100)
+path2.LineTo(400, 200)
+
+// Add path2 to path1
+path1.AddPath(path2)
+
+// Clone a path
+clonedPath := path1.Clone()</code></pre>
+                    </section>
+
+                    <!-- Advanced Path Features -->
+                    <section id="advanced-paths" class="mb-5">
+                        <h2>Advanced Path Features</h2>
+                        
+                        <h4>Path Simplification</h4>
+                        <pre><code class="language-go">// Simplify path (reduce points while maintaining shape)
+simplified := path.Simplify(tolerance)
+
+// Smooth path (reduce sharp corners)
+smoothed := path.Smooth(iterations)</code></pre>
+
+                        <h4>Path Offsetting</h4>
+                        <pre><code class="language-go">// Create offset path (parallel path at distance)
+offsetPath := path.Offset(distance)
+
+// Inward offset (negative distance)
+insetPath := path.Offset(-10)</code></pre>
+
+                        <h4>Path Boolean Operations</h4>
+                        <pre><code class="language-go">// Union of two paths
+union := path1.Union(path2)
+
+// Intersection of two paths
+intersection := path1.Intersection(path2)
+
+// Difference (subtract path2 from path1)
+difference := path1.Difference(path2)
+
+// Exclusive or
+xor := path1.XOR(path2)</code></pre>
+
+                        <h4>Path Stroking</h4>
+                        <pre><code class="language-go">// Convert stroke to filled path
+strokePath := path.Stroke(width, lineCap, lineJoin)
+
+// Stroke with dash pattern
+dashedStroke := path.StrokeDashed(width, dashPattern, lineCap, lineJoin)</code></pre>
+                    </section>
+
+                    <!-- SVG Path Support -->
+                    <section id="svg-paths" class="mb-5">
+                        <h2>SVG Path Support</h2>
+                        
+                        <h4>SVG Path Strings</h4>
+                        <pre><code class="language-go">// Parse SVG path string
+svgPath := "M 100 100 L 200 100 L 200 200 L 100 200 Z"
+path := advancegg.ParseSVGPath(svgPath)
+
+// Convert path to SVG string
+svgString := path.ToSVG()
+
+// Complex SVG path with curves
+complexPath := "M 100 200 C 100 100 250 100 250 200 S 400 300 400 200"
+path2 := advancegg.ParseSVGPath(complexPath)</code></pre>
+
+                        <h4>SVG Path Commands</h4>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Command</th>
+                                        <th>Description</th>
+                                        <th>Parameters</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>M x y</code></td>
+                                        <td>Move to</td>
+                                        <td>x, y coordinates</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>L x y</code></td>
+                                        <td>Line to</td>
+                                        <td>x, y coordinates</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>H x</code></td>
+                                        <td>Horizontal line</td>
+                                        <td>x coordinate</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>V y</code></td>
+                                        <td>Vertical line</td>
+                                        <td>y coordinate</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>C x1 y1 x2 y2 x y</code></td>
+                                        <td>Cubic Bézier</td>
+                                        <td>control points and end point</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Q x1 y1 x y</code></td>
+                                        <td>Quadratic Bézier</td>
+                                        <td>control point and end point</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>A rx ry rotation large-arc sweep x y</code></td>
+                                        <td>Arc</td>
+                                        <td>radii, rotation, flags, end point</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Z</code></td>
+                                        <td>Close path</td>
+                                        <td>none</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Examples -->
+                    <section id="examples" class="mb-5">
+                        <h2>Complete Examples</h2>
+                        
+                        <h4>Complex Path Drawing</h4>
+                        <pre><code class="language-go">package main
+
+import (
+    "math"
+    "github.com/GrandpaEJ/advancegg"
+)
+
+func main() {
+    dc := advancegg.NewContext(800, 600)
+    
+    // Background
+    dc.SetRGB(0.95, 0.95, 0.98)
+    dc.Clear()
+    
+    // Draw a flower using paths
+    drawFlower(dc, 400, 300, 100)
+    
+    // Draw a spiral
+    drawSpiral(dc, 200, 150, 80, 3)
+    
+    // Draw a heart shape
+    drawHeart(dc, 600, 450, 60)
+    
+    dc.SavePNG("complex-paths.png")
+}
+
+func drawFlower(dc *advancegg.Context, centerX, centerY, size float64) {
+    dc.SetRGB(1, 0.2, 0.4)
+    
+    // Draw 8 petals
+    for i := 0; i < 8; i++ {
+        angle := float64(i) * math.Pi / 4
+        
+        dc.Push()
+        dc.Translate(centerX, centerY)
+        dc.Rotate(angle)
+        
+        // Petal shape using Bézier curves
+        dc.MoveTo(0, 0)
+        dc.CubicTo(0, -size*0.3, size*0.3, -size*0.8, 0, -size)
+        dc.CubicTo(-size*0.3, -size*0.8, 0, -size*0.3, 0, 0)
+        dc.Fill()
+        
+        dc.Pop()
+    }
+    
+    // Center
+    dc.SetRGB(1, 1, 0.2)
+    dc.DrawCircle(centerX, centerY, size*0.2)
+    dc.Fill()
+}
+
+func drawSpiral(dc *advancegg.Context, centerX, centerY, maxRadius float64, turns int) {
+    dc.SetRGB(0.2, 0.4, 0.8)
+    dc.SetLineWidth(3)
+    
+    steps := turns * 100
+    dc.MoveTo(centerX, centerY)
+    
+    for i := 1; i <= steps; i++ {
+        t := float64(i) / float64(steps)
+        angle := t * float64(turns) * 2 * math.Pi
+        radius := t * maxRadius
+        
+        x := centerX + radius*math.Cos(angle)
+        y := centerY + radius*math.Sin(angle)
+        dc.LineTo(x, y)
+    }
+    
+    dc.Stroke()
+}
+
+func drawHeart(dc *advancegg.Context, centerX, centerY, size float64) {
+    dc.SetRGB(0.8, 0.1, 0.2)
+    
+    // Heart shape using two circles and a triangle
+    dc.MoveTo(centerX, centerY+size*0.3)
+    
+    // Left curve
+    dc.CubicTo(centerX-size*0.8, centerY-size*0.3,
+               centerX-size*0.8, centerY-size*0.8,
+               centerX, centerY-size*0.2)
+    
+    // Right curve
+    dc.CubicTo(centerX+size*0.8, centerY-size*0.8,
+               centerX+size*0.8, centerY-size*0.3,
+               centerX, centerY+size*0.3)
+    
+    dc.Fill()
+}</code></pre>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script src="../js/main.js"></script>
+</body>
+</html>
