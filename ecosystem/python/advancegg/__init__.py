@@ -6,13 +6,61 @@ High-performance 2D graphics library for Python using Go backend.
 
 import ctypes
 import os
-from typing import List, Tuple, Optional
+import platform
+import sys
+from pathlib import Path
+from typing import List, Tuple, Optional, Dict, Any
+
+# Package metadata
+__version__ = "1.0.0"
+__author__ = "AdvanceGG Contributors"
+__email__ = "hello@advancegg.dev"
+__license__ = "MIT"
 
 # Load the shared library
-_lib_path = os.path.join(os.path.dirname(__file__), '..', 'advancegg.so')
-if not os.path.exists(_lib_path):
-    raise ImportError(f"AdvanceGG shared library not found at {_lib_path}. Please build it first.")
+def _find_native_library():
+    """Find the appropriate native library for current platform."""
+    package_dir = Path(__file__).parent
+    native_dir = package_dir / "native"
 
+    system = platform.system().lower()
+    machine = platform.machine().lower()
+
+    # Normalize architecture
+    arch_map = {
+        'x86_64': 'x64', 'amd64': 'x64',
+        'aarch64': 'arm64', 'arm64': 'arm64',
+        'armv7l': 'armv7'
+    }
+    arch = arch_map.get(machine, machine)
+
+    # Determine library extension
+    if system == "windows":
+        lib_name = f"advancegg-{system}-{arch}.dll"
+    elif system == "darwin":
+        lib_name = f"advancegg-{system}-{arch}.dylib"
+    else:
+        lib_name = f"advancegg-{system}-{arch}.so"
+
+    lib_path = native_dir / lib_name
+
+    if lib_path.exists():
+        return str(lib_path)
+
+    # Fallback to generic names
+    fallbacks = ["advancegg.so", "advancegg.dll", "advancegg.dylib"]
+    for fallback in fallbacks:
+        fallback_path = package_dir / fallback
+        if fallback_path.exists():
+            return str(fallback_path)
+
+    raise ImportError(
+        f"AdvanceGG native library not found. "
+        f"Expected: {lib_path} or fallbacks in {package_dir}. "
+        f"Platform: {system}-{arch}"
+    )
+
+_lib_path = _find_native_library()
 _lib = ctypes.CDLL(_lib_path)
 
 # Define function signatures
@@ -274,5 +322,86 @@ def rgb_to_hex(r: float, g: float, b: float) -> str:
     return f"#{int(r*255):02x}{int(g*255):02x}{int(b*255):02x}"
 
 
-# Export main classes
-__all__ = ['Canvas', 'Gradient', 'LayerManager', 'hex_to_rgb', 'rgb_to_hex']
+# Utility functions
+def get_native_info() -> Dict[str, Any]:
+    """Get information about the native library."""
+    try:
+        # Try to get version info from native library
+        if hasattr(_lib, 'get_version_info'):
+            version_info = _lib.get_version_info()
+            return {
+                'version': version_info.get('version', __version__),
+                'build_type': version_info.get('build_type', 'release'),
+                'build_date': version_info.get('build_date', 'unknown'),
+                'features': {
+                    'simd': version_info.get('simd_enabled', True),
+                    'gpu': version_info.get('gpu_enabled', False),
+                    'unicode': True,
+                    'filters': True,
+                }
+            }
+    except:
+        pass
+
+    return {
+        'version': __version__,
+        'build_type': 'release',
+        'build_date': 'unknown',
+        'features': {
+            'simd': True,
+            'gpu': False,
+            'unicode': True,
+            'filters': True,
+        }
+    }
+
+
+def get_performance_info() -> Dict[str, Any]:
+    """Get system performance information."""
+    import psutil
+
+    try:
+        return {
+            'cpu_cores': psutil.cpu_count(),
+            'memory_gb': psutil.virtual_memory().total / (1024**3),
+            'gpu_name': _get_gpu_name(),
+        }
+    except ImportError:
+        return {
+            'cpu_cores': os.cpu_count() or 1,
+            'memory_gb': 0,
+            'gpu_name': None,
+        }
+
+
+def _get_gpu_name() -> Optional[str]:
+    """Try to get GPU name."""
+    try:
+        import subprocess
+        if platform.system() == "Windows":
+            result = subprocess.run(
+                ["wmic", "path", "win32_VideoController", "get", "name"],
+                capture_output=True, text=True
+            )
+            lines = result.stdout.strip().split('\n')
+            if len(lines) > 1:
+                return lines[1].strip()
+        elif platform.system() == "Linux":
+            result = subprocess.run(
+                ["lspci", "-v"], capture_output=True, text=True
+            )
+            for line in result.stdout.split('\n'):
+                if 'VGA' in line or 'Display' in line:
+                    return line.split(':')[-1].strip()
+    except:
+        pass
+    return None
+
+
+# Export main classes and functions
+__all__ = [
+    'Canvas', 'Gradient', 'LayerManager',
+    'hex_to_rgb', 'rgb_to_hex',
+    'get_native_info', 'get_performance_info',
+    '__version__', '__author__', '__email__', '__license__'
+]

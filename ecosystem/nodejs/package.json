@@ -1,15 +1,15 @@
 {
-  "name": "advancegg-wasm",
+  "name": "advancegg",
   "version": "1.0.0",
-  "description": "AdvanceGG 2D Graphics Library for Node.js via WebAssembly",
+  "description": "High-performance 2D graphics library for Node.js - no Go compiler required",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "build": "go build -o advancegg.wasm main.go",
-    "build-wasm": "GOOS=js GOARCH=wasm go build -o advancegg.wasm main.go",
+    "postinstall": "node scripts/postinstall.js",
     "test": "node test/test.js",
     "example": "node examples/basic-drawing.js",
-    "dev": "nodemon examples/express-charts.js"
+    "benchmark": "node scripts/benchmark.js",
+    "info": "node scripts/info.js"
   },
   "keywords": [
     "graphics",
@@ -36,13 +36,17 @@
   },
   "homepage": "https://github.com/GrandpaEJ/advancegg#readme",
   "dependencies": {
-    "fs-extra": "^11.1.1"
+    "node-fetch": "^3.3.2"
   },
   "devDependencies": {
     "express": "^4.18.2",
     "socket.io": "^4.7.2",
     "nodemon": "^3.0.1",
-    "@types/node": "^20.5.0"
+    "@types/node": "^20.5.0",
+    "jest": "^29.0.0"
+  },
+  "optionalDependencies": {
+    "fs-extra": "^11.1.1"
   },
   "engines": {
     "node": ">=16.0.0"
@@ -50,11 +54,15 @@
   "files": [
     "index.js",
     "index.d.ts",
-    "advancegg.wasm",
-    "wasm_exec.js",
+    "native/",
+    "scripts/",
     "examples/",
     "README.md"
   ],
+  "bin": {
+    "advancegg-info": "./scripts/info.js",
+    "advancegg-benchmark": "./scripts/benchmark.js"
+  },
   "browser": {
     "fs": false,
     "path": false

@@ -1,0 +1,59 @@
+# AdvanceGG Python Package Manifest
+# Specifies which files to include in the distribution
+
+# Include package metadata
+include README.md
+include LICENSE
+include CHANGELOG.md
+include requirements.txt
+
+# Include package configuration
+include setup.py
+include setup.cfg
+include pyproject.toml
+
+# Include native libraries
+recursive-include advancegg/native *.so *.dll *.dylib
+
+# Include type stubs
+include advancegg/py.typed
+recursive-include advancegg *.pyi
+
+# Include examples
+recursive-include examples *.py
+recursive-include examples *.png *.jpg *.jpeg *.gif
+recursive-include examples *.ttf *.otf
+recursive-include examples *.md
+
+# Include tests
+recursive-include tests *.py
+recursive-include tests/data *.png *.jpg *.jpeg
+
+# Include documentation
+recursive-include docs *.md *.rst *.txt
+recursive-include docs *.png *.jpg *.jpeg *.gif
+
+# Exclude development files
+exclude .gitignore
+exclude .github/*
+exclude .pytest_cache/*
+exclude build/*
+exclude dist/*
+exclude *.egg-info/*
+exclude __pycache__/*
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+recursive-exclude * .DS_Store
+recursive-exclude * Thumbs.db
+
+# Exclude Go source files (not needed in distribution)
+exclude *.go
+exclude go.mod
+exclude go.sum
+
+# Exclude development tools
+exclude Makefile
+exclude .pre-commit-config.yaml
+exclude .flake8
+exclude .mypy.ini
+exclude pytest.ini
