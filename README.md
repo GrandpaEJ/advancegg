@@ -2,8 +2,8 @@
 
 [![Go Version](https://img.shields.io/badge/Go-1.18+-00ADD8?style=for-the-badge&logo=go)](https://golang.org)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-[![Documentation](https://img.shields.io/badge/📚_Docs-Live-blue?style=for-the-badge)](index.html)
-[![Examples](https://img.shields.io/badge/🎨_Examples-50+-orange?style=for-the-badge)](docs/examples/)
+[![Documentation](https://img.shields.io/badge/📚_Docs-Live-blue?style=for-the-badge)](https://advancegg.pages.dev/)
+[![Examples](https://img.shields.io/badge/🎨_Examples-50+-orange?style=for-the-badge)](https://advancegg.pages.dev/examples/)
 [![GitHub Stars](https://img.shields.io/github/stars/GrandpaEJ/advancegg?style=for-the-badge&logo=github)](https://github.com/GrandpaEJ/advancegg/stargazers)
 
 > **The most advanced, feature-rich 2D graphics library for Go developers.** Create stunning visualizations, professional charts, game graphics, and interactive applications with unparalleled ease and performance.
@@ -100,15 +100,15 @@ go get github.com/GrandpaEJ/advancegg@v1.0.0
 
 ## 📖 Documentation & Learning
 
-**[📚 Interactive Documentation](index.html)** - Beautiful, responsive docs with live examples
+**[📚 Interactive Documentation](https://advancegg.pages.dev/)** - Beautiful, responsive docs with live examples
 
 | Resource | Description | Link |
 |----------|-------------|------|
-| 🚀 **Quick Start** | Get up and running in 5 minutes | [Getting Started](docs/getting-started.html) |
-| 📋 **API Reference** | Complete function documentation | [API Docs](docs/api/) |
-| 🎨 **Examples Gallery** | 50+ practical examples with source code | [Examples](docs/examples/) |
-| 💡 **Live Demos** | Interactive examples you can run | [Demo Site](index.html) |
-| 🎯 **Tutorials** | Step-by-step learning guides | [Tutorials](docs/getting-started.html#tutorials) |
+| 🚀 **Quick Start** | Get up and running in 5 minutes | [Getting Started](https://advancegg.pages.dev/getting-started.html) |
+| 📋 **API Reference** | Complete function documentation | [API Docs](https://advancegg.pages.dev/api/) |
+| 🎨 **Examples Gallery** | 50+ practical examples with source code | [Examples](https://advancegg.pages.dev/examples/) |
+| 💡 **Live Demos** | Interactive examples you can run | [Demo Site](https://advancegg.pages.dev/) |
+| 🎯 **Tutorials** | Step-by-step learning guides | [Tutorials](https://advancegg.pages.dev/getting-started.html#tutorials) |
 
 ## 🎯 Quick Start - Create Your First Masterpiece
 
@@ -283,7 +283,7 @@ func main() {
 </tr>
 </table>
 
-**[🎨 Explore All Examples →](docs/examples/)**
+**[🎨 Explore All Examples →](https://advancegg.pages.dev/examples/)**
 
 ## ⚡ Performance Benchmarks
 
@@ -349,7 +349,7 @@ AdvanceGG is engineered for speed. Here's how it performs in real-world scenario
 
 ### 💬 **Get Help & Connect**
 
-- **📖 [Documentation](index.html)** - Comprehensive guides and API reference
+- **📖 [Documentation](https://advancegg.pages.dev/)** - Comprehensive guides and API reference
 - **💡 [GitHub Discussions](https://github.com/GrandpaEJ/advancegg/discussions)** - Ask questions and share ideas
 - **🐛 [Issue Tracker](https://github.com/GrandpaEJ/advancegg/issues)** - Report bugs and request features
 - **📧 [Email Support](mailto:support@advancegg.dev)** - Direct support for enterprise users
