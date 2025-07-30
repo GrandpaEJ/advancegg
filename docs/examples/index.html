@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examples - AdvanceGG Documentation</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../../index.html">
+                <i class="bi bi-palette"></i> AdvanceGG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="../../index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../getting-started.html">Getting Started</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../api/">API Reference</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="index.html">Examples</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/GrandpaEJ/advancegg" target="_blank">
+                            <i class="bi bi-github"></i> GitHub
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top: 100px;">
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold">Examples</h1>
+            <p class="lead">Learn AdvanceGG through practical examples and tutorials</p>
+        </div>
+
+        <!-- Categories -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-6 col-lg-4">
+                <div class="example-category">
+                    <div class="category-icon">
+                        <i class="bi bi-brush"></i>
+                    </div>
+                    <h4>Basic Drawing</h4>
+                    <p>Learn the fundamentals of drawing shapes, lines, and paths</p>
+                    <a href="#basic-drawing" class="btn btn-outline-primary">View Examples</a>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="example-category">
+                    <div class="category-icon">
+                        <i class="bi bi-type"></i>
+                    </div>
+                    <h4>Text & Typography</h4>
+                    <p>Advanced text rendering, fonts, and typography effects</p>
+                    <a href="#text-typography" class="btn btn-outline-primary">View Examples</a>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="example-category">
+                    <div class="category-icon">
+                        <i class="bi bi-image"></i>
+                    </div>
+                    <h4>Image Processing</h4>
+                    <p>Filters, effects, and image manipulation techniques</p>
+                    <a href="#image-processing" class="btn btn-outline-primary">View Examples</a>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="example-category">
+                    <div class="category-icon">
+                        <i class="bi bi-layers"></i>
+                    </div>
+                    <h4>Layer System</h4>
+                    <p>Multi-layer compositing and blend modes</p>
+                    <a href="#layer-system" class="btn btn-outline-primary">View Examples</a>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="example-category">
+                    <div class="category-icon">
+                        <i class="bi bi-bar-chart"></i>
+                    </div>
+                    <h4>Data Visualization</h4>
+                    <p>Charts, graphs, and interactive visualizations</p>
+                    <a href="#data-visualization" class="btn btn-outline-primary">View Examples</a>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="example-category">
+                    <div class="category-icon">
+                        <i class="bi bi-controller"></i>
+                    </div>
+                    <h4>Game Graphics</h4>
+                    <p>Sprites, animations, and game UI elements</p>
+                    <a href="#game-graphics" class="btn btn-outline-primary">View Examples</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Basic Drawing Examples -->
+        <section id="basic-drawing" class="mb-5">
+            <h2><i class="bi bi-brush text-primary"></i> Basic Drawing</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="example-card">
+                        <div class="example-image">
+                            <img src="../../images/basic-shapes-demo.png" alt="Basic Shapes" class="img-fluid" 
+                                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZjNzU3ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkJhc2ljIFNoYXBlczwvdGV4dD48L3N2Zz4='">
+                        </div>
+                        <div class="example-content">
+                            <h5>Basic Shapes</h5>
+                            <p>Rectangles, circles, ellipses, and polygons</p>
+                            <a href="basic-shapes.html" class="btn btn-sm btn-primary">View Example</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="example-card">
+                        <div class="example-image">
+                            <img src="../../images/paths-and-curves.png" alt="Paths and Curves" class="img-fluid"
+                                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZjNzU3ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPlBhdGhzICZhbXA7IEN1cnZlczwvdGV4dD48L3N2Zz4='">
+                        </div>
+                        <div class="example-content">
+                            <h5>Paths and Curves</h5>
+                            <p>Bézier curves, arcs, and complex paths</p>
+                            <a href="paths-curves.html" class="btn btn-sm btn-primary">View Example</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="example-card">
+                        <div class="example-image">
+                            <img src="../../images/gradients-patterns.png" alt="Gradients and Patterns" class="img-fluid"
+                                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZjNzU3ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkdyYWRpZW50cyAmYW1wOyBQYXR0ZXJuczwvdGV4dD48L3N2Zz4='">
+                        </div>
+                        <div class="example-content">
+                            <h5>Gradients & Patterns</h5>
+                            <p>Linear, radial gradients and surface patterns</p>
+                            <a href="gradients-patterns.html" class="btn btn-sm btn-primary">View Example</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Text & Typography Examples -->
+        <section id="text-typography" class="mb-5">
+            <h2><i class="bi bi-type text-primary"></i> Text & Typography</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="example-card">
+                        <div class="example-image">
+                            <img src="../../images/creative-text-effects.png" alt="Text Effects" class="img-fluid">
+                        </div>
+                        <div class="example-content">
+                            <h5>Text Effects</h5>
+                            <p>Shadows, outlines, and creative typography</p>
+                            <a href="text-effects.html" class="btn btn-sm btn-primary">View Example</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="example-card">
+                        <div class="example-image">
+                            <img src="../../images/basic-text-on-path.png" alt="Text on Path" class="img-fluid">
+                        </div>
+                        <div class="example-content">
+                            <h5>Text on Path</h5>
+                            <p>Text following curves, circles, and custom paths</p>
+                            <a href="text-on-path.html" class="btn btn-sm btn-primary">View Example</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="example-card">
+                        <div class="example-image">
+                            <img src="../../images/unicode-shaping-demo.png" alt="Unicode Support" class="img-fluid">
+                        </div>
+                        <div class="example-content">
+                            <h5>Unicode & Emoji</h5>
+                            <p>International text and emoji rendering</p>
+                            <a href="unicode-emoji.html" class="btn btn-sm btn-primary">View Example</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Image Processing Examples -->
+        <section id="image-processing" class="mb-5">
+            <h2><i class="bi bi-image text-primary"></i> Image Processing</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="example-card">
+                        <div class="example-image">
+                            <img src="../../images/filter-showcase.png" alt="Image Filters" class="img-fluid">
+                        </div>
+                        <div class="example-content">
+                            <h5>Image Filters</h5>
+                            <p>Blur, sharpen, edge detection, and more</p>
+                            <a href="image-filters.html" class="btn btn-sm btn-primary">View Example</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="example-card">
+                        <div class="example-image">
+                            <img src="../../images/color-space-comparison.png" alt="Color Management" class="img-fluid">
+                        </div>
+                        <div class="example-content">
+                            <h5>Color Management</h5>
+                            <p>ICC profiles and color space conversions</p>
+                            <a href="color-management.html" class="btn btn-sm btn-primary">View Example</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="example-card">
+                        <div class="example-image">
+                            <img src="../../images/image-manipulation.png" alt="Image Manipulation" class="img-fluid"
+                                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZjNzU3ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIE1hbmlwdWxhdGlvbjwvdGV4dD48L3N2Zz4='">
+                        </div>
+                        <div class="example-content">
+                            <h5>Image Manipulation</h5>
+                            <p>Transformations, compositing, and effects</p>
+                            <a href="image-manipulation.html" class="btn btn-sm btn-primary">View Example</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Layer System Examples -->
+        <section id="layer-system" class="mb-5">
+            <h2><i class="bi bi-layers text-primary"></i> Layer System</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="example-card">
+                        <div class="example-image">
+                            <img src="../../images/layer-system-demo.png" alt="Layer Basics" class="img-fluid">
+                        </div>
+                        <div class="example-content">
+                            <h5>Layer Basics</h5>
+                            <p>Creating and managing multiple layers</p>
+                            <a href="layer-basics.html" class="btn btn-sm btn-primary">View Example</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="example-card">
+                        <div class="example-image">
+                            <img src="../../images/blend-modes-demo.png" alt="Blend Modes" class="img-fluid"
+                                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZjNzU3ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkJsZW5kIE1vZGVzPC90ZXh0Pjwvc3ZnPg=='">
+                        </div>
+                        <div class="example-content">
+                            <h5>Blend Modes</h5>
+                            <p>Multiply, screen, overlay, and more</p>
+                            <a href="blend-modes.html" class="btn btn-sm btn-primary">View Example</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="example-card">
+                        <div class="example-image">
+                            <img src="../../images/advanced-composite-demo.png" alt="Advanced Compositing" class="img-fluid">
+                        </div>
+                        <div class="example-content">
+                            <h5>Advanced Compositing</h5>
+                            <p>Complex layer compositions and effects</p>
+                            <a href="advanced-compositing.html" class="btn btn-sm btn-primary">View Example</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Data Visualization Examples -->
+        <section id="data-visualization" class="mb-5">
+            <h2><i class="bi bi-bar-chart text-primary"></i> Data Visualization</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="example-card">
+                        <div class="example-image">
+                            <img src="../../images/data-visualization-demo.png" alt="Charts and Graphs" class="img-fluid">
+                        </div>
+                        <div class="example-content">
+                            <h5>Charts & Graphs</h5>
+                            <p>Bar charts, line graphs, and pie charts</p>
+                            <a href="charts-graphs.html" class="btn btn-sm btn-primary">View Example</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="example-card">
+                        <div class="example-image">
+                            <img src="../../images/dashboard-demo.png" alt="Dashboards" class="img-fluid"
+                                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZjNzU3ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkRhc2hib2FyZHM8L3RleHQ+PC9zdmc+'">
+                        </div>
+                        <div class="example-content">
+                            <h5>Dashboards</h5>
+                            <p>Interactive data dashboards and reports</p>
+                            <a href="dashboards.html" class="btn btn-sm btn-primary">View Example</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="example-card">
+                        <div class="example-image">
+                            <img src="../../images/infographics.png" alt="Infographics" class="img-fluid"
+                                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZjNzU3ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkluZm9ncmFwaGljczwvdGV4dD48L3N2Zz4='">
+                        </div>
+                        <div class="example-content">
+                            <h5>Infographics</h5>
+                            <p>Visual storytelling and data presentation</p>
+                            <a href="infographics.html" class="btn btn-sm btn-primary">View Example</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Game Graphics Examples -->
+        <section id="game-graphics" class="mb-5">
+            <h2><i class="bi bi-controller text-primary"></i> Game Graphics</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="example-card">
+                        <div class="example-image">
+                            <img src="../../images/game-graphics-demo.png" alt="Sprites and Animation" class="img-fluid">
+                        </div>
+                        <div class="example-content">
+                            <h5>Sprites & Animation</h5>
+                            <p>Game sprites, animations, and effects</p>
+                            <a href="sprites-animation.html" class="btn btn-sm btn-primary">View Example</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="example-card">
+                        <div class="example-image">
+                            <img src="../../images/game-ui.png" alt="Game UI" class="img-fluid"
+                                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZjNzU3ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkdhbWUgVUk8L3RleHQ+PC9zdmc+'">
+                        </div>
+                        <div class="example-content">
+                            <h5>Game UI</h5>
+                            <p>User interfaces, HUDs, and menus</p>
+                            <a href="game-ui.html" class="btn btn-sm btn-primary">View Example</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="example-card">
+                        <div class="example-image">
+                            <img src="../../images/particle-effects.png" alt="Particle Effects" class="img-fluid"
+                                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZjNzU3ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPlBhcnRpY2xlIEVmZmVjdHM8L3RleHQ+PC9zdmc+'">
+                        </div>
+                        <div class="example-content">
+                            <h5>Particle Effects</h5>
+                            <p>Fire, smoke, explosions, and magic effects</p>
+                            <a href="particle-effects.html" class="btn btn-sm btn-primary">View Example</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action -->
+        <div class="text-center py-5">
+            <h3>Ready to Start Creating?</h3>
+            <p class="lead mb-4">Explore the full potential of AdvanceGG with our comprehensive documentation</p>
+            <div class="d-flex gap-3 justify-content-center">
+                <a href="../getting-started.html" class="btn btn-primary btn-lg">
+                    <i class="bi bi-rocket"></i> Get Started
+                </a>
+                <a href="../api/" class="btn btn-outline-primary btn-lg">
+                    <i class="bi bi-book"></i> API Reference
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script src="../js/main.js"></script>
+    
+    <style>
+        .example-category {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            height: 100%;
+        }
+        
+        .example-category:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .category-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+        }
+        
+        .example-category h4 {
+            color: #212529;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .example-category p {
+            color: #6c757d;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</body>
+</html>

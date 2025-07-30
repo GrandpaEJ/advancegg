@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Reference - AdvanceGG Documentation</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../../index.html">
+                <i class="bi bi-palette"></i> AdvanceGG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="../../index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../getting-started.html">Getting Started</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="index.html">API Reference</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../examples/">Examples</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/GrandpaEJ/advancegg" target="_blank">
+                            <i class="bi bi-github"></i> GitHub
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid" style="margin-top: 76px;">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <div class="col-lg-3">
+                <div class="doc-nav p-3">
+                    <h6 class="text-muted mb-3">Core API</h6>
+                    <nav class="nav flex-column">
+                        <a class="nav-link active" href="#context">Context</a>
+                        <a class="nav-link" href="#drawing">Drawing</a>
+                        <a class="nav-link" href="#paths">Paths</a>
+                        <a class="nav-link" href="#text">Text</a>
+                        <a class="nav-link" href="#images">Images</a>
+                        <a class="nav-link" href="#colors">Colors</a>
+                        <a class="nav-link" href="#transformations">Transformations</a>
+                    </nav>
+                    
+                    <h6 class="text-muted mb-3 mt-4">Advanced Features</h6>
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="#layers">Layer System</a>
+                        <a class="nav-link" href="#filters">Image Filters</a>
+                        <a class="nav-link" href="#strokes">Advanced Strokes</a>
+                        <a class="nav-link" href="#unicode">Unicode & Emoji</a>
+                        <a class="nav-link" href="#color-management">Color Management</a>
+                        <a class="nav-link" href="#performance">Performance</a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <div class="doc-content">
+                    <h1>API Reference</h1>
+                    <p class="lead">Complete reference for all AdvanceGG functions and types.</p>
+
+                    <!-- Context -->
+                    <section id="context" class="mb-5">
+                        <h2><i class="bi bi-window text-primary"></i> Context</h2>
+                        <p>The Context is the main drawing surface and entry point for all graphics operations.</p>
+                        
+                        <h4>Creating Contexts</h4>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Function</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>NewContext(width, height int) *Context</code></td>
+                                        <td>Creates a new context with specified dimensions</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>NewContextForImage(img image.Image) *Context</code></td>
+                                        <td>Creates a context from an existing image</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>NewContextForRGBA(img *image.RGBA) *Context</code></td>
+                                        <td>Creates a context from an RGBA image</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4>State Management</h4>
+                        <pre><code class="language-go">// Save and restore drawing state
+dc.Push()    // Save current state
+// ... drawing operations ...
+dc.Pop()     // Restore saved state
+
+// Clear the canvas
+dc.Clear()   // Fill with current color
+dc.SetRGB(1, 1, 1)
+dc.Clear()   // White background</code></pre>
+                    </section>
+
+                    <!-- Drawing -->
+                    <section id="drawing" class="mb-5">
+                        <h2><i class="bi bi-brush text-primary"></i> Drawing</h2>
+                        
+                        <h4>Basic Shapes</h4>
+                        <pre><code class="language-go">// Rectangles
+dc.DrawRectangle(x, y, width, height)
+dc.DrawRoundedRectangle(x, y, width, height, radius)
+
+// Circles and ellipses
+dc.DrawCircle(x, y, radius)
+dc.DrawEllipse(x, y, rx, ry)
+
+// Lines
+dc.DrawLine(x1, y1, x2, y2)
+
+// Polygons
+dc.DrawRegularPolygon(sides, x, y, radius, rotation)</code></pre>
+
+                        <h4>Fill and Stroke</h4>
+                        <pre><code class="language-go">// Fill shapes
+dc.Fill()           // Fill and clear path
+dc.FillPreserve()   // Fill but keep path
+
+// Stroke outlines
+dc.Stroke()         // Stroke and clear path
+dc.StrokePreserve() // Stroke but keep path
+
+// Combined operations
+dc.FillPreserve()
+dc.Stroke()         // Fill then stroke</code></pre>
+
+                        <h4>Line Styles</h4>
+                        <pre><code class="language-go">// Line width
+dc.SetLineWidth(5.0)
+
+// Line cap styles
+dc.SetLineCap(advancegg.LineCapRound)   // Round, Butt, Square
+
+// Line join styles
+dc.SetLineJoin(advancegg.LineJoinRound) // Round, Miter, Bevel
+
+// Dash patterns
+dc.SetDash(10, 5)                       // 10 on, 5 off
+dc.SetDashOffset(2.5)                   // Offset pattern</code></pre>
+                    </section>
+
+                    <!-- Paths -->
+                    <section id="paths" class="mb-5">
+                        <h2><i class="bi bi-bezier text-primary"></i> Paths</h2>
+                        
+                        <h4>Path Operations</h4>
+                        <pre><code class="language-go">// Start new path
+dc.NewPath()
+
+// Move without drawing
+dc.MoveTo(x, y)
+
+// Draw lines
+dc.LineTo(x, y)
+
+// Bézier curves
+dc.QuadraticTo(cpx, cpy, x, y)          // Quadratic
+dc.CubicTo(cp1x, cp1y, cp2x, cp2y, x, y) // Cubic
+
+// Arcs
+dc.Arc(x, y, radius, startAngle, endAngle)
+dc.ArcNegative(x, y, radius, startAngle, endAngle)
+
+// Close path
+dc.ClosePath()</code></pre>
+
+                        <h4>Path2D Support</h4>
+                        <pre><code class="language-go">// Create Path2D object
+path := advancegg.NewPath2D()
+path.MoveTo(100, 100)
+path.LineTo(200, 200)
+path.Arc(150, 150, 50, 0, 2*math.Pi)
+
+// Use with context
+dc.DrawPath(path)
+dc.Fill()
+
+// Path operations
+path.Transform(matrix)
+bounds := path.GetBounds()
+contains := path.Contains(x, y)</code></pre>
+                    </section>
+
+                    <!-- Text -->
+                    <section id="text" class="mb-5">
+                        <h2><i class="bi bi-type text-primary"></i> Text</h2>
+                        
+                        <h4>Font Management</h4>
+                        <pre><code class="language-go">// Load fonts
+dc.LoadFontFace("fonts/arial.ttf", 24)
+dc.LoadFontFaceFromBytes(fontData, 24)
+
+// Font properties
+dc.SetFontSize(18)
+dc.SetFontFace(fontFace)</code></pre>
+
+                        <h4>Text Rendering</h4>
+                        <pre><code class="language-go">// Basic text
+dc.DrawString("Hello World", x, y)
+
+// Anchored text (alignment)
+dc.DrawStringAnchored("Centered", x, y, 0.5, 0.5)
+// ax, ay: 0=left/top, 0.5=center, 1=right/bottom
+
+// Word wrapping
+dc.DrawStringWrapped("Long text that will wrap...", 
+    x, y, ax, ay, width, lineSpacing, align)
+
+// Text measurement
+w, h := dc.MeasureString("Text")
+lines := dc.WordWrap("Text", width)</code></pre>
+
+                        <h4>Advanced Text Features</h4>
+                        <pre><code class="language-go">// Text on path
+advancegg.DrawTextOnCircle(dc, "Circular Text", centerX, centerY, radius)
+advancegg.DrawTextOnWave(dc, "Wave Text", startX, startY, endX, amplitude, frequency)
+
+// Unicode and emoji
+dc.DrawString("Hello 世界 🌍", x, y)  // Automatic support
+
+// Text effects
+dc.SetTextShadow(offsetX, offsetY, blur, color)
+dc.DrawString("Shadow Text", x, y)</code></pre>
+                    </section>
+
+                    <!-- Images -->
+                    <section id="images" class="mb-5">
+                        <h2><i class="bi bi-image text-primary"></i> Images</h2>
+                        
+                        <h4>Loading and Saving</h4>
+                        <pre><code class="language-go">// Load images
+img := advancegg.LoadPNG("input.png")
+img := advancegg.LoadJPEG("input.jpg")
+img := advancegg.LoadImage("input.gif") // Auto-detect format
+
+// Save images
+dc.SavePNG("output.png")
+dc.SaveJPEG("output.jpg", 95)  // 95% quality
+dc.SaveGIF("output.gif")
+
+// Get image data
+rgba := dc.Image()  // Get underlying RGBA image</code></pre>
+
+                        <h4>Drawing Images</h4>
+                        <pre><code class="language-go">// Draw at position
+dc.DrawImage(img, x, y)
+
+// Draw with scaling
+dc.DrawImageAnchored(img, x, y, ax, ay)
+
+// Draw with transformation
+dc.Push()
+dc.Scale(2, 2)
+dc.Rotate(math.Pi / 4)
+dc.DrawImage(img, x, y)
+dc.Pop()</code></pre>
+
+                        <h4>Image Processing</h4>
+                        <pre><code class="language-go">// Apply filters
+blurred := advancegg.ApplyBlur(img, 5.0)
+sharpened := advancegg.ApplySharpen(img, 1.5)
+grayscale := advancegg.ApplyGrayscale(img)
+
+// Brightness and contrast
+bright := advancegg.ApplyBrightness(img, 1.2)
+contrast := advancegg.ApplyContrast(img, 1.5)
+
+// Color adjustments
+saturated := advancegg.ApplySaturation(img, 1.3)
+hueShifted := advancegg.ApplyHueRotate(img, 30) // degrees</code></pre>
+                    </section>
+
+                    <!-- Colors -->
+                    <section id="colors" class="mb-5">
+                        <h2><i class="bi bi-palette2 text-primary"></i> Colors</h2>
+                        
+                        <h4>Setting Colors</h4>
+                        <pre><code class="language-go">// RGB colors
+dc.SetRGB(1, 0, 0)        // Red (values 0-1)
+dc.SetRGBA(1, 0, 0, 0.5)  // Semi-transparent red
+dc.SetRGB255(255, 0, 0)   // RGB with 0-255 values
+
+// Hex colors
+dc.SetHexColor("#FF5733")
+dc.SetHexColor("#F53")    // Short form
+
+// Color objects
+dc.SetColor(color.RGBA{255, 0, 0, 255})</code></pre>
+
+                        <h4>Color Spaces</h4>
+                        <pre><code class="language-go">// CMYK (for print)
+dc.SetCMYK(0, 1, 1, 0)    // Cyan=0, Magenta=100%, Yellow=100%, Black=0
+
+// HSV (Hue, Saturation, Value)
+dc.SetHSV(240, 1, 1)      // Blue: H=240°, S=100%, V=100%
+
+// HSL (Hue, Saturation, Lightness)
+dc.SetHSL(240, 1, 0.5)    // Blue: H=240°, S=100%, L=50%
+
+// LAB color space
+dc.SetLAB(50, 20, -30)    // L=50, a=20, b=-30</code></pre>
+
+                        <h4>Gradients</h4>
+                        <pre><code class="language-go">// Linear gradient
+gradient := advancegg.NewLinearGradient(0, 0, 100, 0)
+gradient.AddColorStop(0, color.RGBA{255, 0, 0, 255})    // Red at start
+gradient.AddColorStop(1, color.RGBA{0, 0, 255, 255})    // Blue at end
+dc.SetFillStyle(gradient)
+
+// Radial gradient
+radial := advancegg.NewRadialGradient(50, 50, 0, 50, 50, 50)
+radial.AddColorStop(0, color.RGBA{255, 255, 255, 255})  // White center
+radial.AddColorStop(1, color.RGBA{0, 0, 0, 255})        // Black edge
+dc.SetFillStyle(radial)</code></pre>
+                    </section>
+
+                    <!-- Transformations -->
+                    <section id="transformations" class="mb-5">
+                        <h2><i class="bi bi-arrow-clockwise text-primary"></i> Transformations</h2>
+                        
+                        <pre><code class="language-go">// Translation
+dc.Translate(dx, dy)
+
+// Scaling
+dc.Scale(sx, sy)          // Different X and Y scaling
+dc.Scale(s, s)            // Uniform scaling
+
+// Rotation
+dc.Rotate(angle)          // Angle in radians
+dc.RotateAbout(angle, x, y) // Rotate about point
+
+// Shearing
+dc.Shear(sx, sy)
+
+// Matrix transformations
+matrix := advancegg.Identity()
+matrix = matrix.Scale(2, 2)
+matrix = matrix.Rotate(math.Pi / 4)
+dc.SetMatrix(matrix)
+
+// Reset transformation
+dc.Identity()</code></pre>
+                    </section>
+
+                    <!-- Advanced Features -->
+                    <section id="layers" class="mb-5">
+                        <h2><i class="bi bi-layers text-primary"></i> Layer System</h2>
+                        
+                        <pre><code class="language-go">// Create layer manager
+layerManager := advancegg.NewLayerManager(800, 600)
+
+// Add layers
+background := layerManager.AddLayer("bg")
+foreground := layerManager.AddLayer("fg")
+
+// Draw on layers
+background.SetRGB(0.2, 0.2, 0.4)
+background.Clear()
+
+foreground.SetRGB(1, 1, 0)
+foreground.DrawCircle(400, 300, 100)
+foreground.Fill()
+
+// Layer properties
+foreground.SetOpacity(0.8)
+foreground.SetBlendMode(advancegg.BlendModeMultiply)
+foreground.SetVisible(true)
+
+// Composite layers
+result := layerManager.Flatten()
+result.SavePNG("layered.png")</code></pre>
+                    </section>
+
+                    <section id="filters" class="mb-5">
+                        <h2><i class="bi bi-funnel text-primary"></i> Image Filters</h2>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Basic Filters</h5>
+                                <ul>
+                                    <li><code>ApplyBlur(img, radius)</code></li>
+                                    <li><code>ApplySharpen(img, amount)</code></li>
+                                    <li><code>ApplyGrayscale(img)</code></li>
+                                    <li><code>ApplySepia(img)</code></li>
+                                    <li><code>ApplyInvert(img)</code></li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Advanced Filters</h5>
+                                <ul>
+                                    <li><code>ApplyEdgeDetection(img)</code></li>
+                                    <li><code>ApplyEmboss(img)</code></li>
+                                    <li><code>ApplyPixelate(img, size)</code></li>
+                                    <li><code>ApplyVignette(img, strength)</code></li>
+                                    <li><code>ApplyNoise(img, amount)</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="strokes" class="mb-5">
+                        <h2><i class="bi bi-pen text-primary"></i> Advanced Strokes</h2>
+                        
+                        <pre><code class="language-go">// Dashed strokes
+dc.DrawDashedLine(x1, y1, x2, y2, []float64{10, 5, 2, 5})
+
+// Gradient strokes
+stops := []advancegg.StrokeGradientStop{
+    {Position: 0.0, Color: color.RGBA{255, 0, 0, 255}},
+    {Position: 1.0, Color: color.RGBA{0, 0, 255, 255}},
+}
+dc.DrawGradientLine(x1, y1, x2, y2, stops)
+
+// Tapered strokes
+dc.DrawTaperedLine(x1, y1, x2, y2, startWidth, endWidth)</code></pre>
+                    </section>
+
+                    <section id="performance" class="mb-5">
+                        <h2><i class="bi bi-lightning text-primary"></i> Performance</h2>
+
+                        <pre><code class="language-go">// Enable performance optimizations
+dc.SetSIMDEnabled(true)        // Use SIMD instructions
+dc.SetMemoryPooling(true)      // Enable memory pooling
+dc.SetBatchMode(true)          // Batch operations
+
+// Debug and profiling
+dc.SetDebugMode(true)          // Visual debugging
+dc.EnableProfiling(true)       // Performance profiling
+stats := dc.GetPerformanceStats()
+
+// Caching
+dc.EnableCaching(true)         // Cache rendered elements
+dc.ClearCache()                // Clear cache manually</code></pre>
+                    </section>
+
+                    <!-- Quick Reference -->
+                    <section id="quick-reference" class="mb-5">
+                        <h2><i class="bi bi-bookmark text-primary"></i> Quick Reference</h2>
+
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="bi bi-brush"></i> Common Patterns</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <pre><code class="language-go">// Basic setup
+dc := advancegg.NewContext(800, 600)
+dc.SetRGB(1, 1, 1)
+dc.Clear()
+
+// Draw with style
+dc.SetRGB(1, 0, 0)
+dc.SetLineWidth(3)
+dc.DrawCircle(400, 300, 100)
+dc.Stroke()
+
+// Save result
+dc.SavePNG("output.png")</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="bi bi-exclamation-triangle"></i> Common Gotchas</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-unstyled">
+                                            <li>• Remember to call <code>Fill()</code> or <code>Stroke()</code></li>
+                                            <li>• Use <code>Push()</code>/<code>Pop()</code> for state management</li>
+                                            <li>• Color values are 0-1, not 0-255</li>
+                                            <li>• Angles are in radians, not degrees</li>
+                                            <li>• Y axis increases downward</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script src="../js/main.js"></script>
+</body>
+</html>

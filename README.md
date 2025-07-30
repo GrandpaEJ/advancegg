@@ -1,25 +1,66 @@
-# AdvanceGG
+# AdvanceGG - Advanced 2D Graphics Library for Go
 
-`AdvanceGG` is a powerful library for rendering 2D graphics in pure Go, providing a simple and intuitive API for creating beautiful graphics.
+[![Go Version](https://img.shields.io/badge/Go-1.18+-blue.svg)](https://golang.org)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Documentation](https://img.shields.io/badge/docs-online-blue.svg)](index.html)
 
-<b> [Froked From GG](https://github.com/fogleman/gg) </b>
+AdvanceGG is a powerful, production-ready 2D graphics library for Go that provides comprehensive drawing capabilities, advanced text rendering, image processing, and much more. Built for performance and ease of use, it's perfect for creating visualizations, games, charts, and any application requiring high-quality 2D graphics.
 
-## Installation
+**Originally forked from [GG](https://github.com/fogleman/gg) and significantly enhanced with professional-grade features.**
+
+## ✨ Key Features
+
+### 🎨 **Professional Graphics**
+- **Layer System** - Multi-layered drawing with blend modes and opacity
+- **Advanced Strokes** - Dashed patterns, gradient strokes, tapered ends
+- **Path2D Support** - Complex vector paths and Bézier curves
+- **High-Quality Rendering** - Anti-aliased graphics with sub-pixel precision
+
+### 📝 **Advanced Typography**
+- **Unicode Shaping** - Full support for international text and complex scripts
+- **Emoji Rendering** - Color emoji with fallback mechanisms
+- **Text-on-Path** - Text following curves, circles, and custom paths
+- **Font Management** - TTF/OTF loading with advanced metrics
+
+### 🖼️ **Image Processing**
+- **15+ Filters** - Blur, sharpen, edge detection, sepia, and more
+- **Color Management** - ICC color profiles and accurate color conversion
+- **Multiple Formats** - PNG, JPEG, GIF, WebP, TIFF, BMP support
+- **Non-destructive Editing** - Reversible filters and transformations
+
+### ⚡ **Performance & Developer Experience**
+- **SIMD Optimizations** - CPU vector instructions for image processing
+- **Memory Pooling** - Reduced GC pressure and improved performance
+- **Debug Mode** - Visual debugging tools and performance profiling
+- **Comprehensive Examples** - 50+ examples covering all features
+
+## 🚀 Installation
 
 ```bash
 go get github.com/GrandpaEJ/advancegg
 ```
 
-## Documentation
+**Requirements:** Go 1.18 or later
 
-- [Getting Started Guide](docs/getting-started.md)
-- [API Reference](docs/api-reference.md)
-- [Examples](docs/examples.md)
-- [Contributing](docs/contributing.md)
+## 📖 Documentation
 
-## Hello, Circle!
+**[📚 Complete Documentation & Examples](index.html)** - Interactive web documentation with live examples
 
-Look how easy!
+- **[🚀 Getting Started](docs/getting-started.html)** - Quick start guide and tutorials
+- **[📋 API Reference](docs/api/)** - Complete API documentation with examples
+- **[🎨 Examples Gallery](docs/examples/)** - Practical examples and use cases
+- **[💡 Interactive Demo](index.html)** - Live documentation website
+
+### Quick Links
+- [Basic Drawing](docs/examples/index.html#basic-drawing) - Shapes, paths, and curves
+- [Text & Typography](docs/examples/index.html#text-typography) - Advanced text rendering
+- [Image Processing](docs/examples/index.html#image-processing) - Filters and effects
+- [Layer System](docs/examples/index.html#layer-system) - Multi-layer compositing
+- [Data Visualization](docs/examples/index.html#data-visualization) - Charts and graphs
+
+## 🎯 Quick Start
+
+### Hello, Circle!
 
 ```go
 package main
@@ -27,19 +68,79 @@ package main
 import "github.com/GrandpaEJ/advancegg"
 
 func main() {
-    dc := advancegg.NewContext(1000, 1000)
-    dc.DrawCircle(500, 500, 400)
-    dc.SetRGB(0, 0, 0)
+    // Create a new 800x600 canvas
+    dc := advancegg.NewContext(800, 600)
+
+    // Set background color
+    dc.SetRGB(0.1, 0.1, 0.3)
+    dc.Clear()
+
+    // Draw a red circle with gradient
+    dc.SetRGB(1, 0, 0)
+    dc.DrawCircle(400, 300, 100)
     dc.Fill()
-    dc.SavePNG("out.png")
+
+    // Add text with shadow
+    dc.SetRGB(1, 1, 1)
+    dc.DrawString("Hello AdvanceGG!", 300, 350)
+
+    // Save as PNG
+    dc.SavePNG("hello.png")
 }
 ```
 
-## Examples
+### Advanced Example - Data Visualization
 
-There are [lots of examples](examples/) included. They're mostly for testing the code, but they're good for learning, too.
+```go
+// Create a beautiful bar chart
+dc := advancegg.NewContext(800, 600)
 
-![Examples](http://i.imgur.com/tMFoyzu.png)
+// Gradient background
+gradient := advancegg.NewLinearGradient(0, 0, 0, 600)
+gradient.AddColorStop(0, color.RGBA{240, 248, 255, 255})
+gradient.AddColorStop(1, color.RGBA{230, 240, 250, 255})
+dc.SetFillStyle(gradient)
+dc.DrawRectangle(0, 0, 800, 600)
+dc.Fill()
+
+// Draw bars with different colors
+data := []float64{85, 92, 78, 96, 88}
+colors := []color.Color{
+    color.RGBA{255, 99, 132, 255},
+    color.RGBA{54, 162, 235, 255},
+    color.RGBA{255, 205, 86, 255},
+    color.RGBA{75, 192, 192, 255},
+    color.RGBA{153, 102, 255, 255},
+}
+
+for i, value := range data {
+    x := 100 + float64(i)*120
+    height := value * 4
+
+    dc.SetColor(colors[i])
+    dc.DrawRectangle(x, 500-height, 80, height)
+    dc.Fill()
+
+    // Add value labels
+    dc.SetRGB(0, 0, 0)
+    dc.DrawStringAnchored(fmt.Sprintf("%.0f", value), x+40, 480-height, 0.5, 0.5)
+}
+
+dc.SavePNG("chart.png")
+```
+
+## 🎨 Examples Gallery
+
+Explore our comprehensive [examples gallery](docs/examples/) with over 50 practical examples:
+
+- **[Basic Drawing](examples/basic-shapes.go)** - Shapes, paths, and curves
+- **[Text Effects](examples/text-effects.go)** - Typography and text-on-path
+- **[Image Filters](examples/image-filters.go)** - Professional image processing
+- **[Layer System](examples/layer-system.go)** - Multi-layer compositing
+- **[Data Visualization](examples/data-visualization.go)** - Charts and graphs
+- **[Game Graphics](examples/game-graphics.go)** - Sprites and animations
+
+![AdvanceGG Examples](images/examples-showcase.png)
 
 ## Creating Contexts
 

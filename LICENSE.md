@@ -1,4 +1,4 @@
-Copyright (C) 2016 Michael Fogleman
+Copyright (C) 2016 Michael Fogleman <br>
 Copyright (C) 2025 GrandpaEJ
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

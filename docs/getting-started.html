@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started - AdvanceGG Documentation</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../index.html">
+                <i class="bi bi-palette"></i> AdvanceGG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="../index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="getting-started.html">Getting Started</a></li>
+                    <li class="nav-item"><a class="nav-link" href="api/">API Reference</a></li>
+                    <li class="nav-item"><a class="nav-link" href="examples/">Examples</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/GrandpaEJ/advancegg" target="_blank">
+                            <i class="bi bi-github"></i> GitHub
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid" style="margin-top: 76px;">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <div class="col-lg-3">
+                <div class="doc-nav p-3">
+                    <h6 class="text-muted mb-3">Getting Started</h6>
+                    <nav class="nav flex-column">
+                        <a class="nav-link active" href="#installation">Installation</a>
+                        <a class="nav-link" href="#quick-start">Quick Start</a>
+                        <a class="nav-link" href="#basic-concepts">Basic Concepts</a>
+                        <a class="nav-link" href="#first-program">First Program</a>
+                        <a class="nav-link" href="#next-steps">Next Steps</a>
+                    </nav>
+                    
+                    <h6 class="text-muted mb-3 mt-4">Core Features</h6>
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="#drawing">Drawing</a>
+                        <a class="nav-link" href="#text">Text Rendering</a>
+                        <a class="nav-link" href="#images">Image Processing</a>
+                        <a class="nav-link" href="#colors">Color Management</a>
+                        <a class="nav-link" href="#layers">Layer System</a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <div class="doc-content">
+                    <h1>Getting Started with AdvanceGG</h1>
+                    <p class="lead">Learn how to create stunning 2D graphics with AdvanceGG in just a few minutes.</p>
+
+                    <!-- Installation -->
+                    <section id="installation" class="mb-5">
+                        <h2><i class="bi bi-download text-primary"></i> Installation</h2>
+                        <p>AdvanceGG requires Go 1.18 or later. Install it using Go modules:</p>
+                        
+                        <pre><code class="language-bash">go get github.com/GrandpaEJ/advancegg</code></pre>
+                        
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Note:</strong> AdvanceGG has no external dependencies beyond the Go standard library and a few well-maintained packages for font and image handling.
+                        </div>
+                    </section>
+
+                    <!-- Quick Start -->
+                    <section id="quick-start" class="mb-5">
+                        <h2><i class="bi bi-rocket text-primary"></i> Quick Start</h2>
+                        <p>Create your first graphic in just a few lines of code:</p>
+                        
+                        <pre><code class="language-go">package main
+
+import "github.com/GrandpaEJ/advancegg"
+
+func main() {
+    // Create a new 800x600 canvas
+    dc := advancegg.NewContext(800, 600)
+    
+    // Set background color to dark blue
+    dc.SetRGB(0.1, 0.1, 0.3)
+    dc.Clear()
+    
+    // Draw a red circle
+    dc.SetRGB(1, 0, 0)
+    dc.DrawCircle(400, 300, 100)
+    dc.Fill()
+    
+    // Add white text
+    dc.SetRGB(1, 1, 1)
+    dc.DrawString("Hello AdvanceGG!", 300, 350)
+    
+    // Save as PNG
+    dc.SavePNG("hello.png")
+}</code></pre>
+
+                        <p>Run this program and you'll get a beautiful PNG image with a red circle and text!</p>
+                    </section>
+
+                    <!-- Basic Concepts -->
+                    <section id="basic-concepts" class="mb-5">
+                        <h2><i class="bi bi-lightbulb text-primary"></i> Basic Concepts</h2>
+                        
+                        <h4>Context</h4>
+                        <p>The <code>Context</code> is the main drawing surface. Think of it as a digital canvas where you create your graphics:</p>
+                        
+                        <pre><code class="language-go">// Create a 1920x1080 canvas
+dc := advancegg.NewContext(1920, 1080)
+
+// Or create from an existing image
+img := image.NewRGBA(image.Rect(0, 0, 800, 600))
+dc := advancegg.NewContextForRGBA(img)</code></pre>
+
+                        <h4>Coordinate System</h4>
+                        <p>AdvanceGG uses a standard 2D coordinate system:</p>
+                        <ul>
+                            <li>Origin (0, 0) is at the top-left corner</li>
+                            <li>X increases to the right</li>
+                            <li>Y increases downward</li>
+                            <li>All coordinates are in pixels (float64)</li>
+                        </ul>
+
+                        <h4>Drawing Operations</h4>
+                        <p>AdvanceGG follows a path-based drawing model:</p>
+                        <ol>
+                            <li><strong>Set Style:</strong> Choose colors, line width, fonts, etc.</li>
+                            <li><strong>Create Path:</strong> Define shapes using move, line, curve operations</li>
+                            <li><strong>Render:</strong> Fill or stroke the path to make it visible</li>
+                        </ol>
+
+                        <pre><code class="language-go">// 1. Set style
+dc.SetRGB(0, 0.5, 1)
+dc.SetLineWidth(5)
+
+// 2. Create path
+dc.MoveTo(100, 100)
+dc.LineTo(200, 150)
+dc.LineTo(150, 200)
+dc.ClosePath()
+
+// 3. Render
+dc.Stroke() // or dc.Fill() or dc.FillPreserve() + dc.Stroke()</code></pre>
+                    </section>
+
+                    <!-- First Program -->
+                    <section id="first-program" class="mb-5">
+                        <h2><i class="bi bi-code text-primary"></i> Your First Program</h2>
+                        <p>Let's create a more complex example that demonstrates multiple features:</p>
+                        
+                        <pre><code class="language-go">package main
+
+import (
+    "math"
+    "github.com/GrandpaEJ/advancegg"
+)
+
+func main() {
+    // Create canvas
+    dc := advancegg.NewContext(800, 600)
+    
+    // Gradient background
+    for y := 0; y < 600; y++ {
+        t := float64(y) / 600.0
+        dc.SetRGB(0.1+t*0.2, 0.1+t*0.3, 0.3+t*0.4)
+        dc.DrawLine(0, float64(y), 800, float64(y))
+        dc.Stroke()
+    }
+    
+    // Draw multiple circles with transparency
+    for i := 0; i < 10; i++ {
+        angle := float64(i) * 2 * math.Pi / 10
+        x := 400 + 150*math.Cos(angle)
+        y := 300 + 150*math.Sin(angle)
+        
+        // Set color with transparency
+        dc.SetRGBA(1, float64(i)/10, 0.5, 0.7)
+        dc.DrawCircle(x, y, 30)
+        dc.Fill()
+    }
+    
+    // Add title with shadow effect
+    dc.SetRGB(0, 0, 0)
+    dc.DrawString("AdvanceGG Graphics", 252, 102) // Shadow
+    dc.SetRGB(1, 1, 1)
+    dc.DrawString("AdvanceGG Graphics", 250, 100) // Main text
+    
+    // Save the result
+    dc.SavePNG("first-program.png")
+}</code></pre>
+                    </section>
+
+                    <!-- Core Features Overview -->
+                    <section id="drawing" class="mb-5">
+                        <h2><i class="bi bi-brush text-primary"></i> Drawing Features</h2>
+                        
+                        <h4>Basic Shapes</h4>
+                        <pre><code class="language-go">// Rectangles
+dc.DrawRectangle(x, y, width, height)
+dc.DrawRoundedRectangle(x, y, width, height, radius)
+
+// Circles and ellipses
+dc.DrawCircle(x, y, radius)
+dc.DrawEllipse(x, y, rx, ry)
+
+// Lines and polygons
+dc.DrawLine(x1, y1, x2, y2)
+dc.DrawRegularPolygon(6, x, y, radius, rotation)</code></pre>
+
+                        <h4>Advanced Paths</h4>
+                        <pre><code class="language-go">// Bézier curves
+dc.MoveTo(100, 100)
+dc.QuadraticTo(200, 50, 300, 100)  // Quadratic
+dc.CubicTo(400, 50, 500, 150, 600, 100)  // Cubic
+
+// Arcs
+dc.DrawArc(x, y, radius, startAngle, endAngle)</code></pre>
+                    </section>
+
+                    <section id="text" class="mb-5">
+                        <h2><i class="bi bi-type text-primary"></i> Text Rendering</h2>
+                        
+                        <pre><code class="language-go">// Load custom font
+dc.LoadFontFace("fonts/arial.ttf", 24)
+
+// Basic text
+dc.DrawString("Hello World", x, y)
+dc.DrawStringAnchored("Centered", x, y, 0.5, 0.5)
+
+// Word wrapping
+dc.DrawStringWrapped("Long text...", x, y, ax, ay, width, lineSpacing, align)
+
+// Text on path
+advancegg.DrawTextOnCircle(dc, "Circular Text", centerX, centerY, radius)</code></pre>
+                    </section>
+
+                    <section id="images" class="mb-5">
+                        <h2><i class="bi bi-image text-primary"></i> Image Processing</h2>
+                        
+                        <pre><code class="language-go">// Load and draw images
+img := advancegg.LoadPNG("input.png")
+dc.DrawImage(img, x, y)
+
+// Apply filters
+filtered := advancegg.ApplyBlur(img, 5.0)
+filtered = advancegg.ApplyBrightness(filtered, 1.2)
+dc.DrawImage(filtered, x, y)
+
+// Save in different formats
+dc.SavePNG("output.png")
+dc.SaveJPEG("output.jpg", 95) // 95% quality</code></pre>
+                    </section>
+
+                    <section id="colors" class="mb-5">
+                        <h2><i class="bi bi-palette2 text-primary"></i> Color Management</h2>
+                        
+                        <pre><code class="language-go">// RGB colors
+dc.SetRGB(1, 0, 0)        // Red
+dc.SetRGBA(1, 0, 0, 0.5)  // Semi-transparent red
+dc.SetHexColor("#FF5733") // Hex color
+
+// Other color spaces
+dc.SetCMYK(0, 1, 1, 0)    // CMYK
+dc.SetHSV(240, 1, 1)      // HSV (blue)
+dc.SetLAB(50, 20, -30)    // LAB color space
+
+// Gradients
+gradient := advancegg.NewLinearGradient(0, 0, 100, 0)
+gradient.AddColorStop(0, color.RGBA{255, 0, 0, 255})
+gradient.AddColorStop(1, color.RGBA{0, 0, 255, 255})
+dc.SetFillStyle(gradient)</code></pre>
+                    </section>
+
+                    <section id="layers" class="mb-5">
+                        <h2><i class="bi bi-layers text-primary"></i> Layer System</h2>
+                        
+                        <pre><code class="language-go">// Create layer manager
+layerManager := advancegg.NewLayerManager(800, 600)
+
+// Add layers
+bgLayer := layerManager.AddLayer("background")
+fgLayer := layerManager.AddLayer("foreground")
+
+// Draw on specific layers
+bgLayer.SetRGB(0.2, 0.2, 0.4)
+bgLayer.Clear()
+
+fgLayer.SetRGB(1, 1, 0)
+fgLayer.DrawCircle(400, 300, 100)
+fgLayer.Fill()
+
+// Set blend modes
+fgLayer.SetBlendMode(advancegg.BlendModeMultiply)
+fgLayer.SetOpacity(0.8)
+
+// Composite final image
+result := layerManager.Flatten()
+result.SavePNG("layered.png")</code></pre>
+                    </section>
+
+                    <!-- Next Steps -->
+                    <section id="next-steps" class="mb-5">
+                        <h2><i class="bi bi-arrow-right text-primary"></i> Next Steps</h2>
+                        
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><i class="bi bi-book"></i> API Reference</h5>
+                                        <p class="card-text">Explore the complete API documentation with detailed examples.</p>
+                                        <a href="api/" class="btn btn-primary">View API Docs</a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><i class="bi bi-eye"></i> Examples</h5>
+                                        <p class="card-text">See real-world examples and learn advanced techniques.</p>
+                                        <a href="examples/" class="btn btn-primary">Browse Examples</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-success mt-4">
+                            <h5><i class="bi bi-lightbulb"></i> Pro Tips</h5>
+                            <ul class="mb-0">
+                                <li>Use <code>dc.Push()</code> and <code>dc.Pop()</code> to save and restore drawing state</li>
+                                <li>Enable debug mode with <code>dc.SetDebugMode(true)</code> for development</li>
+                                <li>Use <code>dc.MeasureString()</code> to calculate text dimensions before drawing</li>
+                                <li>Batch similar operations together for better performance</li>
+                                <li>Use layers for complex compositions with blend modes</li>
+                            </ul>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script src="js/main.js"></script>
+</body>
+</html>

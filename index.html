@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdvanceGG - Advanced 2D Graphics Library for Go</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="docs/css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#home">
+                <i class="bi bi-palette"></i> AdvanceGG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#getting-started">Getting Started</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#examples">Examples</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#api">API Reference</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#gallery">Gallery</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/GrandpaEJ/advancegg" target="_blank">
+                            <i class="bi bi-github"></i> GitHub
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="container">
+            <div class="row align-items-center min-vh-100">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">
+                        Advanced 2D Graphics for <span class="text-primary">Go</span>
+                    </h1>
+                    <p class="lead mb-4">
+                        AdvanceGG is a powerful, production-ready 2D graphics library that brings professional-grade 
+                        drawing capabilities to Go applications. Create stunning visualizations, games, and graphics 
+                        with ease.
+                    </p>
+                    <div class="d-flex gap-3 mb-4">
+                        <a href="#getting-started" class="btn btn-primary btn-lg">
+                            <i class="bi bi-rocket"></i> Get Started
+                        </a>
+                        <a href="#examples" class="btn btn-outline-primary btn-lg">
+                            <i class="bi bi-eye"></i> View Examples
+                        </a>
+                    </div>
+                    <div class="d-flex gap-4 text-muted">
+                        <span><i class="bi bi-check-circle text-success"></i> Production Ready</span>
+                        <span><i class="bi bi-check-circle text-success"></i> High Performance</span>
+                        <span><i class="bi bi-check-circle text-success"></i> Easy to Use</span>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="code-preview">
+                        <pre><code class="language-go">package main
+
+import "github.com/GrandpaEJ/advancegg"
+
+func main() {
+    // Create a new canvas
+    dc := advancegg.NewContext(800, 600)
+    
+    // Set background
+    dc.SetRGB(0.1, 0.1, 0.2)
+    dc.Clear()
+    
+    // Draw gradient circle
+    dc.SetRGB(1, 0.5, 0)
+    dc.DrawCircle(400, 300, 100)
+    dc.Fill()
+    
+    // Add text with shadow
+    dc.SetRGB(1, 1, 1)
+    dc.DrawString("Hello AdvanceGG!", 300, 350)
+    
+    // Save as PNG
+    dc.SavePNG("output.png")
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">Powerful Features</h2>
+                <p class="lead">Everything you need for professional 2D graphics</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon">
+                            <i class="bi bi-layers"></i>
+                        </div>
+                        <h4>Layer System</h4>
+                        <p>Multi-layered drawing with blend modes, opacity control, and professional compositing.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon">
+                            <i class="bi bi-palette2"></i>
+                        </div>
+                        <h4>Advanced Colors</h4>
+                        <p>ICC color profiles, multiple color spaces (RGB, CMYK, HSV, LAB), and accurate color conversion.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon">
+                            <i class="bi bi-type"></i>
+                        </div>
+                        <h4>Typography</h4>
+                        <p>Unicode shaping, emoji rendering, text-on-path, and advanced text metrics.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon">
+                            <i class="bi bi-bezier"></i>
+                        </div>
+                        <h4>Vector Graphics</h4>
+                        <p>Path2D support, Bézier curves, advanced stroke styles, and smooth vector rendering.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon">
+                            <i class="bi bi-image"></i>
+                        </div>
+                        <h4>Image Processing</h4>
+                        <p>15+ filters, non-destructive editing, multiple formats (PNG, JPEG, GIF, WebP, TIFF).</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon">
+                            <i class="bi bi-lightning"></i>
+                        </div>
+                        <h4>High Performance</h4>
+                        <p>SIMD optimizations, memory pooling, batch operations, and intelligent caching.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Getting Started Section -->
+    <section id="getting-started" class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">Getting Started</h2>
+                <p class="lead">Start creating amazing graphics in minutes</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="installation-steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Install AdvanceGG</h4>
+                                <div class="code-block">
+                                    <pre><code class="language-bash">go get github.com/GrandpaEJ/advancegg</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Import and Create Context</h4>
+                                <div class="code-block">
+                                    <pre><code class="language-go">import "github.com/GrandpaEJ/advancegg"
+
+dc := advancegg.NewContext(800, 600)</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Start Drawing</h4>
+                                <div class="code-block">
+                                    <pre><code class="language-go">dc.SetRGB(1, 0, 0)
+dc.DrawCircle(400, 300, 100)
+dc.Fill()
+dc.SavePNG("circle.png")</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <a href="docs/getting-started.html" class="btn btn-primary btn-lg">
+                    <i class="bi bi-book"></i> Full Documentation
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Examples Section -->
+    <section id="examples" class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">Examples</h2>
+                <p class="lead">See what you can create with AdvanceGG</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="example-card">
+                        <div class="example-image">
+                            <img src="images/data-visualization-demo.png" alt="Data Visualization" class="img-fluid">
+                        </div>
+                        <div class="example-content">
+                            <h5>Data Visualization</h5>
+                            <p>Charts, graphs, and interactive dashboards</p>
+                            <a href="docs/examples/data-visualization.html" class="btn btn-sm btn-outline-primary">View Example</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="example-card">
+                        <div class="example-image">
+                            <img src="images/creative-text-effects.png" alt="Text Effects" class="img-fluid">
+                        </div>
+                        <div class="example-content">
+                            <h5>Text Effects</h5>
+                            <p>Typography, text-on-path, and creative effects</p>
+                            <a href="docs/examples/text-effects.html" class="btn btn-sm btn-outline-primary">View Example</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="example-card">
+                        <div class="example-image">
+                            <img src="images/layer-system-demo.png" alt="Layer System" class="img-fluid">
+                        </div>
+                        <div class="example-content">
+                            <h5>Layer System</h5>
+                            <p>Multi-layer compositing and blend modes</p>
+                            <a href="docs/examples/layers.html" class="btn btn-sm btn-outline-primary">View Example</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <a href="#gallery" class="btn btn-primary">
+                    <i class="bi bi-images"></i> View All Examples
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- API Reference Section -->
+    <section id="api" class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">API Reference</h2>
+                <p class="lead">Complete documentation for all features</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="api-section">
+                        <h5><i class="bi bi-brush"></i> Drawing</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="docs/api/drawing.html">Basic Shapes</a></li>
+                            <li><a href="docs/api/paths.html">Paths & Curves</a></li>
+                            <li><a href="docs/api/strokes.html">Advanced Strokes</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-3">
+                    <div class="api-section">
+                        <h5><i class="bi bi-type"></i> Text</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="docs/api/text.html">Text Rendering</a></li>
+                            <li><a href="docs/api/fonts.html">Font Management</a></li>
+                            <li><a href="docs/api/unicode.html">Unicode & Emoji</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-3">
+                    <div class="api-section">
+                        <h5><i class="bi bi-layers"></i> Layers</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="docs/api/layers.html">Layer System</a></li>
+                            <li><a href="docs/api/blending.html">Blend Modes</a></li>
+                            <li><a href="docs/api/compositing.html">Compositing</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-3">
+                    <div class="api-section">
+                        <h5><i class="bi bi-image"></i> Images</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="docs/api/images.html">Image Loading</a></li>
+                            <li><a href="docs/api/filters.html">Filters & Effects</a></li>
+                            <li><a href="docs/api/color.html">Color Management</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">Gallery</h2>
+                <p class="lead">Showcase of AdvanceGG capabilities</p>
+            </div>
+            
+            <div id="galleryContainer" class="row g-3">
+                <!-- Gallery items will be loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4">
+                    <h5><i class="bi bi-palette"></i> AdvanceGG</h5>
+                    <p>Advanced 2D graphics library for Go developers. Create professional graphics with ease.</p>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Documentation</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="docs/getting-started.html" class="text-light-emphasis">Getting Started</a></li>
+                        <li><a href="docs/api/" class="text-light-emphasis">API Reference</a></li>
+                        <li><a href="docs/examples/" class="text-light-emphasis">Examples</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Community</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="https://github.com/GrandpaEJ/advancegg" class="text-light-emphasis">GitHub</a></li>
+                        <li><a href="https://github.com/GrandpaEJ/advancegg/issues" class="text-light-emphasis">Issues</a></li>
+                        <li><a href="https://github.com/GrandpaEJ/advancegg/discussions" class="text-light-emphasis">Discussions</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4">
+                    <h6>Quick Start</h6>
+                    <div class="code-block-small">
+                        <code>go get github.com/GrandpaEJ/advancegg</code>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p>&copy; 2024 AdvanceGG. Open source graphics library for Go.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script src="docs/js/main.js"></script>
+</body>
+</html>
