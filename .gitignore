@@ -40,6 +40,15 @@ Thumbs.db
 *.gif
 *.bmp
 *.tiff
+*.webp
+# Allow images in the images/ directory
+!images/*.png
+!images/*.jpg
+!images/*.jpeg
+!images/*.gif
+!images/*.bmp
+!images/*.tiff
+!images/*.webp
 !examples/images/*.png
 !examples/images/*.jpg
 
