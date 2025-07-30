@@ -20,6 +20,116 @@ func NewContextForRGBA(im *image.RGBA) *Context
 ```
 Creates a new context for an RGBA image.
 
+## Path2D
+
+Path2D provides advanced path manipulation capabilities, allowing you to create reusable path objects that can be drawn multiple times.
+
+### NewPath2D
+```go
+func NewPath2D() *Path2D
+```
+Creates a new empty Path2D object.
+
+### NewPath2DFromPath
+```go
+func NewPath2DFromPath(other *Path2D) *Path2D
+```
+Creates a new Path2D object by copying an existing one.
+
+### Path2D Methods
+
+#### MoveTo
+```go
+func (p *Path2D) MoveTo(x, y float64)
+```
+Moves the current point to the specified coordinates.
+
+#### LineTo
+```go
+func (p *Path2D) LineTo(x, y float64)
+```
+Draws a line from the current point to the specified coordinates.
+
+#### QuadraticCurveTo
+```go
+func (p *Path2D) QuadraticCurveTo(cpx, cpy, x, y float64)
+```
+Draws a quadratic Bézier curve.
+
+#### BezierCurveTo
+```go
+func (p *Path2D) BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y float64)
+```
+Draws a cubic Bézier curve.
+
+#### Arc
+```go
+func (p *Path2D) Arc(x, y, radius, startAngle, endAngle float64, counterclockwise bool)
+```
+Adds an arc to the path.
+
+#### ArcTo
+```go
+func (p *Path2D) ArcTo(x1, y1, x2, y2, radius float64)
+```
+Adds an arc with the given control points and radius.
+
+#### Ellipse
+```go
+func (p *Path2D) Ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle float64, counterclockwise bool)
+```
+Adds an ellipse to the path.
+
+#### Rect
+```go
+func (p *Path2D) Rect(x, y, width, height float64)
+```
+Adds a rectangle to the path.
+
+#### ClosePath
+```go
+func (p *Path2D) ClosePath()
+```
+Closes the current path by drawing a line to the start point.
+
+#### AddPath
+```go
+func (p *Path2D) AddPath(other *Path2D)
+```
+Adds another path to this path.
+
+### Context Methods for Path2D
+
+#### DrawPath2D
+```go
+func (dc *Context) DrawPath2D(path2d *Path2D)
+```
+Draws a Path2D object to the context's current path.
+
+#### FillPath2D
+```go
+func (dc *Context) FillPath2D(path2d *Path2D)
+```
+Fills a Path2D object with the current fill style.
+
+#### StrokePath2D
+```go
+func (dc *Context) StrokePath2D(path2d *Path2D)
+```
+Strokes a Path2D object with the current stroke style.
+
+#### ClipPath2D
+```go
+func (dc *Context) ClipPath2D(path2d *Path2D)
+```
+Sets a Path2D object as the clipping region.
+
+#### IsPointInPath2D
+```go
+func (dc *Context) IsPointInPath2D(path2d *Path2D, x, y float64) bool
+```
+Tests if a point is inside a Path2D object.
+
 ## Drawing Functions
 
 ### Basic Shapes
