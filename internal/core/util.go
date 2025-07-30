@@ -5,9 +5,7 @@ import (
 	"image"
 	"image/draw"
 	"image/jpeg"
-	_ "image/jpeg"
 	"image/png"
-	"io/ioutil"
 	"math"
 	"os"
 	"strings"
@@ -125,15 +123,32 @@ func unfix(x fixed.Int26_6) float64 {
 }
 
 // LoadFontFace is a helper function to load the specified font file with
-// the specified point size. Note that the returned `font.Face` objects
-// are not thread safe and cannot be used in parallel across goroutines.
+// the specified point size. Supports both TTF and OTF font formats.
+// Note that the returned `font.Face` objects are not thread safe and
+// cannot be used in parallel across goroutines.
 // You can usually just use the Context.LoadFontFace function instead of
 // this package-level function.
 func LoadFontFace(path string, points float64) (font.Face, error) {
-	fontBytes, err := ioutil.ReadFile(path)
+	fontBytes, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
+	return ParseFontFace(fontBytes, points)
+}
+
+// LoadTTFFace loads a TTF font file with the specified point size.
+func LoadTTFFace(path string, points float64) (font.Face, error) {
+	return LoadFontFace(path, points) // TTF and OTF use the same parser
+}
+
+// LoadOTFFace loads an OTF font file with the specified point size.
+func LoadOTFFace(path string, points float64) (font.Face, error) {
+	return LoadFontFace(path, points) // TTF and OTF use the same parser
+}
+
+// ParseFontFace parses font data from bytes and creates a font face.
+// Supports both TTF and OTF formats.
+func ParseFontFace(fontBytes []byte, points float64) (font.Face, error) {
 	f, err := truetype.Parse(fontBytes)
 	if err != nil {
 		return nil, err
@@ -143,4 +158,42 @@ func LoadFontFace(path string, points float64) (font.Face, error) {
 		// Hinting: font.HintingFull,
 	})
 	return face, nil
+}
+
+// ParseFontFaceWithOptions parses font data with custom options.
+func ParseFontFaceWithOptions(fontBytes []byte, options *truetype.Options) (font.Face, error) {
+	f, err := truetype.Parse(fontBytes)
+	if err != nil {
+		return nil, err
+	}
+	face := truetype.NewFace(f, options)
+	return face, nil
+}
+
+// GetFontFormat attempts to detect the font format from the file header.
+func GetFontFormat(path string) (string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	// Read the first 4 bytes to check the signature
+	header := make([]byte, 4)
+	_, err = file.Read(header)
+	if err != nil {
+		return "", err
+	}
+
+	// Check font format signatures
+	switch {
+	case header[0] == 0x00 && header[1] == 0x01 && header[2] == 0x00 && header[3] == 0x00:
+		return "TTF", nil
+	case string(header) == "OTTO":
+		return "OTF", nil
+	case string(header) == "true" || string(header) == "typ1":
+		return "TTF", nil // Some TTF variants
+	default:
+		return "UNKNOWN", nil
+	}
 }
