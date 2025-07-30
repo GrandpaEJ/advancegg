@@ -10,7 +10,7 @@
 * [x] **Smart Guides & Alignment** – Snap to grid, guides, center, baseline ✅ COMPLETED
 * [x] **Unicode Shaping Support** – Indic, RTL, complex scripts ✅ COMPLETED
 * [x] **Emoji Rendering** – Color emoji font + fallback ✅ COMPLETED
-* [ ] **Color Profiles (ICC)** – Accurate color conversion for print-ready files
+* [x] **Color Profiles (ICC)** – Accurate color conversion for print-ready files ✅ COMPLETED
 
 ---
 

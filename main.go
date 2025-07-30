@@ -4,6 +4,7 @@ package advancegg
 
 // Re-export all public types and functions from the core package
 import (
+	"github.com/GrandpaEJ/advancegg/internal/advance"
 	"github.com/GrandpaEJ/advancegg/internal/core"
 )
 
@@ -324,4 +325,26 @@ var (
 	NewColorConverter     = core.NewColorConverter
 	CreateSRGBProfile     = core.CreateSRGBProfile
 	CreateAdobeRGBProfile = core.CreateAdobeRGBProfile
+)
+
+// Simple Text-on-Path exports
+type SimpleTextOnPath = advance.SimpleTextOnPath
+type SimpleTextAlignment = advance.SimpleTextAlignment
+
+const (
+	SimpleAlignStart  = advance.SimpleAlignStart
+	SimpleAlignCenter = advance.SimpleAlignCenter
+	SimpleAlignEnd    = advance.SimpleAlignEnd
+)
+
+var (
+	NewSimpleTextOnPath      = advance.NewSimpleTextOnPath
+	CreateSimpleCircularPath = advance.CreateSimpleCircularPath
+	CreateSimpleWavePath     = advance.CreateSimpleWavePath
+	CreateSimpleSpiralPath   = advance.CreateSimpleSpiralPath
+	DrawTextOnCircle         = advance.DrawTextOnCircle
+	DrawTextOnWave           = advance.DrawTextOnWave
+	DrawTextOnSpiral         = advance.DrawTextOnSpiral
+	DrawTextOnArc            = advance.DrawTextOnArc
+	DrawTextOnBezier         = advance.DrawTextOnBezier
 )

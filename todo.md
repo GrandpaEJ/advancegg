@@ -127,6 +127,7 @@
 - [x] **Smart Guides & Alignment** - Snap to grid, guides, alignment tools ✅ COMPLETED
 - [x] **Unicode Shaping Support** - Indic, RTL, complex scripts ✅ COMPLETED
 - [x] **Emoji Rendering** - Color emoji font + fallback ✅ COMPLETED
+- [x] **Color Profiles (ICC)** - Accurate color conversion for print-ready files ✅ COMPLETED
 
 ### Medium Priority 📋
 - [x] **Canvas Filters** - CSS-like filter effects ✅ COMPLETED

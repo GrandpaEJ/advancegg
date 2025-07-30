@@ -1,167 +1,339 @@
 # 📷 Image Gallery
 
 
-## .
+**bar-chart**
 
-![bar-chart.png](././bar-chart.png)
+![bar-chart](././bar-chart.png)
 
-![cmyk-example.png](././cmyk-example.png)
+**cmyk-example**
 
-![color-spaces.png](././color-spaces.png)
+![cmyk-example](././cmyk-example.png)
 
-![css-blackandwhite.png](././css-blackandwhite.png)
+**color-space-comparison**
 
-![css-blur.png](././css-blur.png)
+![color-space-comparison](././color-space-comparison.png)
 
-![css-brightness.png](././css-brightness.png)
+**color-spaces**
 
-![css-contrast.png](././css-contrast.png)
+![color-spaces](././color-spaces.png)
 
-![css-cool.png](././css-cool.png)
+**css-blackandwhite**
 
-![css-custom-chain.png](././css-custom-chain.png)
+![css-blackandwhite](././css-blackandwhite.png)
 
-![css-dramatic.png](././css-dramatic.png)
+**css-blur**
 
-![css-hue-rotate.png](././css-hue-rotate.png)
+![css-blur](././css-blur.png)
 
-![css-instagram.png](././css-instagram.png)
+**css-brightness**
 
-![css-invert.png](././css-invert.png)
+![css-brightness](././css-brightness.png)
 
-![css-opacity.png](././css-opacity.png)
+**css-contrast**
 
-![css-original.png](././css-original.png)
+![css-contrast](././css-contrast.png)
 
-![css-saturate.png](././css-saturate.png)
+**css-cool**
 
-![css-sepia.png](././css-sepia.png)
+![css-cool](././css-cool.png)
 
-![css-vintage.png](././css-vintage.png)
+**css-custom-chain**
 
-![css-warm.png](././css-warm.png)
+![css-custom-chain](././css-custom-chain.png)
 
-![dashboard.png](././dashboard.png)
+**css-dramatic**
 
-![emoji-rendering-demo.png](././emoji-rendering-demo.png)
+![css-dramatic](././css-dramatic.png)
 
-![filters-blur.png](././filters-blur.png)
+**css-hue-rotate**
 
-![filters-brightness.png](././filters-brightness.png)
+![css-hue-rotate](././css-hue-rotate.png)
 
-![filters-composite.png](././filters-composite.png)
+**css-instagram**
 
-![filters-contrast.png](././filters-contrast.png)
+![css-instagram](././css-instagram.png)
 
-![filters-edge-detection.png](././filters-edge-detection.png)
+**css-invert**
 
-![filters-emboss.png](././filters-emboss.png)
+![css-invert](././css-invert.png)
 
-![filters-grayscale.png](././filters-grayscale.png)
+**css-opacity**
 
-![filters-invert.png](././filters-invert.png)
+![css-opacity](././css-opacity.png)
 
-![filters-noise.png](././filters-noise.png)
+**css-original**
 
-![filters-original.png](././filters-original.png)
+![css-original](././css-original.png)
 
-![filters-pixelate.png](././filters-pixelate.png)
+**css-saturate**
 
-![filters-posterize.png](././filters-posterize.png)
+![css-saturate](././css-saturate.png)
 
-![filters-sepia.png](././filters-sepia.png)
+**css-sepia**
 
-![filters-sharpen.png](././filters-sharpen.png)
+![css-sepia](././css-sepia.png)
 
-![filters-threshold.png](././filters-threshold.png)
+**css-vintage**
 
-![filters-vignette.png](././filters-vignette.png)
+![css-vintage](././css-vintage.png)
 
-![font-comparison.png](././font-comparison.png)
+**css-warm**
 
-![font-formats.png](././font-formats.png)
+![css-warm](././css-warm.png)
 
-![format-comparison.png](././format-comparison.png)
+**dashboard**
 
-![guides-alignment-demo.png](././guides-alignment-demo.png)
+![dashboard](././dashboard.png)
 
-![heatmap.png](././heatmap.png)
+**emoji-rendering-demo**
 
-![hsv-example.png](././hsv-example.png)
+![emoji-rendering-demo](././emoji-rendering-demo.png)
 
-![imagedata-blur-kernel.png](././imagedata-blur-kernel.png)
+**filters-blur**
 
-![imagedata-checkerboard.png](././imagedata-checkerboard.png)
+![filters-blur](././filters-blur.png)
 
-![imagedata-edge-kernel.png](././imagedata-edge-kernel.png)
+**filters-brightness**
 
-![imagedata-effects-composite.png](././imagedata-effects-composite.png)
+![filters-brightness](././filters-brightness.png)
 
-![imagedata-flip-horizontal.png](././imagedata-flip-horizontal.png)
+**filters-composite**
 
-![imagedata-flip-vertical.png](././imagedata-flip-vertical.png)
+![filters-composite](././filters-composite.png)
 
-![imagedata-mosaic.png](././imagedata-mosaic.png)
+**filters-contrast**
 
-![imagedata-noise.png](././imagedata-noise.png)
+![filters-contrast](././filters-contrast.png)
 
-![imagedata-original.png](././imagedata-original.png)
+**filters-edge-detection**
 
-![imagedata-resized.png](././imagedata-resized.png)
+![filters-edge-detection](././filters-edge-detection.png)
 
-![imagedata-rotate90.png](././imagedata-rotate90.png)
+**filters-emboss**
 
-![imagedata-sharpen-kernel.png](././imagedata-sharpen-kernel.png)
+![filters-emboss](././filters-emboss.png)
 
-![imagedata-wave.png](././imagedata-wave.png)
+**filters-grayscale**
 
-![lab-example.png](././lab-example.png)
+![filters-grayscale](././filters-grayscale.png)
 
-![layer-system-demo.png](././layer-system-demo.png)
+**filters-invert**
 
-![line-chart.png](././line-chart.png)
+![filters-invert](././filters-invert.png)
 
-![mixed-text-demo.png](././mixed-text-demo.png)
+**filters-noise**
 
-![non-destructive-demo.png](././non-destructive-demo.png)
+![filters-noise](././filters-noise.png)
 
-![non-destructive-modified.png](././non-destructive-modified.png)
+**filters-original**
 
-![otf-advanced.png](././otf-advanced.png)
+![filters-original](././filters-original.png)
 
-![out.png](././out.png)
+**filters-pixelate**
 
-![path2d-basic.png](././path2d-basic.png)
+![filters-pixelate](././filters-pixelate.png)
 
-![pattern-checkerboard.png](././pattern-checkerboard.png)
+**filters-posterize**
 
-![pattern-gallery.png](././pattern-gallery.png)
+![filters-posterize](././filters-posterize.png)
 
-![pattern-linear-gradient.png](././pattern-linear-gradient.png)
+**filters-sepia**
 
-![pattern-noise.png](././pattern-noise.png)
+![filters-sepia](././filters-sepia.png)
 
-![pattern-polka-dots.png](././pattern-polka-dots.png)
+**filters-sharpen**
 
-![pattern-radial-gradient.png](././pattern-radial-gradient.png)
+![filters-sharpen](././filters-sharpen.png)
 
-![pattern-stripes.png](././pattern-stripes.png)
+**filters-threshold**
 
-![pattern-waves.png](././pattern-waves.png)
+![filters-threshold](././filters-threshold.png)
 
-![pie-chart.png](././pie-chart.png)
+**filters-vignette**
 
-![sample.gif](././sample.gif)
+![filters-vignette](././filters-vignette.png)
 
-![sample.jpg](././sample.jpg)
+**font-comparison**
 
-![sample.png](././sample.png)
+![font-comparison](././font-comparison.png)
 
-![scatter-plot.png](././scatter-plot.png)
+**font-formats**
 
-![shadow-effects.png](././shadow-effects.png)
+![font-formats](././font-formats.png)
 
-![text-metrics.png](././text-metrics.png)
+**format-comparison**
 
-![unicode-shaping-demo.png](././unicode-shaping-demo.png)
+![format-comparison](././format-comparison.png)
+
+**guides-alignment-demo**
+
+![guides-alignment-demo](././guides-alignment-demo.png)
+
+**heatmap**
+
+![heatmap](././heatmap.png)
+
+**hsv-example**
+
+![hsv-example](././hsv-example.png)
+
+**imagedata-blur-kernel**
+
+![imagedata-blur-kernel](././imagedata-blur-kernel.png)
+
+**imagedata-checkerboard**
+
+![imagedata-checkerboard](././imagedata-checkerboard.png)
+
+**imagedata-edge-kernel**
+
+![imagedata-edge-kernel](././imagedata-edge-kernel.png)
+
+**imagedata-effects-composite**
+
+![imagedata-effects-composite](././imagedata-effects-composite.png)
+
+**imagedata-flip-horizontal**
+
+![imagedata-flip-horizontal](././imagedata-flip-horizontal.png)
+
+**imagedata-flip-vertical**
+
+![imagedata-flip-vertical](././imagedata-flip-vertical.png)
+
+**imagedata-mosaic**
+
+![imagedata-mosaic](././imagedata-mosaic.png)
+
+**imagedata-noise**
+
+![imagedata-noise](././imagedata-noise.png)
+
+**imagedata-original**
+
+![imagedata-original](././imagedata-original.png)
+
+**imagedata-resized**
+
+![imagedata-resized](././imagedata-resized.png)
+
+**imagedata-rotate90**
+
+![imagedata-rotate90](././imagedata-rotate90.png)
+
+**imagedata-sharpen-kernel**
+
+![imagedata-sharpen-kernel](././imagedata-sharpen-kernel.png)
+
+**imagedata-wave**
+
+![imagedata-wave](././imagedata-wave.png)
+
+**lab-example**
+
+![lab-example](././lab-example.png)
+
+**layer-system-demo**
+
+![layer-system-demo](././layer-system-demo.png)
+
+**line-chart**
+
+![line-chart](././line-chart.png)
+
+**mixed-text-demo**
+
+![mixed-text-demo](././mixed-text-demo.png)
+
+**non-destructive-demo**
+
+![non-destructive-demo](././non-destructive-demo.png)
+
+**non-destructive-modified**
+
+![non-destructive-modified](././non-destructive-modified.png)
+
+**otf-advanced**
+
+![otf-advanced](././otf-advanced.png)
+
+**out**
+
+![out](././out.png)
+
+**path2d-basic**
+
+![path2d-basic](././path2d-basic.png)
+
+**pattern-checkerboard**
+
+![pattern-checkerboard](././pattern-checkerboard.png)
+
+**pattern-gallery**
+
+![pattern-gallery](././pattern-gallery.png)
+
+**pattern-linear-gradient**
+
+![pattern-linear-gradient](././pattern-linear-gradient.png)
+
+**pattern-noise**
+
+![pattern-noise](././pattern-noise.png)
+
+**pattern-polka-dots**
+
+![pattern-polka-dots](././pattern-polka-dots.png)
+
+**pattern-radial-gradient**
+
+![pattern-radial-gradient](././pattern-radial-gradient.png)
+
+**pattern-stripes**
+
+![pattern-stripes](././pattern-stripes.png)
+
+**pattern-waves**
+
+![pattern-waves](././pattern-waves.png)
+
+**pie-chart**
+
+![pie-chart](././pie-chart.png)
+
+**print-workflow-demo**
+
+![print-workflow-demo](././print-workflow-demo.png)
+
+**profile-conversion-demo**
+
+![profile-conversion-demo](././profile-conversion-demo.png)
+
+**sample**
+
+![sample](././sample.gif)
+
+**sample**
+
+![sample](././sample.jpg)
+
+**sample**
+
+![sample](././sample.png)
+
+**scatter-plot**
+
+![scatter-plot](././scatter-plot.png)
+
+**shadow-effects**
+
+![shadow-effects](././shadow-effects.png)
+
+**text-metrics**
+
+![text-metrics](././text-metrics.png)
+
+**unicode-shaping-demo**
+
+![unicode-shaping-demo](././unicode-shaping-demo.png)
 
