@@ -81,7 +81,7 @@ MIT License - see LICENSE file for details.
 """
 
 AUTHOR = "AdvanceGG Contributors"
-AUTHOR_EMAIL = "hello@advancegg.dev"
+AUTHOR_EMAIL = ""
 URL = "https://github.com/GrandpaEJ/advancegg"
 LICENSE = "MIT"
 
