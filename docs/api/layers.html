@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layers API - AdvanceGG Documentation</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../../index.html">
+                <i class="bi bi-palette"></i> AdvanceGG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="../../index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../getting-started.html">Getting Started</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="index.html">API Reference</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../examples/">Examples</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid" style="margin-top: 76px;">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <div class="col-lg-3">
+                <div class="doc-nav p-3">
+                    <h6 class="text-muted mb-3">API Reference</h6>
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="index.html">Overview</a>
+                        <a class="nav-link" href="drawing.html">Drawing</a>
+                        <a class="nav-link" href="paths.html">Paths</a>
+                        <a class="nav-link" href="text.html">Text</a>
+                        <a class="nav-link" href="images.html">Images</a>
+                        <a class="nav-link" href="colors.html">Colors</a>
+                        <a class="nav-link active" href="layers.html">Layers</a>
+                        <a class="nav-link" href="filters.html">Filters</a>
+                        <a class="nav-link" href="performance.html">Performance</a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <div class="doc-content">
+                    <h1><i class="bi bi-layers text-primary"></i> Layers API</h1>
+                    <p class="lead">Multi-layer compositing system with blend modes and advanced effects.</p>
+
+                    <!-- Layer Manager -->
+                    <section id="layer-manager" class="mb-5">
+                        <h2>Layer Manager</h2>
+                        
+                        <h4>Creating Layer Manager</h4>
+                        <pre><code class="language-go">// Create layer manager
+layerManager := advancegg.NewLayerManager(800, 600)
+
+// Add layers
+background := layerManager.AddLayer("background")
+content := layerManager.AddLayer("content")
+overlay := layerManager.AddLayer("overlay")
+
+// Each layer is a full Context that you can draw on
+background.SetRGB(0.2, 0.2, 0.4)
+background.Clear()
+
+content.SetRGB(1, 0.5, 0)
+content.DrawCircle(400, 300, 100)
+content.Fill()
+
+overlay.SetRGBA(1, 1, 1, 0.5)
+overlay.DrawString("Overlay Text", 350, 320)</code></pre>
+
+                        <h4>Layer Operations</h4>
+                        <pre><code class="language-go">// Get layer by name
+layer := layerManager.GetLayer("content")
+
+// Remove layer
+layerManager.RemoveLayer("overlay")
+
+// Duplicate layer
+layerManager.DuplicateLayer("content", "content_copy")
+
+// Reorder layers
+layerManager.MoveLayerUp("background")
+layerManager.MoveLayerDown("overlay")
+layerManager.MoveLayerToTop("content")
+layerManager.MoveLayerToBottom("background")
+
+// Get layer list
+layerNames := layerManager.GetLayerNames()
+for _, name := range layerNames {
+    fmt.Printf("Layer: %s\n", name)
+}</code></pre>
+                    </section>
+
+                    <!-- Layer Properties -->
+                    <section id="layer-properties" class="mb-5">
+                        <h2>Layer Properties</h2>
+                        
+                        <h4>Opacity</h4>
+                        <pre><code class="language-go">// Set layer opacity (0.0 to 1.0)
+layerManager.SetLayerOpacity("content", 0.8)    // 80% opacity
+layerManager.SetLayerOpacity("overlay", 0.5)    // 50% opacity
+
+// Get layer opacity
+opacity := layerManager.GetLayerOpacity("content")
+fmt.Printf("Layer opacity: %f\n", opacity)
+
+// Fade layer in/out
+for i := 0; i <= 100; i++ {
+    opacity := float64(i) / 100.0
+    layerManager.SetLayerOpacity("content", opacity)
+    // Render frame
+}</code></pre>
+
+                        <h4>Visibility</h4>
+                        <pre><code class="language-go">// Show/hide layers
+layerManager.SetLayerVisible("background", true)
+layerManager.SetLayerVisible("overlay", false)
+
+// Toggle visibility
+layerManager.ToggleLayerVisibility("content")
+
+// Check if layer is visible
+visible := layerManager.IsLayerVisible("content")
+fmt.Printf("Layer visible: %v\n", visible)</code></pre>
+
+                        <h4>Locking</h4>
+                        <pre><code class="language-go">// Lock/unlock layers
+layerManager.SetLayerLocked("background", true)  // Prevent modifications
+layerManager.SetLayerLocked("content", false)    // Allow modifications
+
+// Check if layer is locked
+locked := layerManager.IsLayerLocked("background")
+fmt.Printf("Layer locked: %v\n", locked)</code></pre>
+                    </section>
+
+                    <!-- Blend Modes -->
+                    <section id="blend-modes" class="mb-5">
+                        <h2>Blend Modes</h2>
+                        
+                        <h4>Basic Blend Modes</h4>
+                        <pre><code class="language-go">// Set blend mode for layer
+layerManager.SetLayerBlendMode("content", advancegg.BlendModeNormal)     // Default
+layerManager.SetLayerBlendMode("overlay", advancegg.BlendModeMultiply)
+layerManager.SetLayerBlendMode("highlight", advancegg.BlendModeScreen)
+
+// Available blend modes:
+// Normal, Multiply, Screen, Overlay, SoftLight, HardLight,
+// ColorDodge, ColorBurn, Darken, Lighten, Difference, Exclusion</code></pre>
+
+                        <h4>Advanced Blend Modes</h4>
+                        <pre><code class="language-go">// Color blend modes
+layerManager.SetLayerBlendMode("color", advancegg.BlendModeColor)
+layerManager.SetLayerBlendMode("hue", advancegg.BlendModeHue)
+layerManager.SetLayerBlendMode("saturation", advancegg.BlendModeSaturation)
+layerManager.SetLayerBlendMode("luminosity", advancegg.BlendModeLuminosity)
+
+// Special effects
+layerManager.SetLayerBlendMode("glow", advancegg.BlendModeLinearDodge)
+layerManager.SetLayerBlendMode("shadow", advancegg.BlendModeLinearBurn)
+layerManager.SetLayerBlendMode("vivid", advancegg.BlendModeVividLight)
+layerManager.SetLayerBlendMode("pin", advancegg.BlendModePinLight)</code></pre>
+
+                        <h4>Custom Blend Functions</h4>
+                        <pre><code class="language-go">// Define custom blend function
+customBlend := func(base, overlay color.Color) color.Color {
+    br, bg, bb, ba := base.RGBA()
+    or, og, ob, oa := overlay.RGBA()
+    
+    // Custom blending logic
+    r := (br + or) / 2
+    g := (bg + og) / 2
+    b := (bb + ob) / 2
+    a := (ba + oa) / 2
+    
+    return color.RGBA{uint8(r >> 8), uint8(g >> 8), uint8(b >> 8), uint8(a >> 8)}
+}
+
+// Register and use custom blend mode
+advancegg.RegisterBlendMode("custom", customBlend)
+layerManager.SetLayerBlendMode("special", "custom")</code></pre>
+                    </section>
+
+                    <!-- Layer Effects -->
+                    <section id="layer-effects" class="mb-5">
+                        <h2>Layer Effects</h2>
+                        
+                        <h4>Drop Shadow</h4>
+                        <pre><code class="language-go">// Add drop shadow to layer
+shadow := advancegg.DropShadowEffect{
+    OffsetX:   5,
+    OffsetY:   5,
+    Blur:      10,
+    Color:     color.RGBA{0, 0, 0, 128},
+    Spread:    2,
+}
+layerManager.AddLayerEffect("content", shadow)
+
+// Inner shadow
+innerShadow := advancegg.InnerShadowEffect{
+    OffsetX:   -2,
+    OffsetY:   -2,
+    Blur:      5,
+    Color:     color.RGBA{0, 0, 0, 100},
+}
+layerManager.AddLayerEffect("content", innerShadow)</code></pre>
+
+                        <h4>Glow Effects</h4>
+                        <pre><code class="language-go">// Outer glow
+outerGlow := advancegg.OuterGlowEffect{
+    Size:      15,
+    Color:     color.RGBA{255, 255, 0, 200},
+    Spread:    5,
+    Quality:   advancegg.EffectQualityHigh,
+}
+layerManager.AddLayerEffect("content", outerGlow)
+
+// Inner glow
+innerGlow := advancegg.InnerGlowEffect{
+    Size:      10,
+    Color:     color.RGBA{255, 255, 255, 150},
+    Source:    advancegg.GlowSourceCenter,
+}
+layerManager.AddLayerEffect("content", innerGlow)</code></pre>
+
+                        <h4>Stroke Effects</h4>
+                        <pre><code class="language-go">// Stroke (outline)
+stroke := advancegg.StrokeEffect{
+    Size:      3,
+    Color:     color.RGBA{255, 0, 0, 255},
+    Position:  advancegg.StrokePositionOutside,
+    FillType:  advancegg.StrokeFillColor,
+}
+layerManager.AddLayerEffect("content", stroke)
+
+// Gradient stroke
+gradientStroke := advancegg.StrokeEffect{
+    Size:      5,
+    Position:  advancegg.StrokePositionCenter,
+    FillType:  advancegg.StrokeFillGradient,
+    Gradient:  myGradient,
+}
+layerManager.AddLayerEffect("content", gradientStroke)</code></pre>
+
+                        <h4>Bevel and Emboss</h4>
+                        <pre><code class="language-go">// Bevel effect
+bevel := advancegg.BevelEffect{
+    Style:         advancegg.BevelStyleInner,
+    Technique:     advancegg.BevelTechniqueSmoothChisel,
+    Depth:         5,
+    Direction:     advancegg.BevelDirectionUp,
+    Size:          10,
+    Soften:        2,
+    Angle:         120,
+    Altitude:      30,
+    HighlightMode: advancegg.BlendModeScreen,
+    ShadowMode:    advancegg.BlendModeMultiply,
+}
+layerManager.AddLayerEffect("content", bevel)</code></pre>
+                    </section>
+
+                    <!-- Layer Masks -->
+                    <section id="layer-masks" class="mb-5">
+                        <h2>Layer Masks</h2>
+                        
+                        <h4>Creating Masks</h4>
+                        <pre><code class="language-go">// Create layer mask
+mask := layerManager.CreateLayerMask("content")
+
+// Draw on mask (white = visible, black = hidden)
+mask.SetRGB(1, 1, 1)  // White
+mask.DrawCircle(400, 300, 100)
+mask.Fill()
+
+// Gradient mask
+mask.SetRGB(0, 0, 0)  // Black
+mask.Clear()
+gradient := advancegg.NewLinearGradient(0, 0, 800, 0)
+gradient.AddColorStop(0, color.RGBA{255, 255, 255, 255})  // White (visible)
+gradient.AddColorStop(1, color.RGBA{0, 0, 0, 255})        // Black (hidden)
+mask.SetFillStyle(gradient)
+mask.DrawRectangle(0, 0, 800, 600)
+mask.Fill()</code></pre>
+
+                        <h4>Mask Operations</h4>
+                        <pre><code class="language-go">// Enable/disable mask
+layerManager.SetLayerMaskEnabled("content", true)
+layerManager.SetLayerMaskEnabled("content", false)
+
+// Invert mask
+layerManager.InvertLayerMask("content")
+
+// Apply mask (merge with layer)
+layerManager.ApplyLayerMask("content")
+
+// Delete mask
+layerManager.DeleteLayerMask("content")
+
+// Mask from selection
+selection := advancegg.CreateSelection(selectionPath)
+layerManager.CreateLayerMaskFromSelection("content", selection)</code></pre>
+
+                        <h4>Vector Masks</h4>
+                        <pre><code class="language-go">// Create vector mask from path
+path := advancegg.NewPath2D()
+path.MoveTo(100, 100)
+path.LineTo(700, 100)
+path.LineTo(700, 500)
+path.LineTo(100, 500)
+path.ClosePath()
+
+vectorMask := layerManager.CreateVectorMask("content", path)
+
+// Feather vector mask
+vectorMask.SetFeather(10) // 10 pixel feather
+
+// Vector mask operations
+vectorMask.Subtract(anotherPath)
+vectorMask.Intersect(anotherPath)
+vectorMask.Add(anotherPath)
+vectorMask.Exclude(anotherPath)</code></pre>
+                    </section>
+
+                    <!-- Layer Groups -->
+                    <section id="layer-groups" class="mb-5">
+                        <h2>Layer Groups</h2>
+                        
+                        <h4>Creating Groups</h4>
+                        <pre><code class="language-go">// Create layer group
+group := layerManager.CreateLayerGroup("UI Elements")
+
+// Add layers to group
+layerManager.AddLayerToGroup("button", "UI Elements")
+layerManager.AddLayerToGroup("text", "UI Elements")
+layerManager.AddLayerToGroup("icon", "UI Elements")
+
+// Group properties
+layerManager.SetGroupOpacity("UI Elements", 0.8)
+layerManager.SetGroupBlendMode("UI Elements", advancegg.BlendModeMultiply)
+layerManager.SetGroupVisible("UI Elements", false)
+
+// Nested groups
+subGroup := layerManager.CreateLayerGroup("Buttons", "UI Elements")
+layerManager.AddLayerToGroup("primary_button", "Buttons")
+layerManager.AddLayerToGroup("secondary_button", "Buttons")</code></pre>
+
+                        <h4>Group Operations</h4>
+                        <pre><code class="language-go">// Collapse/expand group
+layerManager.SetGroupCollapsed("UI Elements", true)
+
+// Duplicate group
+layerManager.DuplicateGroup("UI Elements", "UI Elements Copy")
+
+// Merge group
+layerManager.MergeGroup("UI Elements")
+
+// Ungroup
+layerManager.Ungroup("UI Elements")
+
+// Get group layers
+groupLayers := layerManager.GetGroupLayers("UI Elements")
+for _, layerName := range groupLayers {
+    fmt.Printf("Group layer: %s\n", layerName)
+}</code></pre>
+                    </section>
+
+                    <!-- Compositing -->
+                    <section id="compositing" class="mb-5">
+                        <h2>Compositing</h2>
+                        
+                        <h4>Flattening Layers</h4>
+                        <pre><code class="language-go">// Flatten all layers
+result := layerManager.Flatten()
+
+// Flatten specific layers
+layersToFlatten := []string{"background", "content"}
+flattened := layerManager.FlattenLayers(layersToFlatten)
+
+// Flatten visible layers only
+visibleFlattened := layerManager.FlattenVisible()
+
+// Flatten with options
+options := advancegg.FlattenOptions{
+    IncludeHidden:   false,
+    PreserveAlpha:   true,
+    BackgroundColor: color.RGBA{255, 255, 255, 255},
+}
+customFlattened := layerManager.FlattenWithOptions(options)</code></pre>
+
+                        <h4>Export Options</h4>
+                        <pre><code class="language-go">// Export individual layers
+for _, layerName := range layerManager.GetLayerNames() {
+    layer := layerManager.GetLayer(layerName)
+    layer.SavePNG(fmt.Sprintf("layer_%s.png", layerName))
+}
+
+// Export with transparency
+layerManager.ExportLayerPNG("content", "content_with_alpha.png", true)
+
+// Export layer bounds only
+bounds := layerManager.GetLayerBounds("content")
+cropped := layerManager.ExportLayerBounds("content", bounds)
+
+// Export as PSD (Photoshop format)
+layerManager.ExportPSD("project.psd")</code></pre>
+                    </section>
+
+                    <!-- Examples -->
+                    <section id="examples" class="mb-5">
+                        <h2>Complete Examples</h2>
+                        
+                        <h4>Complex Layer Composition</h4>
+                        <pre><code class="language-go">package main
+
+import (
+    "image/color"
+    "github.com/GrandpaEJ/advancegg"
+)
+
+func main() {
+    // Create layer manager
+    lm := advancegg.NewLayerManager(1200, 800)
+    
+    // Background layer with gradient
+    bg := lm.AddLayer("background")
+    bgGradient := advancegg.NewLinearGradient(0, 0, 0, 800)
+    bgGradient.AddColorStop(0, color.RGBA{20, 30, 60, 255})
+    bgGradient.AddColorStop(1, color.RGBA{60, 30, 20, 255})
+    bg.SetFillStyle(bgGradient)
+    bg.DrawRectangle(0, 0, 1200, 800)
+    bg.Fill()
+    
+    // Mountains layer
+    mountains := lm.AddLayer("mountains")
+    mountains.SetRGBA(0.1, 0.2, 0.3, 0.8)
+    drawMountains(mountains)
+    lm.SetLayerBlendMode("mountains", advancegg.BlendModeMultiply)
+    
+    // Stars layer
+    stars := lm.AddLayer("stars")
+    drawStars(stars, 100)
+    lm.SetLayerOpacity("stars", 0.7)
+    
+    // Moon layer with glow effect
+    moon := lm.AddLayer("moon")
+    moon.SetRGB(1, 1, 0.9)
+    moon.DrawCircle(900, 150, 60)
+    moon.Fill()
+    
+    // Add glow effect to moon
+    glow := advancegg.OuterGlowEffect{
+        Size:    30,
+        Color:   color.RGBA{255, 255, 200, 100},
+        Spread:  10,
+    }
+    lm.AddLayerEffect("moon", glow)
+    
+    // Text layer with effects
+    text := lm.AddLayer("title")
+    text.LoadFontFace("fonts/arial-bold.ttf", 48)
+    text.SetRGB(1, 1, 1)
+    text.DrawStringAnchored("Starry Night", 600, 400, 0.5, 0.5)
+    
+    // Add text effects
+    shadow := advancegg.DropShadowEffect{
+        OffsetX: 3,
+        OffsetY: 3,
+        Blur:    8,
+        Color:   color.RGBA{0, 0, 0, 150},
+    }
+    lm.AddLayerEffect("title", shadow)
+    
+    stroke := advancegg.StrokeEffect{
+        Size:     2,
+        Color:    color.RGBA{100, 100, 200, 255},
+        Position: advancegg.StrokePositionOutside,
+    }
+    lm.AddLayerEffect("title", stroke)
+    
+    // Create layer group for UI
+    ui := lm.CreateLayerGroup("UI")
+    
+    // Watermark layer
+    watermark := lm.AddLayer("watermark")
+    lm.AddLayerToGroup("watermark", "UI")
+    watermark.SetRGBA(1, 1, 1, 0.3)
+    watermark.LoadFontFace("fonts/arial.ttf", 16)
+    watermark.DrawStringAnchored("© AdvanceGG 2024", 1150, 750, 1, 1)
+    
+    // Set group properties
+    lm.SetGroupOpacity("UI", 0.8)
+    
+    // Flatten and save
+    result := lm.Flatten()
+    result.SavePNG("starry-night-composition.png")
+    
+    // Save individual layers for editing
+    lm.ExportPSD("starry-night-project.psd")
+}
+
+func drawMountains(dc *advancegg.Context) {
+    // Draw mountain silhouettes
+    dc.MoveTo(0, 600)
+    dc.LineTo(200, 400)
+    dc.LineTo(400, 500)
+    dc.LineTo(600, 350)
+    dc.LineTo(800, 450)
+    dc.LineTo(1000, 300)
+    dc.LineTo(1200, 400)
+    dc.LineTo(1200, 800)
+    dc.LineTo(0, 800)
+    dc.ClosePath()
+    dc.Fill()
+}
+
+func drawStars(dc *advancegg.Context, count int) {
+    dc.SetRGB(1, 1, 1)
+    for i := 0; i < count; i++ {
+        x := rand.Float64() * 1200
+        y := rand.Float64() * 400
+        size := 1 + rand.Float64()*2
+        dc.DrawCircle(x, y, size)
+        dc.Fill()
+    }
+}</code></pre>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script src="../js/main.js"></script>
+</body>
+</html>

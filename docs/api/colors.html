@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colors API - AdvanceGG Documentation</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../../index.html">
+                <i class="bi bi-palette"></i> AdvanceGG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="../../index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../getting-started.html">Getting Started</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="index.html">API Reference</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../examples/">Examples</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid" style="margin-top: 76px;">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <div class="col-lg-3">
+                <div class="doc-nav p-3">
+                    <h6 class="text-muted mb-3">API Reference</h6>
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="index.html">Overview</a>
+                        <a class="nav-link" href="drawing.html">Drawing</a>
+                        <a class="nav-link" href="paths.html">Paths</a>
+                        <a class="nav-link" href="text.html">Text</a>
+                        <a class="nav-link" href="images.html">Images</a>
+                        <a class="nav-link active" href="colors.html">Colors</a>
+                        <a class="nav-link" href="layers.html">Layers</a>
+                        <a class="nav-link" href="filters.html">Filters</a>
+                        <a class="nav-link" href="performance.html">Performance</a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <div class="doc-content">
+                    <h1><i class="bi bi-palette2 text-primary"></i> Colors API</h1>
+                    <p class="lead">Comprehensive color management, gradients, and color space support.</p>
+
+                    <!-- Basic Colors -->
+                    <section id="basic-colors" class="mb-5">
+                        <h2>Basic Color Operations</h2>
+                        
+                        <h4>Setting Colors</h4>
+                        <pre><code class="language-go">// RGB colors (values 0.0 to 1.0)
+dc.SetRGB(1, 0, 0)        // Red
+dc.SetRGB(0, 1, 0)        // Green
+dc.SetRGB(0, 0, 1)        // Blue
+
+// RGBA with transparency
+dc.SetRGBA(1, 0, 0, 0.5)  // Semi-transparent red
+
+// RGB with 0-255 values
+dc.SetRGB255(255, 128, 0) // Orange
+
+// Hex colors
+dc.SetHexColor("#FF5733")
+dc.SetHexColor("#F53")    // Short form
+
+// Named colors
+dc.SetColor(color.RGBA{255, 0, 0, 255})
+dc.SetColor(advancegg.ColorRed)
+dc.SetColor(advancegg.ColorBlue)</code></pre>
+
+                        <h4>Color Utilities</h4>
+                        <pre><code class="language-go">// Create colors
+red := advancegg.RGB(1, 0, 0)
+blue := advancegg.RGBA(0, 0, 1, 0.8)
+orange := advancegg.RGB255(255, 165, 0)
+purple := advancegg.HexColor("#8A2BE2")
+
+// Color conversion
+r, g, b, a := advancegg.ColorToRGBA(purple)
+hex := advancegg.ColorToHex(red)
+fmt.Printf("Hex: %s\n", hex) // #FF0000
+
+// Color interpolation
+interpolated := advancegg.InterpolateColor(red, blue, 0.5) // 50% between red and blue
+
+// Random colors
+randomColor := advancegg.RandomColor()
+randomPastel := advancegg.RandomPastelColor()
+randomBright := advancegg.RandomBrightColor()</code></pre>
+                    </section>
+
+                    <!-- Color Spaces -->
+                    <section id="color-spaces" class="mb-5">
+                        <h2>Color Spaces</h2>
+                        
+                        <h4>HSV (Hue, Saturation, Value)</h4>
+                        <pre><code class="language-go">// Set HSV color
+dc.SetHSV(240, 1, 1)      // Blue: H=240°, S=100%, V=100%
+dc.SetHSV(120, 0.5, 0.8)  // Muted green
+
+// Convert between RGB and HSV
+h, s, v := advancegg.RGBToHSV(1, 0, 0) // Red to HSV
+r, g, b := advancegg.HSVToRGB(h, s, v) // Back to RGB
+
+// Create HSV color
+hsvColor := advancegg.HSV(300, 0.8, 0.9) // Purple
+dc.SetColor(hsvColor)</code></pre>
+
+                        <h4>HSL (Hue, Saturation, Lightness)</h4>
+                        <pre><code class="language-go">// Set HSL color
+dc.SetHSL(240, 1, 0.5)    // Blue: H=240°, S=100%, L=50%
+dc.SetHSL(0, 0.8, 0.6)    // Light red
+
+// Convert between RGB and HSL
+h, s, l := advancegg.RGBToHSL(1, 0, 0) // Red to HSL
+r, g, b := advancegg.HSLToRGB(h, s, l) // Back to RGB
+
+// Create HSL color
+hslColor := advancegg.HSL(180, 0.7, 0.4) // Dark cyan
+dc.SetColor(hslColor)</code></pre>
+
+                        <h4>CMYK (Cyan, Magenta, Yellow, Black)</h4>
+                        <pre><code class="language-go">// Set CMYK color (for print)
+dc.SetCMYK(0, 1, 1, 0)    // Red: C=0%, M=100%, Y=100%, K=0%
+dc.SetCMYK(1, 0, 1, 0)    // Green
+dc.SetCMYK(1, 1, 0, 0)    // Blue
+
+// Convert between RGB and CMYK
+c, m, y, k := advancegg.RGBToCMYK(1, 0, 0) // Red to CMYK
+r, g, b := advancegg.CMYKToRGB(c, m, y, k) // Back to RGB
+
+// Create CMYK color
+cmykColor := advancegg.CMYK(0.2, 0.8, 0.1, 0.05)
+dc.SetColor(cmykColor)</code></pre>
+
+                        <h4>LAB Color Space</h4>
+                        <pre><code class="language-go">// Set LAB color
+dc.SetLAB(50, 20, -30)    // L=50, a=20, b=-30
+
+// Convert between RGB and LAB
+l, a, b := advancegg.RGBToLAB(1, 0, 0) // Red to LAB
+r, g, b := advancegg.LABToRGB(l, a, b) // Back to RGB
+
+// Create LAB color
+labColor := advancegg.LAB(70, -10, 40)
+dc.SetColor(labColor)
+
+// Calculate color difference (Delta E)
+deltaE := advancegg.CalculateDeltaE(color1, color2)
+fmt.Printf("Color difference: %f\n", deltaE)</code></pre>
+                    </section>
+
+                    <!-- Gradients -->
+                    <section id="gradients" class="mb-5">
+                        <h2>Gradients</h2>
+                        
+                        <h4>Linear Gradients</h4>
+                        <pre><code class="language-go">// Create linear gradient
+gradient := advancegg.NewLinearGradient(0, 0, 100, 0) // Horizontal
+gradient.AddColorStop(0, color.RGBA{255, 0, 0, 255})    // Red at start
+gradient.AddColorStop(0.5, color.RGBA{255, 255, 0, 255}) // Yellow at middle
+gradient.AddColorStop(1, color.RGBA{0, 255, 0, 255})    // Green at end
+
+// Use gradient as fill
+dc.SetFillStyle(gradient)
+dc.DrawRectangle(50, 50, 200, 100)
+dc.Fill()
+
+// Vertical gradient
+verticalGradient := advancegg.NewLinearGradient(0, 0, 0, 100)
+verticalGradient.AddColorStop(0, advancegg.RGB(0.2, 0.4, 0.8))
+verticalGradient.AddColorStop(1, advancegg.RGB(0.8, 0.2, 0.4))
+
+// Diagonal gradient
+diagonalGradient := advancegg.NewLinearGradient(0, 0, 100, 100)</code></pre>
+
+                        <h4>Radial Gradients</h4>
+                        <pre><code class="language-go">// Create radial gradient
+radial := advancegg.NewRadialGradient(50, 50, 0, 50, 50, 50)
+radial.AddColorStop(0, color.RGBA{255, 255, 255, 255})  // White center
+radial.AddColorStop(1, color.RGBA{0, 0, 0, 255})        // Black edge
+
+dc.SetFillStyle(radial)
+dc.DrawCircle(100, 100, 50)
+dc.Fill()
+
+// Offset radial gradient
+offsetRadial := advancegg.NewRadialGradient(40, 40, 0, 50, 50, 50)
+offsetRadial.AddColorStop(0, advancegg.RGBA(1, 1, 0, 1))   // Yellow center
+offsetRadial.AddColorStop(1, advancegg.RGBA(1, 0, 0, 1))   // Red edge</code></pre>
+
+                        <h4>Conic Gradients</h4>
+                        <pre><code class="language-go">// Create conic (angular) gradient
+conic := advancegg.NewConicGradient(100, 100, 0) // Center at (100,100), start at 0°
+conic.AddColorStop(0, advancegg.RGB(1, 0, 0))     // Red
+conic.AddColorStop(0.33, advancegg.RGB(0, 1, 0))  // Green
+conic.AddColorStop(0.66, advancegg.RGB(0, 0, 1))  // Blue
+conic.AddColorStop(1, advancegg.RGB(1, 0, 0))     // Back to red
+
+dc.SetFillStyle(conic)
+dc.DrawCircle(100, 100, 80)
+dc.Fill()
+
+// Conic gradient with custom start angle
+conicAngled := advancegg.NewConicGradient(200, 200, math.Pi/4) // Start at 45°</code></pre>
+
+                        <h4>Advanced Gradient Features</h4>
+                        <pre><code class="language-go">// Gradient with multiple color stops
+rainbow := advancegg.NewLinearGradient(0, 0, 300, 0)
+rainbow.AddColorStop(0, advancegg.RGB(1, 0, 0))     // Red
+rainbow.AddColorStop(0.17, advancegg.RGB(1, 0.5, 0)) // Orange
+rainbow.AddColorStop(0.33, advancegg.RGB(1, 1, 0))   // Yellow
+rainbow.AddColorStop(0.5, advancegg.RGB(0, 1, 0))    // Green
+rainbow.AddColorStop(0.67, advancegg.RGB(0, 0, 1))   // Blue
+rainbow.AddColorStop(0.83, advancegg.RGB(0.3, 0, 0.5)) // Indigo
+rainbow.AddColorStop(1, advancegg.RGB(0.5, 0, 1))    // Violet
+
+// Gradient transformations
+transformedGradient := gradient.Transform(matrix)
+
+// Gradient with opacity
+gradient.SetGlobalAlpha(0.7)
+
+// Repeating gradients
+repeatingGradient := advancegg.NewRepeatingLinearGradient(0, 0, 50, 0)
+repeatingGradient.AddColorStop(0, advancegg.RGB(1, 0, 0))
+repeatingGradient.AddColorStop(1, advancegg.RGB(0, 0, 1))</code></pre>
+                    </section>
+
+                    <!-- Color Palettes -->
+                    <section id="palettes" class="mb-5">
+                        <h2>Color Palettes</h2>
+                        
+                        <h4>Predefined Palettes</h4>
+                        <pre><code class="language-go">// Material Design colors
+materialRed := advancegg.MaterialRed500
+materialBlue := advancegg.MaterialBlue500
+materialGreen := advancegg.MaterialGreen500
+
+// Web safe colors
+webSafeColors := advancegg.GetWebSafeColors()
+
+// CSS named colors
+cssRed := advancegg.CSSColors["red"]
+cssBlue := advancegg.CSSColors["blue"]
+cssOrange := advancegg.CSSColors["orange"]
+
+// Pantone colors (subset)
+pantoneRed := advancegg.PantoneColors["18-1664"]
+pantoneBlue := advancegg.PantoneColors["19-4052"]</code></pre>
+
+                        <h4>Color Harmony</h4>
+                        <pre><code class="language-go">// Generate color harmonies
+baseColor := advancegg.RGB(0.8, 0.2, 0.4)
+
+// Complementary colors
+complementary := advancegg.GetComplementaryColor(baseColor)
+
+// Triadic colors
+triadic := advancegg.GetTriadicColors(baseColor)
+
+// Analogous colors
+analogous := advancegg.GetAnalogousColors(baseColor, 5) // 5 colors
+
+// Monochromatic colors
+monochromatic := advancegg.GetMonochromaticColors(baseColor, 7) // 7 shades
+
+// Split complementary
+splitComplementary := advancegg.GetSplitComplementaryColors(baseColor)
+
+// Tetradic (square) colors
+tetradic := advancegg.GetTetradicColors(baseColor)</code></pre>
+
+                        <h4>Custom Palettes</h4>
+                        <pre><code class="language-go">// Create custom palette
+palette := advancegg.NewColorPalette()
+palette.AddColor("primary", advancegg.RGB(0.2, 0.4, 0.8))
+palette.AddColor("secondary", advancegg.RGB(0.8, 0.2, 0.4))
+palette.AddColor("accent", advancegg.RGB(1, 0.8, 0.2))
+
+// Use palette colors
+dc.SetColor(palette.GetColor("primary"))
+
+// Generate palette from image
+imagePalette := advancegg.ExtractPaletteFromImage(img, 8) // 8 dominant colors
+
+// Save/load palettes
+palette.SaveToFile("my-palette.json")
+loadedPalette := advancegg.LoadPaletteFromFile("my-palette.json")
+
+// Adobe Color (Kuler) format
+adobePalette := advancegg.LoadAdobeColorPalette("palette.aco")</code></pre>
+                    </section>
+
+                    <!-- Color Manipulation -->
+                    <section id="manipulation" class="mb-5">
+                        <h2>Color Manipulation</h2>
+                        
+                        <h4>Color Adjustments</h4>
+                        <pre><code class="language-go">// Lighten/darken colors
+lighter := advancegg.LightenColor(baseColor, 0.2) // 20% lighter
+darker := advancegg.DarkenColor(baseColor, 0.3)   // 30% darker
+
+// Saturate/desaturate
+saturated := advancegg.SaturateColor(baseColor, 0.5)   // More saturated
+desaturated := advancegg.DesaturateColor(baseColor, 0.3) // Less saturated
+
+// Adjust hue
+hueShifted := advancegg.AdjustHue(baseColor, 60) // Shift hue by 60°
+
+// Adjust brightness
+brighter := advancegg.AdjustBrightness(baseColor, 1.2) // 20% brighter
+dimmer := advancegg.AdjustBrightness(baseColor, 0.8)   // 20% dimmer
+
+// Adjust contrast
+highContrast := advancegg.AdjustContrast(baseColor, 1.5) // Higher contrast
+lowContrast := advancegg.AdjustContrast(baseColor, 0.7)  // Lower contrast</code></pre>
+
+                        <h4>Color Mixing</h4>
+                        <pre><code class="language-go">// Mix colors
+red := advancegg.RGB(1, 0, 0)
+blue := advancegg.RGB(0, 0, 1)
+
+// Additive mixing (light)
+additive := advancegg.MixColorsAdditive(red, blue)
+
+// Subtractive mixing (paint)
+subtractive := advancegg.MixColorsSubtractive(red, blue)
+
+// Weighted mixing
+weighted := advancegg.MixColorsWeighted(red, blue, 0.3) // 30% red, 70% blue
+
+// Blend modes
+multiply := advancegg.BlendColors(red, blue, advancegg.BlendModeMultiply)
+screen := advancegg.BlendColors(red, blue, advancegg.BlendModeScreen)
+overlay := advancegg.BlendColors(red, blue, advancegg.BlendModeOverlay)</code></pre>
+
+                        <h4>Color Analysis</h4>
+                        <pre><code class="language-go">// Get color properties
+luminance := advancegg.GetLuminance(color)
+brightness := advancegg.GetBrightness(color)
+contrast := advancegg.GetContrast(color1, color2)
+
+// Check accessibility
+wcagAA := advancegg.MeetsWCAGAA(textColor, backgroundColor)
+wcagAAA := advancegg.MeetsWCAGAAA(textColor, backgroundColor)
+
+// Color temperature
+temperature := advancegg.GetColorTemperature(color) // In Kelvin
+warmColor := advancegg.ColorFromTemperature(3000)   // Warm white
+coolColor := advancegg.ColorFromTemperature(6500)   // Cool white
+
+// Color distance
+distance := advancegg.ColorDistance(color1, color2)
+perceptualDistance := advancegg.PerceptualColorDistance(color1, color2)</code></pre>
+                    </section>
+
+                    <!-- Examples -->
+                    <section id="examples" class="mb-5">
+                        <h2>Complete Examples</h2>
+                        
+                        <h4>Color Wheel Generator</h4>
+                        <pre><code class="language-go">package main
+
+import (
+    "math"
+    "github.com/GrandpaEJ/advancegg"
+)
+
+func main() {
+    dc := advancegg.NewContext(600, 600)
+    
+    // Background
+    dc.SetRGB(0.1, 0.1, 0.1)
+    dc.Clear()
+    
+    centerX, centerY := 300.0, 300.0
+    outerRadius := 250.0
+    innerRadius := 100.0
+    
+    // Draw color wheel
+    segments := 360
+    for i := 0; i < segments; i++ {
+        angle1 := float64(i) * 2 * math.Pi / float64(segments)
+        angle2 := float64(i+1) * 2 * math.Pi / float64(segments)
+        
+        // Calculate color based on angle
+        hue := float64(i) / float64(segments) * 360
+        color := advancegg.HSV(hue, 1, 1)
+        
+        dc.SetColor(color)
+        
+        // Draw segment
+        dc.MoveTo(centerX, centerY)
+        dc.Arc(centerX, centerY, outerRadius, angle1, angle2)
+        dc.ClosePath()
+        dc.Fill()
+    }
+    
+    // Draw inner circle (white)
+    dc.SetRGB(1, 1, 1)
+    dc.DrawCircle(centerX, centerY, innerRadius)
+    dc.Fill()
+    
+    // Add saturation gradient
+    for r := innerRadius; r < outerRadius; r += 2 {
+        saturation := (r - innerRadius) / (outerRadius - innerRadius)
+        
+        for i := 0; i < segments; i++ {
+            angle := float64(i) * 2 * math.Pi / float64(segments)
+            hue := float64(i) / float64(segments) * 360
+            
+            color := advancegg.HSV(hue, saturation, 1)
+            dc.SetColor(color)
+            
+            x := centerX + r*math.Cos(angle)
+            y := centerY + r*math.Sin(angle)
+            dc.DrawCircle(x, y, 1)
+            dc.Fill()
+        }
+    }
+    
+    dc.SavePNG("color-wheel.png")
+}</code></pre>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script src="../js/main.js"></script>
+</body>
+</html>

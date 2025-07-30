@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filters API - AdvanceGG Documentation</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../../index.html">
+                <i class="bi bi-palette"></i> AdvanceGG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="../../index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../getting-started.html">Getting Started</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="index.html">API Reference</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../examples/">Examples</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid" style="margin-top: 76px;">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <div class="col-lg-3">
+                <div class="doc-nav p-3">
+                    <h6 class="text-muted mb-3">API Reference</h6>
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="index.html">Overview</a>
+                        <a class="nav-link" href="drawing.html">Drawing</a>
+                        <a class="nav-link" href="paths.html">Paths</a>
+                        <a class="nav-link" href="text.html">Text</a>
+                        <a class="nav-link" href="images.html">Images</a>
+                        <a class="nav-link" href="colors.html">Colors</a>
+                        <a class="nav-link" href="layers.html">Layers</a>
+                        <a class="nav-link active" href="filters.html">Filters</a>
+                        <a class="nav-link" href="performance.html">Performance</a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <div class="doc-content">
+                    <h1><i class="bi bi-funnel text-primary"></i> Filters API</h1>
+                    <p class="lead">Professional image processing filters and effects.</p>
+
+                    <!-- Basic Filters -->
+                    <section id="basic-filters" class="mb-5">
+                        <h2>Basic Filters</h2>
+                        
+                        <h4>Blur Filters</h4>
+                        <pre><code class="language-go">// Gaussian blur
+blurred := advancegg.ApplyGaussianBlur(img, 5.0) // 5 pixel radius
+
+// Box blur (faster)
+boxBlurred := advancegg.ApplyBoxBlur(img, 3)
+
+// Motion blur
+motionBlurred := advancegg.ApplyMotionBlur(img, 10, 45) // 10px distance, 45° angle
+
+// Radial blur
+radialBlurred := advancegg.ApplyRadialBlur(img, centerX, centerY, 8)
+
+// Zoom blur
+zoomBlurred := advancegg.ApplyZoomBlur(img, centerX, centerY, 0.1) // 10% zoom
+
+// Surface blur (edge-preserving)
+surfaceBlurred := advancegg.ApplySurfaceBlur(img, 5, 15) // radius, threshold</code></pre>
+
+                        <h4>Sharpen Filters</h4>
+                        <pre><code class="language-go">// Unsharp mask
+sharpened := advancegg.ApplyUnsharpMask(img, 1.5, 1.0, 0) // amount, radius, threshold
+
+// Simple sharpen
+sharpened := advancegg.ApplySharpen(img, 0.5) // strength
+
+// Smart sharpen
+smartSharpened := advancegg.ApplySmartSharpen(img, 2.0, 1.0, true) // amount, radius, reduce noise
+
+// High pass filter
+highPass := advancegg.ApplyHighPass(img, 3.0) // radius</code></pre>
+
+                        <h4>Noise Filters</h4>
+                        <pre><code class="language-go">// Add noise
+noisy := advancegg.AddNoise(img, 0.1, advancegg.NoiseTypeGaussian)
+noisy := advancegg.AddNoise(img, 0.05, advancegg.NoiseTypeUniform)
+noisy := advancegg.AddNoise(img, 0.08, advancegg.NoiseTypeSaltPepper)
+
+// Remove noise
+denoised := advancegg.ApplyMedianFilter(img, 3) // 3x3 kernel
+denoised := advancegg.ApplyBilateralFilter(img, 9, 75, 75) // d, sigmaColor, sigmaSpace
+denoised := advancegg.ApplyNonLocalMeansDenoising(img, 10, 7, 21) // h, templateWindowSize, searchWindowSize
+
+// Dust and scratches
+cleaned := advancegg.RemoveDustAndScratches(img, 2, 50) // radius, threshold</code></pre>
+                    </section>
+
+                    <!-- Color Filters -->
+                    <section id="color-filters" class="mb-5">
+                        <h2>Color Filters</h2>
+                        
+                        <h4>Basic Color Adjustments</h4>
+                        <pre><code class="language-go">// Brightness and contrast
+bright := advancegg.ApplyBrightness(img, 1.2)    // 20% brighter
+contrast := advancegg.ApplyContrast(img, 1.5)    // 50% more contrast
+combined := advancegg.ApplyBrightnessContrast(img, 1.1, 1.3)
+
+// Gamma correction
+gamma := advancegg.ApplyGamma(img, 1.4)
+
+// Exposure
+exposed := advancegg.ApplyExposure(img, 0.5) // +0.5 stops
+
+// Levels adjustment
+leveled := advancegg.ApplyLevels(img, 0, 1, 0.5, 0, 255) // input min/max, gamma, output min/max</code></pre>
+
+                        <h4>Color Balance</h4>
+                        <pre><code class="language-go">// Hue, saturation, lightness
+hsl := advancegg.ApplyHSL(img, 15, 1.2, 1.1) // +15° hue, +20% saturation, +10% lightness
+
+// Color balance
+balanced := advancegg.ApplyColorBalance(img, -10, 5, 15) // cyan-red, magenta-green, yellow-blue
+
+// Vibrance and saturation
+vibrant := advancegg.ApplyVibrance(img, 0.3)     // Selective saturation
+saturated := advancegg.ApplySaturation(img, 1.4) // Overall saturation
+
+// Temperature and tint
+warmed := advancegg.ApplyTemperature(img, 200)   // Warmer (+200K)
+tinted := advancegg.ApplyTint(img, -10)          // Magenta tint</code></pre>
+
+                        <h4>Color Effects</h4>
+                        <pre><code class="language-go">// Grayscale conversions
+gray := advancegg.ApplyGrayscale(img)
+grayLuminance := advancegg.ApplyGrayscaleLuminance(img)
+grayDesaturate := advancegg.ApplyGrayscaleDesaturate(img)
+
+// Sepia tone
+sepia := advancegg.ApplySepia(img, 0.8) // intensity
+
+// Color tinting
+tinted := advancegg.ApplyColorTint(img, color.RGBA{255, 200, 100, 128})
+
+// Duotone
+duotone := advancegg.ApplyDuotone(img, 
+    color.RGBA{50, 50, 100, 255},   // Shadow color
+    color.RGBA{255, 200, 150, 255}) // Highlight color
+
+// Posterize
+posterized := advancegg.ApplyPosterize(img, 8) // 8 levels per channel
+
+// Threshold
+threshold := advancegg.ApplyThreshold(img, 128) // Binary threshold at 128</code></pre>
+                    </section>
+
+                    <!-- Artistic Filters -->
+                    <section id="artistic-filters" class="mb-5">
+                        <h2>Artistic Filters</h2>
+                        
+                        <h4>Painting Effects</h4>
+                        <pre><code class="language-go">// Oil painting
+oilPainting := advancegg.ApplyOilPainting(img, 5, 20) // brush size, intensity
+
+// Watercolor
+watercolor := advancegg.ApplyWatercolor(img, 0.8, 0.6) // wetness, bleeding
+
+// Acrylic painting
+acrylic := advancegg.ApplyAcrylicPainting(img, 3, 15) // brush size, detail
+
+// Impressionist
+impressionist := advancegg.ApplyImpressionist(img, 4, 8) // brush size, variation
+
+// Pointillism
+pointillism := advancegg.ApplyPointillism(img, 3, 0.7) // dot size, coverage</code></pre>
+
+                        <h4>Sketch and Drawing</h4>
+                        <pre><code class="language-go">// Pencil sketch
+pencil := advancegg.ApplyPencilSketch(img, 0.1, 0.15) // detail, shading
+
+// Charcoal drawing
+charcoal := advancegg.ApplyCharcoal(img, 2, 0.8) // stroke size, intensity
+
+// Ink drawing
+ink := advancegg.ApplyInkDrawing(img, 3, 0.5) // line weight, detail
+
+// Cross hatch
+crossHatch := advancegg.ApplyCrossHatch(img, 2, 45) // line spacing, angle
+
+// Stippling
+stippling := advancegg.ApplyStippling(img, 1.5, 0.6) // dot size, density</code></pre>
+
+                        <h4>Stylization</h4>
+                        <pre><code class="language-go">// Cartoon effect
+cartoon := advancegg.ApplyCartoon(img, 7, 200, 20) // blur, edge threshold, edge amount
+
+// Comic book
+comic := advancegg.ApplyComicBook(img, 4, 80) // color reduction, edge strength
+
+// Pop art
+popArt := advancegg.ApplyPopArt(img, 6, 4) // colors, contrast
+
+// Mosaic
+mosaic := advancegg.ApplyMosaic(img, 8) // tile size
+
+// Stained glass
+stainedGlass := advancegg.ApplyStainedGlass(img, 12, 3) // cell size, border width
+
+// Emboss
+embossed := advancegg.ApplyEmboss(img, 45, 3) // angle, depth</code></pre>
+                    </section>
+
+                    <!-- Edge Detection -->
+                    <section id="edge-detection" class="mb-5">
+                        <h2>Edge Detection</h2>
+                        
+                        <h4>Edge Detection Algorithms</h4>
+                        <pre><code class="language-go">// Sobel edge detection
+sobelEdges := advancegg.ApplySobelEdgeDetection(img)
+
+// Canny edge detection
+cannyEdges := advancegg.ApplyCannyEdgeDetection(img, 50, 150) // low, high threshold
+
+// Laplacian edge detection
+laplacianEdges := advancegg.ApplyLaplacianEdgeDetection(img)
+
+// Prewitt edge detection
+prewittEdges := advancegg.ApplyPrewittEdgeDetection(img)
+
+// Roberts cross-gradient
+robertsEdges := advancegg.ApplyRobertsEdgeDetection(img)
+
+// Scharr edge detection
+scharrEdges := advancegg.ApplySchurrEdgeDetection(img)</code></pre>
+
+                        <h4>Edge Enhancement</h4>
+                        <pre><code class="language-go">// Find edges
+edges := advancegg.FindEdges(img, 0.1) // threshold
+
+// Enhance edges
+enhanced := advancegg.EnhanceEdges(img, 2.0) // strength
+
+// Edge-preserving smoothing
+smoothed := advancegg.ApplyEdgePreservingSmoothing(img, 50, 0.4) // flags, sigma
+
+// Anisotropic diffusion
+diffused := advancegg.ApplyAnisotropicDiffusion(img, 0.1, 20, 30) // kappa, gamma, iterations</code></pre>
+                    </section>
+
+                    <!-- Distortion Filters -->
+                    <section id="distortion-filters" class="mb-5">
+                        <h2>Distortion Filters</h2>
+                        
+                        <h4>Geometric Distortions</h4>
+                        <pre><code class="language-go">// Barrel distortion
+barrel := advancegg.ApplyBarrelDistortion(img, 0.2) // strength
+
+// Pincushion distortion
+pincushion := advancegg.ApplyPincushionDistortion(img, 0.15)
+
+// Fisheye effect
+fisheye := advancegg.ApplyFisheye(img, 1.5) // strength
+
+// Spherize
+spherized := advancegg.ApplySpherize(img, 0.8, advancegg.SpherizeNormal)
+
+// Twirl
+twirled := advancegg.ApplyTwirl(img, centerX, centerY, 45, 100) // angle, radius
+
+// Ripple
+rippled := advancegg.ApplyRipple(img, 10, 20, advancegg.RippleTypeSine) // amplitude, wavelength</code></pre>
+
+                        <h4>Displacement</h4>
+                        <pre><code class="language-go">// Wave distortion
+waved := advancegg.ApplyWave(img, 20, 50, 0, advancegg.WaveTypeSine) // amplitude, wavelength, phase
+
+// Displacement map
+displacementMap := advancegg.LoadImage("displacement.png")
+displaced := advancegg.ApplyDisplacement(img, displacementMap, 10, 10) // x scale, y scale
+
+// Liquify
+liquified := advancegg.ApplyLiquify(img, points, radius, strength) // control points
+
+// Polar coordinates
+polar := advancegg.ApplyPolarCoordinates(img, advancegg.PolarRectangularToPolar)
+rectangular := advancegg.ApplyPolarCoordinates(img, advancegg.PolarPolarToRectangular)</code></pre>
+                    </section>
+
+                    <!-- Filter Chains -->
+                    <section id="filter-chains" class="mb-5">
+                        <h2>Filter Chains</h2>
+                        
+                        <h4>Creating Filter Chains</h4>
+                        <pre><code class="language-go">// Create filter chain
+chain := advancegg.NewFilterChain()
+
+// Add filters to chain
+chain.AddFilter(advancegg.NewGaussianBlurFilter(2.0))
+chain.AddFilter(advancegg.NewBrightnessFilter(1.1))
+chain.AddFilter(advancegg.NewContrastFilter(1.2))
+chain.AddFilter(advancegg.NewSaturationFilter(1.15))
+
+// Apply chain
+result := chain.Apply(img)
+
+// Chain with conditions
+conditionalChain := advancegg.NewFilterChain()
+conditionalChain.AddFilterIf(advancegg.NewNoiseReductionFilter(0.1), func(img image.Image) bool {
+    return advancegg.DetectNoise(img) > 0.05 // Only if noisy
+})
+
+// Parallel processing
+parallelChain := advancegg.NewParallelFilterChain()
+parallelChain.AddFilter(advancegg.NewSharpenFilter(0.5))
+parallelChain.AddFilter(advancegg.NewColorBalanceFilter(-5, 0, 5))
+result := parallelChain.Apply(img)</code></pre>
+
+                        <h4>Non-destructive Editing</h4>
+                        <pre><code class="language-go">// Create adjustment layer
+adjustmentLayer := advancegg.NewAdjustmentLayer(img)
+
+// Add adjustments
+adjustmentLayer.AddAdjustment(advancegg.NewBrightnessAdjustment(1.1))
+adjustmentLayer.AddAdjustment(advancegg.NewContrastAdjustment(1.2))
+adjustmentLayer.AddAdjustment(advancegg.NewHueSaturationAdjustment(5, 1.15, 0))
+
+// Apply adjustments
+result := adjustmentLayer.Render()
+
+// Modify adjustments
+adjustmentLayer.ModifyAdjustment(0, advancegg.NewBrightnessAdjustment(1.05)) // Change brightness
+adjustmentLayer.RemoveAdjustment(1) // Remove contrast
+
+// Save adjustment preset
+preset := adjustmentLayer.SavePreset()
+advancegg.SavePresetToFile(preset, "my-preset.json")
+
+// Load and apply preset
+loadedPreset := advancegg.LoadPresetFromFile("my-preset.json")
+newAdjustmentLayer := advancegg.NewAdjustmentLayerFromPreset(img, loadedPreset)</code></pre>
+                    </section>
+
+                    <!-- Custom Filters -->
+                    <section id="custom-filters" class="mb-5">
+                        <h2>Custom Filters</h2>
+                        
+                        <h4>Kernel Filters</h4>
+                        <pre><code class="language-go">// Define custom kernel
+kernel := [][]float64{
+    {-1, -1, -1},
+    {-1,  8, -1},
+    {-1, -1, -1},
+} // Edge detection kernel
+
+// Apply custom kernel
+filtered := advancegg.ApplyKernel(img, kernel, 1.0, 0) // divisor, offset
+
+// Separable kernel (more efficient)
+horizontalKernel := []float64{1, 2, 1}
+verticalKernel := []float64{1, 2, 1}
+separableFiltered := advancegg.ApplySeparableKernel(img, horizontalKernel, verticalKernel)
+
+// Morphological operations
+eroded := advancegg.ApplyErosion(img, 3)  // 3x3 kernel
+dilated := advancegg.ApplyDilation(img, 3)
+opened := advancegg.ApplyOpening(img, 3)  // Erosion followed by dilation
+closed := advancegg.ApplyClosing(img, 3)  // Dilation followed by erosion</code></pre>
+
+                        <h4>Pixel-level Filters</h4>
+                        <pre><code class="language-go">// Custom pixel function
+customFilter := func(r, g, b, a uint8) (uint8, uint8, uint8, uint8) {
+    // Custom processing logic
+    newR := uint8(float64(r) * 1.2)
+    newG := uint8(float64(g) * 0.8)
+    newB := uint8(float64(b) * 1.1)
+    return newR, newG, newB, a
+}
+
+// Apply pixel function
+result := advancegg.ApplyPixelFunction(img, customFilter)
+
+// Neighborhood function (access surrounding pixels)
+neighborhoodFilter := func(pixels [][]color.Color, x, y int) color.Color {
+    // Access pixels[y][x] and surrounding pixels
+    // Implement custom neighborhood processing
+    return pixels[y][x] // Placeholder
+}
+
+result := advancegg.ApplyNeighborhoodFunction(img, neighborhoodFilter, 1) // 1 pixel radius</code></pre>
+                    </section>
+
+                    <!-- Examples -->
+                    <section id="examples" class="mb-5">
+                        <h2>Complete Examples</h2>
+                        
+                        <h4>Photo Enhancement Pipeline</h4>
+                        <pre><code class="language-go">package main
+
+import (
+    "fmt"
+    "github.com/GrandpaEJ/advancegg"
+)
+
+func main() {
+    // Load image
+    img := advancegg.LoadImage("photo.jpg")
+    if img == nil {
+        fmt.Println("Failed to load image")
+        return
+    }
+    
+    // Create enhancement pipeline
+    enhanced := enhancePhoto(img)
+    
+    // Save result
+    advancegg.SaveJPEG(enhanced, "enhanced_photo.jpg", 95)
+    fmt.Println("Photo enhancement completed!")
+}
+
+func enhancePhoto(img image.Image) image.Image {
+    // Step 1: Noise reduction
+    denoised := advancegg.ApplyBilateralFilter(img, 9, 75, 75)
+    
+    // Step 2: Lens correction
+    corrected := advancegg.ApplyBarrelDistortion(denoised, -0.05) // Slight correction
+    
+    // Step 3: Exposure and contrast
+    exposed := advancegg.ApplyExposure(corrected, 0.2)
+    contrasted := advancegg.ApplyContrast(exposed, 1.15)
+    
+    // Step 4: Color enhancement
+    vibrant := advancegg.ApplyVibrance(contrasted, 0.25)
+    warmed := advancegg.ApplyTemperature(vibrant, 100) // Slightly warmer
+    
+    // Step 5: Sharpening
+    sharpened := advancegg.ApplyUnsharpMask(warmed, 1.2, 1.0, 0)
+    
+    // Step 6: Final adjustments
+    final := advancegg.ApplyBrightnessContrast(sharpened, 1.05, 1.08)
+    
+    return final
+}
+
+// Artistic filter example
+func createArtisticEffect(img image.Image) image.Image {
+    // Create oil painting effect
+    oilPainting := advancegg.ApplyOilPainting(img, 4, 15)
+    
+    // Add slight blur for smoothness
+    smoothed := advancegg.ApplyGaussianBlur(oilPainting, 1.0)
+    
+    // Enhance colors
+    saturated := advancegg.ApplySaturation(smoothed, 1.3)
+    
+    // Add warm tone
+    warmed := advancegg.ApplyColorTint(saturated, color.RGBA{255, 240, 220, 50})
+    
+    return warmed
+}</code></pre>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script src="../js/main.js"></script>
+</body>
+</html>

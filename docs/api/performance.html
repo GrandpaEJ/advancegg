@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance API - AdvanceGG Documentation</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../../index.html">
+                <i class="bi bi-palette"></i> AdvanceGG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="../../index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../getting-started.html">Getting Started</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="index.html">API Reference</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../examples/">Examples</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid" style="margin-top: 76px;">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <div class="col-lg-3">
+                <div class="doc-nav p-3">
+                    <h6 class="text-muted mb-3">API Reference</h6>
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="index.html">Overview</a>
+                        <a class="nav-link" href="drawing.html">Drawing</a>
+                        <a class="nav-link" href="paths.html">Paths</a>
+                        <a class="nav-link" href="text.html">Text</a>
+                        <a class="nav-link" href="images.html">Images</a>
+                        <a class="nav-link" href="colors.html">Colors</a>
+                        <a class="nav-link" href="layers.html">Layers</a>
+                        <a class="nav-link" href="filters.html">Filters</a>
+                        <a class="nav-link active" href="performance.html">Performance</a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <div class="doc-content">
+                    <h1><i class="bi bi-speedometer2 text-primary"></i> Performance API</h1>
+                    <p class="lead">Optimization features, profiling tools, and performance best practices.</p>
+
+                    <!-- SIMD Optimizations -->
+                    <section id="simd" class="mb-5">
+                        <h2>SIMD Optimizations</h2>
+                        
+                        <h4>Enabling SIMD</h4>
+                        <pre><code class="language-go">// Enable SIMD optimizations globally
+advancegg.EnableSIMD(true)
+
+// Check SIMD support
+if advancegg.SIMDSupported() {
+    fmt.Println("SIMD optimizations available")
+    fmt.Printf("SIMD instruction set: %s\n", advancegg.GetSIMDInstructionSet())
+}
+
+// Enable specific SIMD features
+advancegg.EnableSIMDFeature(advancegg.SIMDFeatureSSE2, true)
+advancegg.EnableSIMDFeature(advancegg.SIMDFeatureAVX2, true)
+advancegg.EnableSIMDFeature(advancegg.SIMDFeatureAVX512, true)
+
+// Per-context SIMD settings
+dc.SetSIMDEnabled(true)
+dc.SetSIMDInstructionSet(advancegg.SIMDInstructionSetAVX2)</code></pre>
+
+                        <h4>SIMD-Optimized Operations</h4>
+                        <pre><code class="language-go">// Image processing with SIMD
+blurred := advancegg.ApplyGaussianBlurSIMD(img, 5.0)
+resized := advancegg.ResizeImageSIMD(img, 1920, 1080, advancegg.ResizeBicubic)
+
+// Color space conversions
+rgbToHsv := advancegg.ConvertRGBToHSVSIMD(rgbImage)
+hsvToRgb := advancegg.ConvertHSVToRGBSIMD(hsvImage)
+
+// Batch operations
+images := []image.Image{img1, img2, img3, img4}
+results := advancegg.BatchProcessSIMD(images, func(img image.Image) image.Image {
+    return advancegg.ApplyBrightness(img, 1.2)
+})
+
+// Vector operations
+points := []advancegg.Point{{100, 100}, {200, 200}, {300, 300}}
+transformed := advancegg.TransformPointsSIMD(points, matrix)</code></pre>
+                    </section>
+
+                    <!-- Memory Management -->
+                    <section id="memory" class="mb-5">
+                        <h2>Memory Management</h2>
+                        
+                        <h4>Memory Pooling</h4>
+                        <pre><code class="language-go">// Enable memory pooling
+advancegg.EnableMemoryPooling(true)
+
+// Configure pool sizes
+advancegg.SetMemoryPoolSize(advancegg.PoolTypeImage, 100*1024*1024) // 100MB for images
+advancegg.SetMemoryPoolSize(advancegg.PoolTypeContext, 50*1024*1024) // 50MB for contexts
+advancegg.SetMemoryPoolSize(advancegg.PoolTypePath, 10*1024*1024)    // 10MB for paths
+
+// Get pool statistics
+stats := advancegg.GetMemoryPoolStats()
+fmt.Printf("Image pool: %d/%d bytes used\n", stats.ImagePool.Used, stats.ImagePool.Total)
+fmt.Printf("Context pool: %d/%d bytes used\n", stats.ContextPool.Used, stats.ContextPool.Total)
+
+// Manual pool management
+advancegg.ClearMemoryPool(advancegg.PoolTypeImage)
+advancegg.CompactMemoryPools()</code></pre>
+
+                        <h4>Resource Management</h4>
+                        <pre><code class="language-go">// Automatic resource cleanup
+defer advancegg.CleanupResources()
+
+// Manual resource management
+resource := advancegg.AcquireResource(advancegg.ResourceTypeImage, width*height*4)
+defer advancegg.ReleaseResource(resource)
+
+// Context resource management
+dc := advancegg.NewContext(800, 600)
+defer dc.Dispose() // Explicit cleanup
+
+// Image cache management
+advancegg.SetImageCacheSize(200 * 1024 * 1024) // 200MB cache
+advancegg.ClearImageCache()
+
+// Font cache management
+advancegg.SetFontCacheSize(50 * 1024 * 1024) // 50MB cache
+advancegg.ClearFontCache()</code></pre>
+
+                        <h4>Garbage Collection Optimization</h4>
+                        <pre><code class="language-go">// Reduce GC pressure
+advancegg.SetGCOptimizationLevel(advancegg.GCOptimizationHigh)
+
+// Pre-allocate buffers
+buffer := advancegg.AllocateBuffer(width * height * 4)
+defer advancegg.FreeBuffer(buffer)
+
+// Reuse contexts
+contextPool := advancegg.NewContextPool(10) // Pool of 10 contexts
+ctx := contextPool.Get()
+defer contextPool.Put(ctx)
+
+// Batch allocations
+allocator := advancegg.NewBatchAllocator()
+defer allocator.FreeAll()
+
+img1 := allocator.AllocateImage(800, 600)
+img2 := allocator.AllocateImage(1920, 1080)</code></pre>
+                    </section>
+
+                    <!-- Caching -->
+                    <section id="caching" class="mb-5">
+                        <h2>Caching System</h2>
+                        
+                        <h4>Automatic Caching</h4>
+                        <pre><code class="language-go">// Enable automatic caching
+advancegg.EnableAutomaticCaching(true)
+
+// Configure cache policies
+advancegg.SetCachePolicy(advancegg.CachePolicyLRU) // Least Recently Used
+advancegg.SetCachePolicy(advancegg.CachePolicyLFU) // Least Frequently Used
+advancegg.SetCachePolicy(advancegg.CachePolicyTTL) // Time To Live
+
+// Set cache sizes
+advancegg.SetCacheSize(advancegg.CacheTypeImage, 500*1024*1024)    // 500MB
+advancegg.SetCacheSize(advancegg.CacheTypeFont, 100*1024*1024)     // 100MB
+advancegg.SetCacheSize(advancegg.CacheTypeGradient, 50*1024*1024)  // 50MB
+advancegg.SetCacheSize(advancegg.CacheTypePath, 25*1024*1024)      // 25MB
+
+// Cache statistics
+cacheStats := advancegg.GetCacheStatistics()
+fmt.Printf("Image cache hit rate: %.2f%%\n", cacheStats.ImageCache.HitRate*100)
+fmt.Printf("Font cache hit rate: %.2f%%\n", cacheStats.FontCache.HitRate*100)</code></pre>
+
+                        <h4>Manual Caching</h4>
+                        <pre><code class="language-go">// Cache expensive operations
+cacheKey := "processed_image_" + imageHash
+if cached := advancegg.GetFromCache(cacheKey); cached != nil {
+    return cached.(image.Image)
+}
+
+// Perform expensive operation
+processed := expensiveImageProcessing(img)
+
+// Store in cache
+advancegg.StoreInCache(cacheKey, processed, 3600) // Cache for 1 hour
+
+// Preload cache
+advancegg.PreloadCache([]string{"common_image_1.jpg", "common_image_2.jpg"})
+
+// Cache warming
+advancegg.WarmCache(func() {
+    // Perform operations that should be cached
+    advancegg.LoadFont("arial.ttf", 12)
+    advancegg.LoadFont("arial.ttf", 14)
+    advancegg.LoadFont("arial.ttf", 16)
+})</code></pre>
+                    </section>
+
+                    <!-- Parallel Processing -->
+                    <section id="parallel" class="mb-5">
+                        <h2>Parallel Processing</h2>
+                        
+                        <h4>Multi-threading</h4>
+                        <pre><code class="language-go">// Set number of worker threads
+advancegg.SetWorkerThreads(runtime.NumCPU())
+
+// Parallel image processing
+images := []image.Image{img1, img2, img3, img4}
+results := advancegg.ProcessImagesParallel(images, func(img image.Image) image.Image {
+    return advancegg.ApplyGaussianBlur(img, 3.0)
+})
+
+// Parallel drawing operations
+dc := advancegg.NewContext(1920, 1080)
+advancegg.DrawParallel(dc, func(ctx *advancegg.Context, threadID int) {
+    // Each thread draws different parts
+    startY := threadID * (1080 / advancegg.GetWorkerThreads())
+    endY := (threadID + 1) * (1080 / advancegg.GetWorkerThreads())
+    
+    for y := startY; y < endY; y++ {
+        // Draw scanline
+        drawComplexScanline(ctx, y)
+    }
+})
+
+// Thread-safe operations
+mutex := advancegg.NewRenderMutex()
+go func() {
+    mutex.Lock()
+    defer mutex.Unlock()
+    dc.DrawCircle(100, 100, 50)
+    dc.Fill()
+}()</code></pre>
+
+                        <h4>GPU Acceleration</h4>
+                        <pre><code class="language-go">// Check GPU support
+if advancegg.GPUSupported() {
+    fmt.Printf("GPU: %s\n", advancegg.GetGPUInfo())
+    advancegg.EnableGPUAcceleration(true)
+}
+
+// GPU-accelerated operations
+gpuBlurred := advancegg.ApplyGaussianBlurGPU(img, 5.0)
+gpuResized := advancegg.ResizeImageGPU(img, 1920, 1080)
+
+// GPU memory management
+advancegg.SetGPUMemoryLimit(1024 * 1024 * 1024) // 1GB
+advancegg.ClearGPUMemory()
+
+// Batch GPU operations
+gpuBatch := advancegg.NewGPUBatch()
+gpuBatch.AddOperation(advancegg.NewBlurOperation(img1, 3.0))
+gpuBatch.AddOperation(advancegg.NewBrightnessOperation(img2, 1.2))
+gpuBatch.AddOperation(advancegg.NewContrastOperation(img3, 1.5))
+results := gpuBatch.Execute()</code></pre>
+                    </section>
+
+                    <!-- Profiling -->
+                    <section id="profiling" class="mb-5">
+                        <h2>Profiling and Debugging</h2>
+                        
+                        <h4>Performance Profiling</h4>
+                        <pre><code class="language-go">// Enable profiling
+profiler := advancegg.NewProfiler()
+profiler.Start()
+
+// Profile specific operations
+profiler.BeginSection("image_processing")
+processed := advancegg.ApplyGaussianBlur(img, 5.0)
+profiler.EndSection("image_processing")
+
+profiler.BeginSection("drawing")
+dc.DrawCircle(400, 300, 100)
+dc.Fill()
+profiler.EndSection("drawing")
+
+// Get profiling results
+results := profiler.GetResults()
+for _, section := range results.Sections {
+    fmt.Printf("%s: %v (%.2f%%)\n", section.Name, section.Duration, section.Percentage)
+}
+
+// Memory profiling
+memProfiler := advancegg.NewMemoryProfiler()
+memProfiler.Start()
+// ... operations ...
+memStats := memProfiler.GetStats()
+fmt.Printf("Peak memory usage: %d bytes\n", memStats.PeakUsage)</code></pre>
+
+                        <h4>Performance Monitoring</h4>
+                        <pre><code class="language-go">// Real-time performance monitoring
+monitor := advancegg.NewPerformanceMonitor()
+monitor.SetUpdateInterval(100 * time.Millisecond)
+monitor.Start()
+
+// Get current metrics
+metrics := monitor.GetCurrentMetrics()
+fmt.Printf("FPS: %.1f\n", metrics.FPS)
+fmt.Printf("Memory usage: %d MB\n", metrics.MemoryUsage/1024/1024)
+fmt.Printf("GPU usage: %.1f%%\n", metrics.GPUUsage)
+
+// Performance alerts
+monitor.SetAlert(advancegg.AlertTypeMemoryUsage, 500*1024*1024, func(value float64) {
+    fmt.Printf("High memory usage: %.1f MB\n", value/1024/1024)
+})
+
+monitor.SetAlert(advancegg.AlertTypeFPS, 30, func(value float64) {
+    fmt.Printf("Low FPS: %.1f\n", value)
+})</code></pre>
+
+                        <h4>Debug Mode</h4>
+                        <pre><code class="language-go">// Enable debug mode
+advancegg.SetDebugMode(true)
+advancegg.SetDebugLevel(advancegg.DebugLevelVerbose)
+
+// Debug visualization
+dc.SetDebugVisualization(true)
+dc.SetDebugShowBounds(true)
+dc.SetDebugShowPaths(true)
+dc.SetDebugShowTextMetrics(true)
+
+// Debug output
+advancegg.SetDebugOutput(os.Stdout)
+advancegg.DebugPrint("Custom debug message")
+
+// Performance warnings
+advancegg.EnablePerformanceWarnings(true)
+advancegg.SetPerformanceWarningThreshold(advancegg.WarningTypeSlowOperation, 100*time.Millisecond)
+
+// Memory leak detection
+advancegg.EnableMemoryLeakDetection(true)
+leaks := advancegg.DetectMemoryLeaks()
+if len(leaks) > 0 {
+    fmt.Printf("Memory leaks detected: %d\n", len(leaks))
+}</code></pre>
+                    </section>
+
+                    <!-- Benchmarking -->
+                    <section id="benchmarking" class="mb-5">
+                        <h2>Benchmarking</h2>
+                        
+                        <h4>Built-in Benchmarks</h4>
+                        <pre><code class="language-go">// Run standard benchmarks
+results := advancegg.RunBenchmarks()
+fmt.Printf("Drawing performance: %.2f ops/sec\n", results.DrawingOpsPerSecond)
+fmt.Printf("Image processing: %.2f MP/sec\n", results.ImageProcessingMPPerSecond)
+fmt.Printf("Text rendering: %.2f chars/sec\n", results.TextRenderingCharsPerSecond)
+
+// Custom benchmarks
+benchmark := advancegg.NewBenchmark("custom_operation")
+benchmark.Run(1000, func() {
+    // Operation to benchmark
+    dc.DrawCircle(rand.Float64()*800, rand.Float64()*600, 50)
+    dc.Fill()
+})
+fmt.Printf("Custom operation: %.2f ops/sec\n", benchmark.GetOpsPerSecond())
+
+// Comparative benchmarks
+comparison := advancegg.CompareBenchmarks(
+    "SIMD vs Non-SIMD",
+    func() { advancegg.ApplyGaussianBlurSIMD(img, 5.0) },
+    func() { advancegg.ApplyGaussianBlur(img, 5.0) },
+)
+fmt.Printf("SIMD is %.2fx faster\n", comparison.SpeedupFactor)</code></pre>
+
+                        <h4>Performance Testing</h4>
+                        <pre><code class="language-go">// Stress testing
+stressTest := advancegg.NewStressTest()
+stressTest.SetDuration(60 * time.Second)
+stressTest.SetConcurrency(10)
+
+stressTest.AddTest("drawing", func() {
+    dc := advancegg.NewContext(800, 600)
+    for i := 0; i < 1000; i++ {
+        dc.DrawCircle(rand.Float64()*800, rand.Float64()*600, 10)
+        dc.Fill()
+    }
+})
+
+results := stressTest.Run()
+fmt.Printf("Stress test results: %.2f ops/sec\n", results.OpsPerSecond)
+
+// Load testing
+loadTest := advancegg.NewLoadTest()
+loadTest.SetRampUpTime(10 * time.Second)
+loadTest.SetSustainTime(30 * time.Second)
+loadTest.SetMaxConcurrency(100)
+
+loadResults := loadTest.Run(func() {
+    img := advancegg.LoadImage("test.jpg")
+    processed := advancegg.ApplyGaussianBlur(img, 3.0)
+    advancegg.SaveJPEG(processed, "output.jpg", 90)
+})
+
+fmt.Printf("Load test peak throughput: %.2f ops/sec\n", loadResults.PeakThroughput)</code></pre>
+                    </section>
+
+                    <!-- Optimization Tips -->
+                    <section id="optimization-tips" class="mb-5">
+                        <h2>Optimization Best Practices</h2>
+                        
+                        <h4>General Guidelines</h4>
+                        <div class="alert alert-info">
+                            <h6><i class="bi bi-lightbulb"></i> Performance Tips</h6>
+                            <ul class="mb-0">
+                                <li><strong>Enable SIMD:</strong> Use SIMD optimizations for image processing</li>
+                                <li><strong>Memory Pooling:</strong> Enable memory pooling for frequent allocations</li>
+                                <li><strong>Batch Operations:</strong> Group similar operations together</li>
+                                <li><strong>Cache Resources:</strong> Cache fonts, images, and gradients</li>
+                                <li><strong>Reuse Contexts:</strong> Avoid creating new contexts frequently</li>
+                                <li><strong>Optimize Image Sizes:</strong> Use appropriate resolutions</li>
+                                <li><strong>Profile Regularly:</strong> Identify bottlenecks early</li>
+                            </ul>
+                        </div>
+
+                        <h4>Code Examples</h4>
+                        <pre><code class="language-go">// Efficient drawing loop
+func efficientDrawing() {
+    // Reuse context
+    dc := advancegg.NewContext(800, 600)
+    defer dc.Dispose()
+    
+    // Batch similar operations
+    dc.SetRGB(1, 0, 0)
+    for _, circle := range redCircles {
+        dc.DrawCircle(circle.X, circle.Y, circle.Radius)
+    }
+    dc.Fill() // Single fill operation
+    
+    dc.SetRGB(0, 1, 0)
+    for _, circle := range greenCircles {
+        dc.DrawCircle(circle.X, circle.Y, circle.Radius)
+    }
+    dc.Fill()
+}
+
+// Efficient image processing
+func efficientImageProcessing(images []image.Image) []image.Image {
+    // Enable optimizations
+    advancegg.EnableSIMD(true)
+    advancegg.EnableMemoryPooling(true)
+    
+    // Process in parallel
+    return advancegg.ProcessImagesParallel(images, func(img image.Image) image.Image {
+        // Chain operations efficiently
+        return advancegg.ApplyFilterChain(img, []advancegg.Filter{
+            advancegg.NewGaussianBlurFilter(2.0),
+            advancegg.NewBrightnessFilter(1.1),
+            advancegg.NewContrastFilter(1.2),
+        })
+    })
+}</code></pre>
+                    </section>
+
+                    <!-- Examples -->
+                    <section id="examples" class="mb-5">
+                        <h2>Complete Examples</h2>
+                        
+                        <h4>High-Performance Rendering</h4>
+                        <pre><code class="language-go">package main
+
+import (
+    "fmt"
+    "runtime"
+    "time"
+    "github.com/GrandpaEJ/advancegg"
+)
+
+func main() {
+    // Initialize performance optimizations
+    setupPerformanceOptimizations()
+    
+    // Create profiler
+    profiler := advancegg.NewProfiler()
+    profiler.Start()
+    
+    // Perform high-performance rendering
+    profiler.BeginSection("setup")
+    dc := setupHighPerformanceContext()
+    profiler.EndSection("setup")
+    
+    profiler.BeginSection("rendering")
+    renderComplexScene(dc)
+    profiler.EndSection("rendering")
+    
+    profiler.BeginSection("save")
+    dc.SavePNG("high_performance_render.png")
+    profiler.EndSection("save")
+    
+    // Print performance results
+    results := profiler.GetResults()
+    fmt.Printf("Total time: %v\n", results.TotalTime)
+    for _, section := range results.Sections {
+        fmt.Printf("%s: %v (%.1f%%)\n", 
+            section.Name, section.Duration, section.Percentage)
+    }
+}
+
+func setupPerformanceOptimizations() {
+    // Enable all optimizations
+    advancegg.EnableSIMD(true)
+    advancegg.EnableMemoryPooling(true)
+    advancegg.EnableAutomaticCaching(true)
+    advancegg.SetWorkerThreads(runtime.NumCPU())
+    
+    // Configure memory pools
+    advancegg.SetMemoryPoolSize(advancegg.PoolTypeImage, 200*1024*1024)
+    advancegg.SetMemoryPoolSize(advancegg.PoolTypeContext, 100*1024*1024)
+    
+    // Configure caches
+    advancegg.SetCacheSize(advancegg.CacheTypeFont, 50*1024*1024)
+    advancegg.SetCacheSize(advancegg.CacheTypeGradient, 25*1024*1024)
+    
+    // Enable GPU if available
+    if advancegg.GPUSupported() {
+        advancegg.EnableGPUAcceleration(true)
+    }
+}
+
+func setupHighPerformanceContext() *advancegg.Context {
+    dc := advancegg.NewContext(1920, 1080)
+    
+    // Enable context-specific optimizations
+    dc.SetSIMDEnabled(true)
+    dc.SetMemoryPoolingEnabled(true)
+    dc.SetCachingEnabled(true)
+    
+    return dc
+}
+
+func renderComplexScene(dc *advancegg.Context) {
+    // Background gradient
+    bg := advancegg.NewLinearGradient(0, 0, 1920, 1080)
+    bg.AddColorStop(0, advancegg.RGB(0.1, 0.1, 0.2))
+    bg.AddColorStop(1, advancegg.RGB(0.2, 0.1, 0.3))
+    dc.SetFillStyle(bg)
+    dc.DrawRectangle(0, 0, 1920, 1080)
+    dc.Fill()
+    
+    // Render thousands of objects efficiently
+    renderParticleSystem(dc, 10000)
+    renderGeometry(dc, 1000)
+    renderText(dc)
+}
+
+func renderParticleSystem(dc *advancegg.Context, count int) {
+    // Batch particles by color for efficiency
+    colors := []advancegg.Color{
+        advancegg.RGB(1, 0.5, 0),
+        advancegg.RGB(0.5, 1, 0),
+        advancegg.RGB(0, 0.5, 1),
+    }
+    
+    for _, color := range colors {
+        dc.SetColor(color)
+        for i := 0; i < count/len(colors); i++ {
+            x := rand.Float64() * 1920
+            y := rand.Float64() * 1080
+            size := 1 + rand.Float64()*3
+            dc.DrawCircle(x, y, size)
+        }
+        dc.Fill() // Single fill for all particles of this color
+    }
+}</code></pre>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script src="../js/main.js"></script>
+</body>
+</html>

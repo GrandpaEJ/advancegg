@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Images API - AdvanceGG Documentation</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../../index.html">
+                <i class="bi bi-palette"></i> AdvanceGG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="../../index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../getting-started.html">Getting Started</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="index.html">API Reference</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../examples/">Examples</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid" style="margin-top: 76px;">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <div class="col-lg-3">
+                <div class="doc-nav p-3">
+                    <h6 class="text-muted mb-3">API Reference</h6>
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="index.html">Overview</a>
+                        <a class="nav-link" href="drawing.html">Drawing</a>
+                        <a class="nav-link" href="paths.html">Paths</a>
+                        <a class="nav-link" href="text.html">Text</a>
+                        <a class="nav-link active" href="images.html">Images</a>
+                        <a class="nav-link" href="colors.html">Colors</a>
+                        <a class="nav-link" href="layers.html">Layers</a>
+                        <a class="nav-link" href="filters.html">Filters</a>
+                        <a class="nav-link" href="performance.html">Performance</a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <div class="doc-content">
+                    <h1><i class="bi bi-image text-primary"></i> Images API</h1>
+                    <p class="lead">Image loading, manipulation, and processing capabilities.</p>
+
+                    <!-- Loading and Saving -->
+                    <section id="loading-saving" class="mb-5">
+                        <h2>Loading and Saving Images</h2>
+                        
+                        <h4>Loading Images</h4>
+                        <pre><code class="language-go">// Load from file (auto-detect format)
+img := advancegg.LoadImage("input.jpg")
+
+// Load specific formats
+pngImg := advancegg.LoadPNG("image.png")
+jpegImg := advancegg.LoadJPEG("photo.jpg")
+gifImg := advancegg.LoadGIF("animation.gif")
+webpImg := advancegg.LoadWebP("modern.webp")
+tiffImg := advancegg.LoadTIFF("document.tiff")
+bmpImg := advancegg.LoadBMP("legacy.bmp")
+
+// Load from bytes
+data, _ := ioutil.ReadFile("image.png")
+img := advancegg.LoadImageFromBytes(data)
+
+// Load from URL
+img := advancegg.LoadImageFromURL("https://example.com/image.jpg")
+
+// Load from base64
+base64Data := "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+img := advancegg.LoadImageFromBase64(base64Data)</code></pre>
+
+                        <h4>Saving Images</h4>
+                        <pre><code class="language-go">// Save canvas as different formats
+dc.SavePNG("output.png")
+dc.SaveJPEG("output.jpg", 95)  // 95% quality
+dc.SaveGIF("output.gif")
+dc.SaveWebP("output.webp", 90) // 90% quality
+dc.SaveTIFF("output.tiff")
+dc.SaveBMP("output.bmp")
+
+// Save with custom options
+pngOptions := advancegg.PNGOptions{
+    CompressionLevel: 9,  // Maximum compression
+    Interlaced: true,
+}
+dc.SavePNGWithOptions("output.png", pngOptions)
+
+jpegOptions := advancegg.JPEGOptions{
+    Quality: 85,
+    Progressive: true,
+    OptimizeHuffman: true,
+}
+dc.SaveJPEGWithOptions("output.jpg", jpegOptions)
+
+// Save to bytes
+pngBytes := dc.ToPNG()
+jpegBytes := dc.ToJPEG(90)
+
+// Save to base64
+base64String := dc.ToBase64PNG()
+base64JPEG := dc.ToBase64JPEG(85)</code></pre>
+                    </section>
+
+                    <!-- Drawing Images -->
+                    <section id="drawing-images" class="mb-5">
+                        <h2>Drawing Images</h2>
+                        
+                        <h4>Basic Image Drawing</h4>
+                        <pre><code class="language-go">// Draw image at position
+dc.DrawImage(img, 100, 100)
+
+// Draw with anchor positioning
+dc.DrawImageAnchored(img, 400, 300, 0.5, 0.5) // Center
+
+// Draw scaled image
+dc.DrawImageScaled(img, 100, 100, 200, 150) // Fit to 200x150
+
+// Draw with rotation
+dc.Push()
+dc.Translate(200, 200)
+dc.Rotate(math.Pi / 4) // 45 degrees
+dc.DrawImage(img, -img.Bounds().Dx()/2, -img.Bounds().Dy()/2)
+dc.Pop()</code></pre>
+
+                        <h4>Advanced Image Drawing</h4>
+                        <pre><code class="language-go">// Draw with transformation matrix
+matrix := advancegg.Identity()
+matrix = matrix.Scale(2, 2)
+matrix = matrix.Rotate(math.Pi / 6)
+matrix = matrix.Translate(100, 100)
+
+dc.SetMatrix(matrix)
+dc.DrawImage(img, 0, 0)
+dc.Identity() // Reset transformation
+
+// Draw with opacity
+dc.SetGlobalAlpha(0.5)
+dc.DrawImage(img, 100, 100)
+dc.SetGlobalAlpha(1.0) // Reset
+
+// Draw with blend mode
+dc.SetCompositeOperation(advancegg.CompositeOperationMultiply)
+dc.DrawImage(img, 100, 100)
+dc.SetCompositeOperation(advancegg.CompositeOperationSourceOver) // Reset
+
+// Draw image region (cropping)
+srcRect := image.Rect(50, 50, 200, 200)  // Source rectangle
+dstRect := image.Rect(100, 100, 300, 300) // Destination rectangle
+dc.DrawImageRegion(img, srcRect, dstRect)</code></pre>
+                    </section>
+
+                    <!-- Image Transformations -->
+                    <section id="transformations" class="mb-5">
+                        <h2>Image Transformations</h2>
+                        
+                        <h4>Scaling and Resizing</h4>
+                        <pre><code class="language-go">// Resize image
+resized := advancegg.ResizeImage(img, 800, 600)
+
+// Scale by factor
+scaled := advancegg.ScaleImage(img, 2.0) // 2x larger
+
+// Resize with different algorithms
+resized = advancegg.ResizeImageWithAlgorithm(img, 800, 600, advancegg.ResizeNearestNeighbor)
+resized = advancegg.ResizeImageWithAlgorithm(img, 800, 600, advancegg.ResizeBilinear)
+resized = advancegg.ResizeImageWithAlgorithm(img, 800, 600, advancegg.ResizeBicubic)
+resized = advancegg.ResizeImageWithAlgorithm(img, 800, 600, advancegg.ResizeLanczos)
+
+// Resize maintaining aspect ratio
+resized = advancegg.ResizeImageFit(img, 800, 600) // Fit within bounds
+resized = advancegg.ResizeImageFill(img, 800, 600) // Fill bounds (may crop)
+
+// Smart resize (content-aware)
+resized = advancegg.SmartResize(img, 800, 600)</code></pre>
+
+                        <h4>Rotation and Flipping</h4>
+                        <pre><code class="language-go">// Rotate image
+rotated := advancegg.RotateImage(img, math.Pi/4) // 45 degrees
+rotated90 := advancegg.RotateImage90(img)
+rotated180 := advancegg.RotateImage180(img)
+rotated270 := advancegg.RotateImage270(img)
+
+// Flip image
+flippedH := advancegg.FlipImageHorizontal(img)
+flippedV := advancegg.FlipImageVertical(img)
+
+// Rotate with custom center
+rotated := advancegg.RotateImageAroundPoint(img, math.Pi/6, 200, 150)
+
+// Rotate with background color
+rotated := advancegg.RotateImageWithBackground(img, math.Pi/4, color.RGBA{255, 255, 255, 255})</code></pre>
+
+                        <h4>Cropping and Padding</h4>
+                        <pre><code class="language-go">// Crop image
+cropped := advancegg.CropImage(img, image.Rect(100, 100, 400, 300))
+
+// Crop to aspect ratio
+cropped := advancegg.CropToAspectRatio(img, 16.0/9.0) // 16:9 aspect ratio
+
+// Auto crop (remove borders)
+cropped := advancegg.AutoCrop(img, color.RGBA{255, 255, 255, 255}) // Remove white borders
+
+// Add padding
+padded := advancegg.PadImage(img, 50, 50, 50, 50, color.RGBA{0, 0, 0, 255}) // Black padding
+
+// Pad to square
+squared := advancegg.PadToSquare(img, color.RGBA{255, 255, 255, 255}) // White padding</code></pre>
+                    </section>
+
+                    <!-- Image Analysis -->
+                    <section id="analysis" class="mb-5">
+                        <h2>Image Analysis</h2>
+                        
+                        <h4>Image Properties</h4>
+                        <pre><code class="language-go">// Get image dimensions
+width, height := advancegg.GetImageDimensions(img)
+fmt.Printf("Image size: %dx%d\n", width, height)
+
+// Get image format
+format := advancegg.GetImageFormat("image.jpg") // Returns "JPEG"
+
+// Get color depth
+depth := advancegg.GetColorDepth(img)
+fmt.Printf("Color depth: %d bits\n", depth)
+
+// Check if image has transparency
+hasAlpha := advancegg.HasTransparency(img)
+fmt.Printf("Has transparency: %v\n", hasAlpha)
+
+// Get file size
+fileSize := advancegg.GetImageFileSize("image.jpg")
+fmt.Printf("File size: %d bytes\n", fileSize)</code></pre>
+
+                        <h4>Color Analysis</h4>
+                        <pre><code class="language-go">// Get dominant colors
+dominantColors := advancegg.GetDominantColors(img, 5) // Top 5 colors
+for i, color := range dominantColors {
+    fmt.Printf("Color %d: %v\n", i+1, color)
+}
+
+// Get average color
+avgColor := advancegg.GetAverageColor(img)
+fmt.Printf("Average color: %v\n", avgColor)
+
+// Get color histogram
+histogram := advancegg.GetColorHistogram(img)
+fmt.Printf("Red histogram: %v\n", histogram.Red)
+
+// Analyze brightness
+brightness := advancegg.GetAverageBrightness(img)
+fmt.Printf("Average brightness: %f\n", brightness)
+
+// Detect if image is grayscale
+isGrayscale := advancegg.IsGrayscale(img)
+fmt.Printf("Is grayscale: %v\n", isGrayscale)</code></pre>
+
+                        <h4>Content Analysis</h4>
+                        <pre><code class="language-go">// Detect edges
+edges := advancegg.DetectEdges(img)
+
+// Find contours
+contours := advancegg.FindContours(img)
+
+// Detect corners
+corners := advancegg.DetectCorners(img)
+
+// Calculate image complexity
+complexity := advancegg.CalculateComplexity(img)
+fmt.Printf("Image complexity: %f\n", complexity)
+
+// Get image entropy
+entropy := advancegg.CalculateEntropy(img)
+fmt.Printf("Image entropy: %f\n", entropy)</code></pre>
+                    </section>
+
+                    <!-- Image Comparison -->
+                    <section id="comparison" class="mb-5">
+                        <h2>Image Comparison</h2>
+                        
+                        <h4>Similarity Metrics</h4>
+                        <pre><code class="language-go">// Calculate similarity between images
+similarity := advancegg.CalculateSimilarity(img1, img2)
+fmt.Printf("Similarity: %f\n", similarity) // 0.0 to 1.0
+
+// Mean Squared Error
+mse := advancegg.CalculateMSE(img1, img2)
+fmt.Printf("MSE: %f\n", mse)
+
+// Peak Signal-to-Noise Ratio
+psnr := advancegg.CalculatePSNR(img1, img2)
+fmt.Printf("PSNR: %f dB\n", psnr)
+
+// Structural Similarity Index
+ssim := advancegg.CalculateSSIM(img1, img2)
+fmt.Printf("SSIM: %f\n", ssim)
+
+// Perceptual hash
+hash1 := advancegg.PerceptualHash(img1)
+hash2 := advancegg.PerceptualHash(img2)
+distance := advancegg.HammingDistance(hash1, hash2)
+fmt.Printf("Perceptual distance: %d\n", distance)</code></pre>
+
+                        <h4>Difference Detection</h4>
+                        <pre><code class="language-go">// Create difference image
+diff := advancegg.CreateDifferenceImage(img1, img2)
+
+// Highlight differences
+highlighted := advancegg.HighlightDifferences(img1, img2, color.RGBA{255, 0, 0, 255})
+
+// Get difference statistics
+stats := advancegg.GetDifferenceStats(img1, img2)
+fmt.Printf("Different pixels: %d (%.2f%%)\n", stats.DifferentPixels, stats.DifferencePercentage)</code></pre>
+                    </section>
+
+                    <!-- Metadata -->
+                    <section id="metadata" class="mb-5">
+                        <h2>Image Metadata</h2>
+                        
+                        <h4>EXIF Data</h4>
+                        <pre><code class="language-go">// Read EXIF data
+exif := advancegg.ReadEXIF("photo.jpg")
+if exif != nil {
+    fmt.Printf("Camera: %s %s\n", exif.Make, exif.Model)
+    fmt.Printf("Date taken: %s\n", exif.DateTime)
+    fmt.Printf("ISO: %d\n", exif.ISO)
+    fmt.Printf("Aperture: f/%.1f\n", exif.Aperture)
+    fmt.Printf("Shutter speed: %s\n", exif.ShutterSpeed)
+    fmt.Printf("GPS: %f, %f\n", exif.GPS.Latitude, exif.GPS.Longitude)
+}
+
+// Write EXIF data
+newExif := &advancegg.EXIFData{
+    Make:    "AdvanceGG",
+    Model:   "Virtual Camera",
+    DateTime: time.Now().Format("2006:01:02 15:04:05"),
+}
+advancegg.WriteEXIF("output.jpg", newExif)
+
+// Remove EXIF data
+advancegg.RemoveEXIF("photo.jpg", "clean_photo.jpg")</code></pre>
+
+                        <h4>Color Profiles</h4>
+                        <pre><code class="language-go">// Read ICC color profile
+profile := advancegg.ReadColorProfile("image.jpg")
+if profile != nil {
+    fmt.Printf("Color space: %s\n", profile.ColorSpace)
+    fmt.Printf("Description: %s\n", profile.Description)
+}
+
+// Embed color profile
+srgbProfile := advancegg.GetSRGBProfile()
+advancegg.EmbedColorProfile("image.jpg", "output.jpg", srgbProfile)
+
+// Convert color space
+converted := advancegg.ConvertColorSpace(img, advancegg.ColorSpaceSRGB, advancegg.ColorSpaceAdobeRGB)</code></pre>
+                    </section>
+
+                    <!-- Examples -->
+                    <section id="examples" class="mb-5">
+                        <h2>Complete Examples</h2>
+                        
+                        <h4>Image Processing Pipeline</h4>
+                        <pre><code class="language-go">package main
+
+import (
+    "fmt"
+    "image/color"
+    "github.com/GrandpaEJ/advancegg"
+)
+
+func main() {
+    // Load image
+    img := advancegg.LoadImage("input.jpg")
+    if img == nil {
+        fmt.Println("Failed to load image")
+        return
+    }
+    
+    fmt.Printf("Original size: %dx%d\n", img.Bounds().Dx(), img.Bounds().Dy())
+    
+    // Resize image
+    resized := advancegg.ResizeImageFit(img, 1920, 1080)
+    fmt.Printf("Resized to: %dx%d\n", resized.Bounds().Dx(), resized.Bounds().Dy())
+    
+    // Apply filters
+    enhanced := advancegg.ApplyBrightness(resized, 1.1)
+    enhanced = advancegg.ApplyContrast(enhanced, 1.2)
+    enhanced = advancegg.ApplySaturation(enhanced, 1.15)
+    
+    // Add watermark
+    watermarked := addWatermark(enhanced, "© AdvanceGG 2024")
+    
+    // Save with different qualities
+    advancegg.SaveJPEG(watermarked, "output_high.jpg", 95)
+    advancegg.SaveJPEG(watermarked, "output_medium.jpg", 85)
+    advancegg.SaveJPEG(watermarked, "output_low.jpg", 70)
+    
+    // Create thumbnail
+    thumbnail := advancegg.ResizeImageFit(watermarked, 300, 200)
+    advancegg.SaveJPEG(thumbnail, "thumbnail.jpg", 90)
+    
+    fmt.Println("Image processing completed!")
+}
+
+func addWatermark(img image.Image, text string) image.Image {
+    dc := advancegg.NewContextForImage(img)
+    
+    // Semi-transparent watermark
+    dc.SetRGBA(1, 1, 1, 0.7)
+    dc.LoadFontFace("fonts/arial.ttf", 24)
+    
+    // Position in bottom right
+    width := float64(img.Bounds().Dx())
+    height := float64(img.Bounds().Dy())
+    dc.DrawStringAnchored(text, width-20, height-20, 1, 1)
+    
+    return dc.Image()
+}</code></pre>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script src="../js/main.js"></script>
+</body>
+</html>
