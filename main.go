@@ -100,6 +100,16 @@ var (
 	SavePNG   = core.SavePNG
 )
 
+// Font loading functions
+var (
+	LoadFontFace             = core.LoadFontFace
+	LoadTTFFace              = core.LoadTTFFace
+	LoadOTFFace              = core.LoadOTFFace
+	ParseFontFace            = core.ParseFontFace
+	ParseFontFaceWithOptions = core.ParseFontFaceWithOptions
+	GetFontFormat            = core.GetFontFormat
+)
+
 // Bezier curve functions
 var (
 	QuadraticBezier = core.QuadraticBezier
