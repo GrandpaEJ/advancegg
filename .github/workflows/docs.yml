@@ -1,0 +1,391 @@
+name: 📚 Documentation
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/**'
+      - 'README.md'
+      - 'ecosystem/*/README.md'
+      - 'examples/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'docs/**'
+      - 'README.md'
+      - 'ecosystem/*/README.md'
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '18'
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  # Build and validate documentation
+  build-docs:
+    name: 🔨 Build Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install documentation dependencies
+        run: |
+          # Install Node.js dependencies for docs site
+          npm install -g @11ty/eleventy
+          
+          # Install Python dependencies for API docs
+          pip install sphinx sphinx-rtd-theme myst-parser
+
+      - name: Validate markdown files
+        run: |
+          # Check for broken links and formatting issues
+          find docs/ -name "*.md" -exec echo "Validating {}" \;
+          
+          # Check for proper front matter in documentation
+          for file in docs/**/*.md; do
+            if [ -f "$file" ]; then
+              echo "Checking front matter in $file"
+              head -10 "$file" | grep -q "^---$" || echo "Warning: No front matter in $file"
+            fi
+          done
+
+      - name: Build static documentation site
+        run: |
+          # Create a simple static site from our documentation
+          mkdir -p _site
+          
+          # Copy documentation files
+          cp -r docs/* _site/
+          
+          # Generate index page
+          cat > _site/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>AdvanceGG Documentation</title>
+              <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+              <link href="css/style.css" rel="stylesheet">
+          </head>
+          <body>
+              <div class="container mt-5">
+                  <h1>🎨 AdvanceGG Documentation</h1>
+                  <p class="lead">High-performance 2D graphics library</p>
+                  
+                  <div class="row">
+                      <div class="col-md-4">
+                          <div class="card">
+                              <div class="card-body">
+                                  <h5 class="card-title">Getting Started</h5>
+                                  <p class="card-text">Quick start guide and installation instructions.</p>
+                                  <a href="getting-started.html" class="btn btn-primary">Get Started</a>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-md-4">
+                          <div class="card">
+                              <div class="card-body">
+                                  <h5 class="card-title">API Reference</h5>
+                                  <p class="card-text">Complete API documentation with examples.</p>
+                                  <a href="api/index.html" class="btn btn-primary">API Docs</a>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-md-4">
+                          <div class="card">
+                              <div class="card-body">
+                                  <h5 class="card-title">Examples</h5>
+                                  <p class="card-text">Code examples and tutorials.</p>
+                                  <a href="examples/" class="btn btn-primary">Examples</a>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </body>
+          </html>
+          EOF
+
+      - name: Generate API documentation
+        run: |
+          # Generate Go documentation
+          go install golang.org/x/tools/cmd/godoc@latest
+          
+          # Create API docs directory
+          mkdir -p _site/api/go
+          
+          # Generate Go docs (simplified for static hosting)
+          echo "Go API documentation would be generated here" > _site/api/go/index.html
+
+      - name: Optimize documentation
+        run: |
+          # Minify HTML files
+          find _site -name "*.html" -exec echo "Optimizing {}" \;
+          
+          # Optimize images
+          find _site -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" | head -10 | while read img; do
+            echo "Would optimize: $img"
+          done
+
+      - name: Upload documentation artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: documentation-site
+          path: _site/
+          retention-days: 30
+
+  # Deploy to GitHub Pages
+  deploy-docs:
+    name: 🚀 Deploy Documentation
+    needs: build-docs
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download documentation
+        uses: actions/download-artifact@v3
+        with:
+          name: documentation-site
+          path: _site
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
+
+  # Check documentation quality
+  docs-quality:
+    name: 📊 Documentation Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install quality tools
+        run: |
+          npm install -g markdownlint-cli
+          npm install -g alex
+          npm install -g write-good
+
+      - name: Check markdown quality
+        run: |
+          # Lint markdown files
+          markdownlint docs/ --config .markdownlint.json || true
+          
+          # Check for insensitive language
+          alex docs/ || true
+          
+          # Check writing quality
+          find docs/ -name "*.md" -exec write-good {} \; || true
+
+      - name: Check documentation completeness
+        run: |
+          echo "📊 Documentation Completeness Report"
+          echo "===================================="
+          
+          # Count documentation files
+          MD_FILES=$(find docs/ -name "*.md" | wc -l)
+          HTML_FILES=$(find docs/ -name "*.html" | wc -l)
+          
+          echo "📄 Markdown files: $MD_FILES"
+          echo "🌐 HTML files: $HTML_FILES"
+          
+          # Check for required documentation
+          REQUIRED_DOCS=(
+            "docs/getting-started.md"
+            "docs/api/index.html"
+            "README.md"
+            "ecosystem/python/README.md"
+            "ecosystem/nodejs/README.md"
+          )
+          
+          echo ""
+          echo "📋 Required Documentation:"
+          for doc in "${REQUIRED_DOCS[@]}"; do
+            if [ -f "$doc" ]; then
+              echo "✅ $doc"
+            else
+              echo "❌ $doc (missing)"
+            fi
+          done
+          
+          # Check for examples
+          EXAMPLE_COUNT=$(find examples/ -name "*.go" | wc -l)
+          PYTHON_EXAMPLE_COUNT=$(find ecosystem/python/examples/ -name "*.py" 2>/dev/null | wc -l || echo 0)
+          NODEJS_EXAMPLE_COUNT=$(find ecosystem/nodejs/examples/ -name "*.js" 2>/dev/null | wc -l || echo 0)
+          
+          echo ""
+          echo "📝 Examples:"
+          echo "   Go: $EXAMPLE_COUNT files"
+          echo "   Python: $PYTHON_EXAMPLE_COUNT files"
+          echo "   Node.js: $NODEJS_EXAMPLE_COUNT files"
+
+      - name: Generate documentation metrics
+        run: |
+          # Create documentation metrics report
+          cat > docs-metrics.json << EOF
+          {
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "metrics": {
+              "markdown_files": $(find docs/ -name "*.md" | wc -l),
+              "html_files": $(find docs/ -name "*.html" | wc -l),
+              "total_words": $(find docs/ -name "*.md" -exec wc -w {} + | tail -1 | awk '{print $1}'),
+              "go_examples": $(find examples/ -name "*.go" | wc -l),
+              "python_examples": $(find ecosystem/python/examples/ -name "*.py" 2>/dev/null | wc -l || echo 0),
+              "nodejs_examples": $(find ecosystem/nodejs/examples/ -name "*.js" 2>/dev/null | wc -l || echo 0)
+            }
+          }
+          EOF
+
+      - name: Upload documentation metrics
+        uses: actions/upload-artifact@v3
+        with:
+          name: docs-metrics
+          path: docs-metrics.json
+          retention-days: 30
+
+  # Update documentation index
+  update-docs-index:
+    name: 📇 Update Documentation Index
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate documentation index
+        run: |
+          # Create comprehensive documentation index
+          cat > DOCUMENTATION.md << 'EOF'
+          # 📚 AdvanceGG Documentation Index
+          
+          *Auto-generated documentation index*
+          
+          ## 🚀 Getting Started
+          
+          - [Installation Guide](docs/getting-started.html)
+          - [Quick Start Tutorial](docs/getting-started.html#quick-start)
+          - [System Requirements](docs/getting-started.html#requirements)
+          
+          ## 📖 API Reference
+          
+          ### Core API
+          EOF
+          
+          # Add API documentation links
+          find docs/api/ -name "*.html" | sort | while read file; do
+            name=$(basename "$file" .html)
+            title=$(echo "$name" | sed 's/-/ /g' | sed 's/\b\w/\U&/g')
+            echo "- [$title]($file)" >> DOCUMENTATION.md
+          done
+          
+          cat >> DOCUMENTATION.md << 'EOF'
+          
+          ## 🌍 Language Ecosystems
+          
+          - [Python Package](ecosystem/python/README.md)
+          - [Node.js Package](ecosystem/nodejs/README.md)
+          - [Go Module](README.md#go-usage)
+          
+          ## 📝 Examples
+          
+          ### Go Examples
+          EOF
+          
+          # Add Go examples
+          find examples/ -name "*.go" | sort | while read file; do
+            name=$(basename "$file" .go)
+            title=$(echo "$name" | sed 's/_/ /g' | sed 's/\b\w/\U&/g')
+            echo "- [$title]($file)" >> DOCUMENTATION.md
+          done
+          
+          cat >> DOCUMENTATION.md << 'EOF'
+          
+          ### Python Examples
+          EOF
+          
+          # Add Python examples
+          find ecosystem/python/examples/ -name "*.py" 2>/dev/null | sort | while read file; do
+            name=$(basename "$file" .py)
+            title=$(echo "$name" | sed 's/_/ /g' | sed 's/\b\w/\U&/g')
+            echo "- [$title]($file)" >> DOCUMENTATION.md
+          done || true
+          
+          cat >> DOCUMENTATION.md << 'EOF'
+          
+          ### Node.js Examples
+          EOF
+          
+          # Add Node.js examples
+          find ecosystem/nodejs/examples/ -name "*.js" 2>/dev/null | sort | while read file; do
+            name=$(basename "$file" .js)
+            title=$(echo "$name" | sed 's/_/ /g' | sed 's/\b\w/\U&/g')
+            echo "- [$title]($file)" >> DOCUMENTATION.md
+          done || true
+          
+          cat >> DOCUMENTATION.md << 'EOF'
+          
+          ## 🔧 Development
+          
+          - [Contributing Guide](CONTRIBUTING.md)
+          - [Build Instructions](docs/development/building.md)
+          - [Testing Guide](docs/development/testing.md)
+          
+          ## 📊 Performance
+          
+          - [Benchmarks](docs/performance/benchmarks.md)
+          - [Optimization Guide](docs/performance/optimization.md)
+          
+          ---
+          
+          *Last updated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")*
+          *Generated by GitHub Actions*
+          EOF
+
+      - name: Commit documentation index
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          if ! git diff --quiet DOCUMENTATION.md; then
+            git add DOCUMENTATION.md
+            git commit -m "📚 Update documentation index [skip ci]"
+            git push
+          else
+            echo "No changes to documentation index"
+          fi

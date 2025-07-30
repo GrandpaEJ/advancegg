@@ -14,7 +14,7 @@ from typing import List, Tuple, Optional, Dict, Any
 # Package metadata
 __version__ = "1.0.0"
 __author__ = "AdvanceGG Contributors"
-__email__ = "hello@advancegg.dev"
+__email__ = ""
 __license__ = "MIT"
 
 # Load the shared library
