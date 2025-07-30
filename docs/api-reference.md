@@ -242,6 +242,61 @@ func (dc *Context) MeasureString(s string) (w, h float64)
 ```
 Measures the dimensions of text.
 
+## Font Loading
+
+AdvanceGG supports both TTF (TrueType) and OTF (OpenType) font formats.
+
+### LoadFontFace
+```go
+func LoadFontFace(path string, points float64) (font.Face, error)
+func (dc *Context) LoadFontFace(path string, points float64) error
+```
+Loads a font file (TTF or OTF) with the specified point size.
+
+### LoadTTFFace
+```go
+func LoadTTFFace(path string, points float64) (font.Face, error)
+func (dc *Context) LoadTTFFace(path string, points float64) error
+```
+Explicitly loads a TTF font file.
+
+### LoadOTFFace
+```go
+func LoadOTFFace(path string, points float64) (font.Face, error)
+func (dc *Context) LoadOTFFace(path string, points float64) error
+```
+Explicitly loads an OTF font file.
+
+### LoadFontFaceFromBytes
+```go
+func (dc *Context) LoadFontFaceFromBytes(fontBytes []byte, points float64) error
+```
+Loads a font from byte data in memory.
+
+### LoadFontFaceWithOptions
+```go
+func (dc *Context) LoadFontFaceWithOptions(path string, options *truetype.Options) error
+```
+Loads a font with custom truetype options (hinting, DPI, etc.).
+
+### ParseFontFace
+```go
+func ParseFontFace(fontBytes []byte, points float64) (font.Face, error)
+```
+Parses font data from bytes and creates a font face.
+
+### ParseFontFaceWithOptions
+```go
+func ParseFontFaceWithOptions(fontBytes []byte, options *truetype.Options) (font.Face, error)
+```
+Parses font data with custom truetype options.
+
+### GetFontFormat
+```go
+func GetFontFormat(path string) (string, error)
+```
+Detects the font format (TTF, OTF, etc.) from a file.
+
 ## Rendering Functions
 
 ### Fill

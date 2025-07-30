@@ -96,19 +96,58 @@ import "github.com/GrandpaEJ/advancegg"
 
 func main() {
     dc := advancegg.NewContext(800, 600)
-    
+
     // White background
     dc.SetRGB(1, 1, 1)
     dc.Clear()
-    
+
     // Black text
     dc.SetRGB(0, 0, 0)
     dc.DrawString("Hello, AdvanceGG!", 50, 100)
-    
+
     // Centered text
     dc.DrawStringAnchored("Centered Text", 400, 300, 0.5, 0.5)
-    
+
     dc.SavePNG("text.png")
+}
+```
+
+### Font Loading (TTF and OTF Support)
+
+AdvanceGG supports both TTF and OTF font formats:
+
+```go
+package main
+
+import "github.com/GrandpaEJ/advancegg"
+
+func main() {
+    dc := advancegg.NewContext(600, 400)
+    dc.SetRGB(1, 1, 1)
+    dc.Clear()
+
+    // Load TTF font
+    err := dc.LoadTTFFace("/path/to/font.ttf", 24)
+    if err == nil {
+        dc.SetRGB(1, 0, 0)
+        dc.DrawString("TTF Font Text", 50, 100)
+    }
+
+    // Load OTF font
+    err = dc.LoadOTFFace("/path/to/font.otf", 24)
+    if err == nil {
+        dc.SetRGB(0, 0, 1)
+        dc.DrawString("OTF Font Text", 50, 150)
+    }
+
+    // Auto-detect format
+    err = dc.LoadFontFace("/path/to/font.ttf", 20)
+    if err == nil {
+        dc.SetRGB(0, 1, 0)
+        dc.DrawString("Auto-detected Font", 50, 200)
+    }
+
+    dc.SavePNG("fonts.png")
 }
 ```
 

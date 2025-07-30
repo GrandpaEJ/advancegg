@@ -94,6 +94,38 @@ dc.Stroke()
 dc.Clear()
 ```
 
+## Font Support
+
+AdvanceGG supports both TTF and OTF font formats:
+
+```go
+// Auto-detect font format
+dc.LoadFontFace("path/to/font.ttf", 24)
+dc.LoadFontFace("path/to/font.otf", 24)
+
+// Explicit format loading
+dc.LoadTTFFace("path/to/font.ttf", 24)
+dc.LoadOTFFace("path/to/font.otf", 24)
+
+// Load from memory
+fontBytes, _ := os.ReadFile("font.ttf")
+dc.LoadFontFaceFromBytes(fontBytes, 24)
+
+// Custom options
+dc.LoadFontFaceWithOptions("font.ttf", &truetype.Options{
+    Size:    24,
+    DPI:     72,
+    Hinting: font.HintingFull,
+})
+```
+
+### Font Format Detection
+
+```go
+format, err := advancegg.GetFontFormat("path/to/font.ttf")
+// Returns: "TTF", "OTF", or "UNKNOWN"
+```
+
 ## Next Steps
 
 - Check out the [API Reference](api-reference.md) for complete function documentation
