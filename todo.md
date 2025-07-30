@@ -35,6 +35,13 @@
 - [x] LAB color space for perceptual uniformity
 - [x] Color space conversions between all formats
 
+### Advanced Effects
+- [x] Shadow effects with blur and offset control
+- [x] CSS-like filter chains (brightness, contrast, saturation, etc.)
+- [x] Pattern generation (gradients, checkerboard, stripes, etc.)
+- [x] Advanced text metrics and layout
+- [x] Pixel-level image manipulation with ImageData API
+
 ### Colors & Patterns
 - [x] RGB/RGBA color setting
 - [x] Hex color support
@@ -101,6 +108,9 @@
 - [x] **More Image Formats** - GIF, WebP, TIFF, BMP support ✅ COMPLETED
 - [x] **ImageData API** - Pixel-level manipulation ✅ COMPLETED
 - [x] **Color Spaces** - CMYK, HSV, HSL, LAB support ✅ COMPLETED
+- [x] **Shadow Effects** - Drop shadows for shapes and text ✅ COMPLETED
+- [x] **Text Metrics** - Advanced text measurement and layout ✅ COMPLETED
+- [x] **CSS-like Effects** - Modern filter chains and patterns ✅ COMPLETED
 - [ ] **Text Metrics** - Advanced text measurement
 - [ ] **Shadow Effects** - Drop shadows for shapes/text
 
