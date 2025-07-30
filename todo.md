@@ -129,6 +129,8 @@
 - [x] **Emoji Rendering** - Color emoji font + fallback ✅ COMPLETED
 - [x] **Color Profiles (ICC)** - Accurate color conversion for print-ready files ✅ COMPLETED
 - [x] **Text-on-Path** - Draw text along curves or custom shapes ✅ COMPLETED
+- [x] **Advanced Stroke Styles** - Dashed patterns, gradient strokes, tapered ends ✅ COMPLETED
+- [x] **Comprehensive Documentation** - Interactive web docs with Bootstrap UI ✅ COMPLETED
 
 ### Medium Priority 📋
 - [x] **Canvas Filters** - CSS-like filter effects ✅ COMPLETED
