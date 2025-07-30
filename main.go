@@ -348,3 +348,38 @@ var (
 	DrawTextOnArc            = advance.DrawTextOnArc
 	DrawTextOnBezier         = advance.DrawTextOnBezier
 )
+
+// Advanced Stroke exports
+type StrokeStyle = core.StrokeStyle
+type StrokeLineCap = core.StrokeLineCap
+type StrokeLineJoin = core.StrokeLineJoin
+type StrokeGradient = core.StrokeGradient
+type StrokeGradientType = core.StrokeGradientType
+type StrokeGradientStop = core.StrokeGradientStop
+type StrokeTaper = core.StrokeTaper
+type StrokeTaperType = core.StrokeTaperType
+
+const (
+	StrokeLineCapButt   = core.StrokeLineCapButt
+	StrokeLineCapRound  = core.StrokeLineCapRound
+	StrokeLineCapSquare = core.StrokeLineCapSquare
+
+	StrokeLineJoinMiter = core.StrokeLineJoinMiter
+	StrokeLineJoinRound = core.StrokeLineJoinRound
+	StrokeLineJoinBevel = core.StrokeLineJoinBevel
+
+	StrokeGradientLinear = core.StrokeGradientLinear
+	StrokeGradientRadial = core.StrokeGradientRadial
+	StrokeGradientConic  = core.StrokeGradientConic
+
+	StrokeTaperLinear      = core.StrokeTaperLinear
+	StrokeTaperExponential = core.StrokeTaperExponential
+	StrokeTaperSinusoidal  = core.StrokeTaperSinusoidal
+)
+
+var (
+	NewStrokeStyle       = core.NewStrokeStyle
+	CreateDashedStroke   = core.CreateDashedStroke
+	CreateGradientStroke = core.CreateGradientStroke
+	CreateTaperedStroke  = core.CreateTaperedStroke
+)

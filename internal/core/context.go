@@ -98,6 +98,8 @@ type Context struct {
 	// Color management
 	colorProfile   *ICCProfile
 	colorConverter *ColorConverter
+	// Advanced stroke
+	advancedStroke *StrokeStyle
 }
 
 // NewContext creates a new image.RGBA with the specified width and height
