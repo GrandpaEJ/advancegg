@@ -125,6 +125,8 @@
 - [x] **Layer System** - Multi-layered drawing with blend modes ✅ COMPLETED
 - [x] **Non-destructive Editing** - Reversible filters and transformations ✅ COMPLETED
 - [x] **Smart Guides & Alignment** - Snap to grid, guides, alignment tools ✅ COMPLETED
+- [x] **Unicode Shaping Support** - Indic, RTL, complex scripts ✅ COMPLETED
+- [x] **Emoji Rendering** - Color emoji font + fallback ✅ COMPLETED
 
 ### Medium Priority 📋
 - [x] **Canvas Filters** - CSS-like filter effects ✅ COMPLETED

@@ -95,6 +95,9 @@ type Context struct {
 	textShaper *TextShaper
 	// Emoji rendering
 	emojiRenderer *EmojiRenderer
+	// Color management
+	colorProfile   *ICCProfile
+	colorConverter *ColorConverter
 }
 
 // NewContext creates a new image.RGBA with the specified width and height

@@ -8,8 +8,8 @@
 * [x] **Layer System** – Multi-layered drawing (like Photoshop layers) ✅ COMPLETED
 * [x] **Non-destructive Editing** – Filters/transformations as reversible states ✅ COMPLETED
 * [x] **Smart Guides & Alignment** – Snap to grid, guides, center, baseline ✅ COMPLETED
-* [ ] **Unicode Shaping Support** – Indic, RTL, complex scripts
-* [ ] **Emoji Rendering** – Color emoji font + fallback
+* [x] **Unicode Shaping Support** – Indic, RTL, complex scripts ✅ COMPLETED
+* [x] **Emoji Rendering** – Color emoji font + fallback ✅ COMPLETED
 * [ ] **Color Profiles (ICC)** – Accurate color conversion for print-ready files
 
 ---

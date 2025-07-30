@@ -289,3 +289,39 @@ var (
 	NewEmojiRenderer = core.NewEmojiRenderer
 	IsEmoji          = core.IsEmoji
 )
+
+// ICC Color Profile exports
+type ICCProfile = core.ICCProfile
+type ColorConverter = core.ColorConverter
+type XYZColor = core.XYZColor
+type RenderingIntent = core.RenderingIntent
+type DeviceClass = core.DeviceClass
+type ColorSpace = core.ColorSpace
+
+const (
+	IntentPerceptual           = core.IntentPerceptual
+	IntentRelativeColorimetric = core.IntentRelativeColorimetric
+	IntentSaturation           = core.IntentSaturation
+	IntentAbsoluteColorimetric = core.IntentAbsoluteColorimetric
+
+	DeviceClassInput      = core.DeviceClassInput
+	DeviceClassDisplay    = core.DeviceClassDisplay
+	DeviceClassOutput     = core.DeviceClassOutput
+	DeviceClassLink       = core.DeviceClassLink
+	DeviceClassAbstract   = core.DeviceClassAbstract
+	DeviceClassNamedColor = core.DeviceClassNamedColor
+
+	ColorSpaceXYZ  = core.ColorSpaceXYZ
+	ColorSpaceLab  = core.ColorSpaceLab
+	ColorSpaceRGB  = core.ColorSpaceRGB
+	ColorSpaceCMYK = core.ColorSpaceCMYK
+	ColorSpaceGray = core.ColorSpaceGray
+)
+
+var (
+	NewICCProfile         = core.NewICCProfile
+	LoadICCProfile        = core.LoadICCProfile
+	NewColorConverter     = core.NewColorConverter
+	CreateSRGBProfile     = core.CreateSRGBProfile
+	CreateAdobeRGBProfile = core.CreateAdobeRGBProfile
+)
