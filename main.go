@@ -250,3 +250,42 @@ var (
 	DistributeHorizontally       = core.DistributeHorizontally
 	DistributeVertically         = core.DistributeVertically
 )
+
+// Unicode shaping exports
+type TextShaper = core.TextShaper
+type ShapedText = core.ShapedText
+type ShapedGlyph = core.ShapedGlyph
+type TextDirection = core.TextDirection
+type ScriptType = core.ScriptType
+
+const (
+	TextDirectionLTR = core.TextDirectionLTR
+	TextDirectionRTL = core.TextDirectionRTL
+	TextDirectionTTB = core.TextDirectionTTB
+	TextDirectionBTT = core.TextDirectionBTT
+
+	ScriptLatin      = core.ScriptLatin
+	ScriptArabic     = core.ScriptArabic
+	ScriptHebrew     = core.ScriptHebrew
+	ScriptDevanagari = core.ScriptDevanagari
+	ScriptThai       = core.ScriptThai
+	ScriptChinese    = core.ScriptChinese
+	ScriptJapanese   = core.ScriptJapanese
+	ScriptKorean     = core.ScriptKorean
+	ScriptCyrillic   = core.ScriptCyrillic
+	ScriptGreek      = core.ScriptGreek
+)
+
+var (
+	NewTextShaper = core.NewTextShaper
+)
+
+// Emoji rendering exports
+type EmojiRenderer = core.EmojiRenderer
+type EmojiInfo = core.EmojiInfo
+type EmojiSequence = core.EmojiSequence
+
+var (
+	NewEmojiRenderer = core.NewEmojiRenderer
+	IsEmoji          = core.IsEmoji
+)

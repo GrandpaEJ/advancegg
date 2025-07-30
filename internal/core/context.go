@@ -91,6 +91,10 @@ type Context struct {
 	editStack *EditStack
 	// Guides and alignment
 	guideManager *GuideManager
+	// Unicode shaping
+	textShaper *TextShaper
+	// Emoji rendering
+	emojiRenderer *EmojiRenderer
 }
 
 // NewContext creates a new image.RGBA with the specified width and height
