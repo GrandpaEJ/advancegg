@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"image"
 	"image/draw"
+	"image/gif"
 	"image/jpeg"
 	"image/png"
 	"math"
@@ -12,8 +13,11 @@ import (
 
 	"github.com/golang/freetype/truetype"
 
+	"golang.org/x/image/bmp"
 	"golang.org/x/image/font"
 	"golang.org/x/image/math/fixed"
+	"golang.org/x/image/tiff"
+	"golang.org/x/image/webp"
 )
 
 func Radians(degrees float64) float64 {
@@ -52,6 +56,46 @@ func SavePNG(path string, im image.Image) error {
 	return png.Encode(file, im)
 }
 
+// SaveJPEG encodes the image as a JPEG and writes it to disk.
+func SaveJPEG(path string, im image.Image, quality int) error {
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	return jpeg.Encode(file, im, &jpeg.Options{Quality: quality})
+}
+
+// SaveGIF encodes the image as a GIF and writes it to disk.
+func SaveGIF(path string, im image.Image) error {
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	return gif.Encode(file, im, nil)
+}
+
+// SaveBMP encodes the image as a BMP and writes it to disk.
+func SaveBMP(path string, im image.Image) error {
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	return bmp.Encode(file, im)
+}
+
+// SaveTIFF encodes the image as a TIFF and writes it to disk.
+func SaveTIFF(path string, im image.Image) error {
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	return tiff.Encode(file, im, nil)
+}
+
 func LoadJPG(path string) (image.Image, error) {
 	file, err := os.Open(path)
 	if err != nil {
@@ -59,6 +103,46 @@ func LoadJPG(path string) (image.Image, error) {
 	}
 	defer file.Close()
 	return jpeg.Decode(file)
+}
+
+// LoadGIF loads a GIF image from the specified file path.
+func LoadGIF(path string) (image.Image, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	return gif.Decode(file)
+}
+
+// LoadBMP loads a BMP image from the specified file path.
+func LoadBMP(path string) (image.Image, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	return bmp.Decode(file)
+}
+
+// LoadTIFF loads a TIFF image from the specified file path.
+func LoadTIFF(path string) (image.Image, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	return tiff.Decode(file)
+}
+
+// LoadWebP loads a WebP image from the specified file path.
+func LoadWebP(path string) (image.Image, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	return webp.Decode(file)
 }
 
 func SaveJPG(path string, im image.Image, quality int) error {

@@ -143,6 +143,56 @@ func (dc *Context) SavePNG(path string) error {
 	return SavePNG(path, dc.im)
 }
 
+// SaveJPEG saves the current image as a JPEG file.
+func (dc *Context) SaveJPEG(path string, quality int) error {
+	return SaveJPEG(path, dc.im, quality)
+}
+
+// SaveGIF saves the current image as a GIF file.
+func (dc *Context) SaveGIF(path string) error {
+	return SaveGIF(path, dc.im)
+}
+
+// SaveBMP saves the current image as a BMP file.
+func (dc *Context) SaveBMP(path string) error {
+	return SaveBMP(path, dc.im)
+}
+
+// SaveTIFF saves the current image as a TIFF file.
+func (dc *Context) SaveTIFF(path string) error {
+	return SaveTIFF(path, dc.im)
+}
+
+// ImageData methods
+
+// GetImageData returns the current image as ImageData for pixel manipulation
+func (dc *Context) GetImageData() *ImageData {
+	return NewImageDataFromImage(dc.im)
+}
+
+// GetImageDataRegion returns a region of the current image as ImageData
+func (dc *Context) GetImageDataRegion(x, y, width, height int) *ImageData {
+	imageData := NewImageDataFromImage(dc.im)
+	return imageData.GetSubImageData(x, y, width, height)
+}
+
+// PutImageData replaces the current image with ImageData
+func (dc *Context) PutImageData(imageData *ImageData) {
+	dc.im = imageData.ToImage()
+}
+
+// PutImageDataAt places ImageData at the specified coordinates
+func (dc *Context) PutImageDataAt(imageData *ImageData, x, y int) {
+	currentData := NewImageDataFromImage(dc.im)
+	currentData.CopyFrom(imageData, 0, 0, imageData.Width, imageData.Height, x, y)
+	dc.im = currentData.ToImage()
+}
+
+// CreateImageData creates a new ImageData with the specified dimensions
+func (dc *Context) CreateImageData(width, height int) *ImageData {
+	return NewImageData(width, height)
+}
+
 // SaveJPG encodes the image as a JPG and writes it to disk.
 func (dc *Context) SaveJPG(path string, quality int) error {
 	return SaveJPG(path, dc.im, quality)
@@ -250,6 +300,34 @@ func (dc *Context) SetColor(c color.Color) {
 func (dc *Context) SetHexColor(x string) {
 	r, g, b, a := parseHexColor(x)
 	dc.SetRGBA255(r, g, b, a)
+}
+
+// SetCMYK sets the current color using CMYK values (0-1 range)
+func (dc *Context) SetCMYK(c, m, y, k float64) {
+	cmyk := CMYK{C: c, M: m, Y: y, K: k}
+	rgb := cmyk.ToRGB()
+	dc.SetRGBA(rgb.R, rgb.G, rgb.B, 1.0)
+}
+
+// SetHSV sets the current color using HSV values
+func (dc *Context) SetHSV(h, s, v float64) {
+	hsv := HSV{H: h, S: s, V: v}
+	rgb := hsv.ToRGB()
+	dc.SetRGBA(rgb.R, rgb.G, rgb.B, 1.0)
+}
+
+// SetHSL sets the current color using HSL values
+func (dc *Context) SetHSL(h, s, l float64) {
+	hsl := HSL{H: h, S: s, L: l}
+	rgb := hsl.ToRGB()
+	dc.SetRGBA(rgb.R, rgb.G, rgb.B, 1.0)
+}
+
+// SetLAB sets the current color using LAB values
+func (dc *Context) SetLAB(l, a, b float64) {
+	lab := LAB{L: l, A: a, B: b}
+	rgb := lab.ToRGB()
+	dc.SetRGBA(rgb.R, rgb.G, rgb.B, 1.0)
 }
 
 // SetRGBA255 sets the current color. r, g, b, a values should be between 0 and

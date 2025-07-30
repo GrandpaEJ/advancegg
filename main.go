@@ -19,6 +19,17 @@ type Matrix = core.Matrix
 // Path2D represents a 2D path that can be reused and manipulated
 type Path2D = core.Path2D
 
+// Color space types
+type Color = core.Color
+type CMYK = core.CMYK
+type HSV = core.HSV
+type HSL = core.HSL
+type LAB = core.LAB
+type XYZ = core.XYZ
+
+// ImageData type for pixel manipulation
+type ImageData = core.ImageData
+
 // Pattern interface for fill and stroke patterns
 type Pattern = core.Pattern
 
@@ -97,7 +108,16 @@ var (
 	Degrees   = core.Degrees
 	LoadImage = core.LoadImage
 	LoadPNG   = core.LoadPNG
+	LoadJPG   = core.LoadJPG
+	LoadGIF   = core.LoadGIF
+	LoadBMP   = core.LoadBMP
+	LoadTIFF  = core.LoadTIFF
+	LoadWebP  = core.LoadWebP
 	SavePNG   = core.SavePNG
+	SaveJPEG  = core.SaveJPEG
+	SaveGIF   = core.SaveGIF
+	SaveBMP   = core.SaveBMP
+	SaveTIFF  = core.SaveTIFF
 )
 
 // Font loading functions
@@ -123,4 +143,34 @@ var (
 	Scale     = core.Scale
 	Rotate    = core.Rotate
 	Shear     = core.Shear
+)
+
+// Image filter functions
+var (
+	Grayscale     = core.Grayscale
+	Invert        = core.Invert
+	Sepia         = core.Sepia
+	Brightness    = core.Brightness
+	Contrast      = core.Contrast
+	Blur          = core.Blur
+	Sharpen       = core.Sharpen
+	Threshold     = core.Threshold
+	Pixelate      = core.Pixelate
+	Noise         = core.Noise
+	EdgeDetection = core.EdgeDetection
+	Emboss        = core.Emboss
+	Posterize     = core.Posterize
+	Vignette      = core.Vignette
+)
+
+// Color space functions
+var (
+	NewColor            = core.NewColor
+	NewColorFromRGBA255 = core.NewColorFromRGBA255
+)
+
+// ImageData functions
+var (
+	NewImageData          = core.NewImageData
+	NewImageDataFromImage = core.NewImageDataFromImage
 )
