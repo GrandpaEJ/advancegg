@@ -16,6 +16,9 @@ type Point = core.Point
 // Matrix represents a 2D transformation matrix
 type Matrix = core.Matrix
 
+// Path2D represents a 2D path that can be reused and manipulated
+type Path2D = core.Path2D
+
 // Pattern interface for fill and stroke patterns
 type Pattern = core.Pattern
 
@@ -71,6 +74,12 @@ var (
 	NewContext         = core.NewContext
 	NewContextForImage = core.NewContextForImage
 	NewContextForRGBA  = core.NewContextForRGBA
+)
+
+// Path2D creation functions
+var (
+	NewPath2D         = core.NewPath2D
+	NewPath2DFromPath = core.NewPath2DFromPath
 )
 
 // Pattern creation functions
