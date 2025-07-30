@@ -79,6 +79,11 @@ type Context struct {
 	fontHeight    float64
 	matrix        Matrix
 	stack         []*Context
+	// Shadow properties
+	shadowColor   color.Color
+	shadowOffsetX float64
+	shadowOffsetY float64
+	shadowBlur    float64
 }
 
 // NewContext creates a new image.RGBA with the specified width and height
@@ -328,6 +333,39 @@ func (dc *Context) SetLAB(l, a, b float64) {
 	lab := LAB{L: l, A: a, B: b}
 	rgb := lab.ToRGB()
 	dc.SetRGBA(rgb.R, rgb.G, rgb.B, 1.0)
+}
+
+// Shadow methods
+
+// SetShadow sets the shadow properties
+func (dc *Context) SetShadow(offsetX, offsetY, blur float64, shadowColor color.Color) {
+	dc.shadowOffsetX = offsetX
+	dc.shadowOffsetY = offsetY
+	dc.shadowBlur = blur
+	dc.shadowColor = shadowColor
+}
+
+// SetShadowRGBA sets the shadow with RGBA color
+func (dc *Context) SetShadowRGBA(offsetX, offsetY, blur, r, g, b, a float64) {
+	dc.SetShadow(offsetX, offsetY, blur, color.RGBA{
+		uint8(r * 255),
+		uint8(g * 255),
+		uint8(b * 255),
+		uint8(a * 255),
+	})
+}
+
+// ClearShadow removes the shadow effect
+func (dc *Context) ClearShadow() {
+	dc.shadowOffsetX = 0
+	dc.shadowOffsetY = 0
+	dc.shadowBlur = 0
+	dc.shadowColor = nil
+}
+
+// HasShadow returns true if shadow is enabled
+func (dc *Context) HasShadow() bool {
+	return dc.shadowColor != nil && (dc.shadowOffsetX != 0 || dc.shadowOffsetY != 0 || dc.shadowBlur > 0)
 }
 
 // SetRGBA255 sets the current color. r, g, b, a values should be between 0 and
