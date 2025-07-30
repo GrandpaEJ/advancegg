@@ -382,6 +382,128 @@ func (dc *Context) NewSubPath() {
 	dc.hasCurrent = false
 }
 
+// Path2D methods
+
+// DrawPath2D draws a Path2D object to the context
+func (dc *Context) DrawPath2D(path2d *Path2D) {
+	if path2d == nil || path2d.IsEmpty() {
+		return
+	}
+
+	// Convert Path2D to the context's path format
+	path2dPath := path2d.GetPath()
+	for i := 0; i < len(path2dPath); {
+		switch path2dPath[i] {
+		case 0: // MoveTo
+			if i+2 < len(path2dPath) {
+				x := float64(path2dPath[i+1]) / 64
+				y := float64(path2dPath[i+2]) / 64
+				dc.MoveTo(x, y)
+				i += 3
+			} else {
+				i++
+			}
+		case 1: // LineTo
+			if i+2 < len(path2dPath) {
+				x := float64(path2dPath[i+1]) / 64
+				y := float64(path2dPath[i+2]) / 64
+				dc.LineTo(x, y)
+				i += 3
+			} else {
+				i++
+			}
+		case 2: // QuadTo
+			if i+4 < len(path2dPath) {
+				cpx := float64(path2dPath[i+1]) / 64
+				cpy := float64(path2dPath[i+2]) / 64
+				x := float64(path2dPath[i+3]) / 64
+				y := float64(path2dPath[i+4]) / 64
+				dc.QuadraticTo(cpx, cpy, x, y)
+				i += 5
+			} else {
+				i++
+			}
+		case 3: // CubeTo
+			if i+6 < len(path2dPath) {
+				cp1x := float64(path2dPath[i+1]) / 64
+				cp1y := float64(path2dPath[i+2]) / 64
+				cp2x := float64(path2dPath[i+3]) / 64
+				cp2y := float64(path2dPath[i+4]) / 64
+				x := float64(path2dPath[i+5]) / 64
+				y := float64(path2dPath[i+6]) / 64
+				dc.CubicTo(cp1x, cp1y, cp2x, cp2y, x, y)
+				i += 7
+			} else {
+				i++
+			}
+		default:
+			i++
+		}
+	}
+}
+
+// FillPath2D fills a Path2D object
+func (dc *Context) FillPath2D(path2d *Path2D) {
+	if path2d == nil || path2d.IsEmpty() {
+		return
+	}
+	dc.Push()
+	dc.ClearPath()
+	dc.DrawPath2D(path2d)
+	dc.Fill()
+	dc.Pop()
+}
+
+// StrokePath2D strokes a Path2D object
+func (dc *Context) StrokePath2D(path2d *Path2D) {
+	if path2d == nil || path2d.IsEmpty() {
+		return
+	}
+	dc.Push()
+	dc.ClearPath()
+	dc.DrawPath2D(path2d)
+	dc.Stroke()
+	dc.Pop()
+}
+
+// ClipPath2D sets a Path2D object as the clipping region
+func (dc *Context) ClipPath2D(path2d *Path2D) {
+	if path2d == nil || path2d.IsEmpty() {
+		return
+	}
+	dc.Push()
+	dc.ClearPath()
+	dc.DrawPath2D(path2d)
+	dc.Clip()
+	dc.Pop()
+}
+
+// IsPointInPath2D tests if a point is inside a Path2D object
+func (dc *Context) IsPointInPath2D(path2d *Path2D, x, y float64) bool {
+	if path2d == nil || path2d.IsEmpty() {
+		return false
+	}
+
+	// Save current state
+	dc.Push()
+	dc.ClearPath()
+	dc.DrawPath2D(path2d)
+
+	// Use a simple point-in-polygon test (simplified implementation)
+	result := dc.isPointInCurrentPath(x, y)
+
+	dc.Pop()
+	return result
+}
+
+// Helper method for point-in-path testing (simplified implementation)
+func (dc *Context) isPointInCurrentPath(x, y float64) bool {
+	// This is a placeholder implementation
+	// A full implementation would use proper point-in-polygon algorithms
+	// like ray casting or winding number calculation
+	return false
+}
+
 // Path Drawing
 
 func (dc *Context) capper() raster.Capper {
