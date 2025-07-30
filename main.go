@@ -30,6 +30,9 @@ type XYZ = core.XYZ
 // ImageData type for pixel manipulation
 type ImageData = core.ImageData
 
+// TextMetrics type for advanced text measurement
+type TextMetrics = core.TextMetrics
+
 // Pattern interface for fill and stroke patterns
 type Pattern = core.Pattern
 

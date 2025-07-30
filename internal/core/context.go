@@ -1077,6 +1077,146 @@ func (dc *Context) WordWrap(s string, w float64) []string {
 	return wordWrap(dc, s, w)
 }
 
+// TextMetrics represents detailed text measurement information
+type TextMetrics struct {
+	Width                    float64 // Total width of the text
+	Height                   float64 // Total height of the text
+	ActualBoundingBoxLeft    float64 // Distance from text baseline to left edge of bounding box
+	ActualBoundingBoxRight   float64 // Distance from text baseline to right edge of bounding box
+	ActualBoundingBoxAscent  float64 // Distance from text baseline to top of bounding box
+	ActualBoundingBoxDescent float64 // Distance from text baseline to bottom of bounding box
+	FontBoundingBoxAscent    float64 // Distance from baseline to top of font bounding box
+	FontBoundingBoxDescent   float64 // Distance from baseline to bottom of font bounding box
+	EmHeightAscent           float64 // Distance from baseline to top of em square
+	EmHeightDescent          float64 // Distance from baseline to bottom of em square
+	HangingBaseline          float64 // Distance from alphabetic baseline to hanging baseline
+	AlphabeticBaseline       float64 // Distance from alphabetic baseline to alphabetic baseline (0)
+	IdeographicBaseline      float64 // Distance from alphabetic baseline to ideographic baseline
+}
+
+// MeasureTextMetrics returns detailed metrics for the specified text
+func (dc *Context) MeasureTextMetrics(s string) TextMetrics {
+	if dc.fontFace == nil {
+		return TextMetrics{}
+	}
+
+	d := &font.Drawer{
+		Face: dc.fontFace,
+	}
+
+	// Get basic measurements
+	advance := d.MeasureString(s)
+	width := float64(advance >> 6)
+
+	// Get font metrics
+	metrics := dc.fontFace.Metrics()
+	ascent := float64(metrics.Ascent >> 6)
+	descent := float64(metrics.Descent >> 6)
+	height := ascent + descent
+
+	return TextMetrics{
+		Width:                    width,
+		Height:                   height,
+		ActualBoundingBoxLeft:    0, // Simplified
+		ActualBoundingBoxRight:   width,
+		ActualBoundingBoxAscent:  ascent,
+		ActualBoundingBoxDescent: descent,
+		FontBoundingBoxAscent:    ascent,
+		FontBoundingBoxDescent:   descent,
+		EmHeightAscent:           ascent,
+		EmHeightDescent:          descent,
+		HangingBaseline:          ascent * 0.8, // Approximation
+		AlphabeticBaseline:       0,
+		IdeographicBaseline:      -descent * 0.5, // Approximation
+	}
+}
+
+// GetFontMetrics returns metrics for the current font
+func (dc *Context) GetFontMetrics() (ascent, descent, lineGap float64) {
+	if dc.fontFace == nil {
+		return 0, 0, 0
+	}
+
+	metrics := dc.fontFace.Metrics()
+	ascent = float64(metrics.Ascent >> 6)
+	descent = float64(metrics.Descent >> 6)
+	lineGap = float64(metrics.Height>>6) - ascent - descent
+
+	return ascent, descent, lineGap
+}
+
+// GetTextWidth returns the width of the specified text
+func (dc *Context) GetTextWidth(s string) float64 {
+	width, _ := dc.MeasureString(s)
+	return width
+}
+
+// GetTextHeight returns the height of the current font
+func (dc *Context) GetTextHeight() float64 {
+	return dc.fontHeight
+}
+
+// GetLineHeight returns the recommended line height for the current font
+func (dc *Context) GetLineHeight() float64 {
+	if dc.fontFace == nil {
+		return 0
+	}
+	metrics := dc.fontFace.Metrics()
+	return float64(metrics.Height >> 6)
+}
+
+// GetBaseline returns the baseline position for the current font
+func (dc *Context) GetBaseline() float64 {
+	if dc.fontFace == nil {
+		return 0
+	}
+	metrics := dc.fontFace.Metrics()
+	return float64(metrics.Ascent >> 6)
+}
+
+// WrapText wraps text to fit within the specified width and returns the lines
+func (dc *Context) WrapText(text string, maxWidth float64) []string {
+	if dc.fontFace == nil {
+		return []string{text}
+	}
+
+	words := strings.Fields(text)
+	if len(words) == 0 {
+		return []string{""}
+	}
+
+	var lines []string
+	var currentLine strings.Builder
+
+	for _, word := range words {
+		testLine := currentLine.String()
+		if testLine != "" {
+			testLine += " "
+		}
+		testLine += word
+
+		width, _ := dc.MeasureString(testLine)
+		if width <= maxWidth {
+			if currentLine.Len() > 0 {
+				currentLine.WriteString(" ")
+			}
+			currentLine.WriteString(word)
+		} else {
+			if currentLine.Len() > 0 {
+				lines = append(lines, currentLine.String())
+				currentLine.Reset()
+			}
+			currentLine.WriteString(word)
+		}
+	}
+
+	if currentLine.Len() > 0 {
+		lines = append(lines, currentLine.String())
+	}
+
+	return lines
+}
+
 // Transformation Matrix Operations
 
 // Identity resets the current transformation matrix to the identity matrix.
