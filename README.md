@@ -351,13 +351,13 @@ AdvanceGG is engineered for speed. Here's how it performs in real-world scenario
 <details>
 <summary><strong>🚀 Getting Started Issues</strong></summary>
 
-**Q: Installation fails with module errors**
+**Q: Installation fails with module errors**<br>
 A: Ensure you're using Go 1.18+ and run `go mod tidy` after installation.
 
-**Q: Fonts not loading properly**
+**Q: Fonts not loading properly**<br>
 A: Check font file paths and ensure TTF/OTF files are accessible. Use absolute paths for reliability.
 
-**Q: Images appear blurry**
+**Q: Images appear blurry**<br>
 A: Use high DPI settings with `dc.SetDPI(144)` for crisp output on high-resolution displays.
 
 </details>
@@ -365,13 +365,13 @@ A: Use high DPI settings with `dc.SetDPI(144)` for crisp output on high-resoluti
 <details>
 <summary><strong>⚡ Performance Optimization</strong></summary>
 
-**Q: Slow rendering performance**
+**Q: Slow rendering performance**<br>
 A: Enable SIMD optimizations with `dc.SetSIMDEnabled(true)` and use memory pooling.
 
-**Q: High memory usage**
+**Q: High memory usage**<br>
 A: Enable memory pooling with `dc.SetMemoryPooling(true)` and clear caches periodically.
 
-**Q: Large file sizes**
+**Q: Large file sizes**<br>
 A: Adjust JPEG quality settings and use appropriate image formats (PNG for graphics, JPEG for photos).
 
 </details>
