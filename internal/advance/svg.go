@@ -1,3 +1,6 @@
+//go:build svg
+// +build svg
+
 package advance
 
 import (
@@ -13,11 +16,11 @@ import (
 
 // SVGDocument represents a complete SVG document
 type SVGDocument struct {
-	XMLName xml.Name    `xml:"svg"`
-	Width   string      `xml:"width,attr,omitempty"`
-	Height  string      `xml:"height,attr,omitempty"`
-	ViewBox string      `xml:"viewBox,attr,omitempty"`
-	Xmlns   string      `xml:"xmlns,attr,omitempty"`
+	XMLName  xml.Name     `xml:"svg"`
+	Width    string       `xml:"width,attr,omitempty"`
+	Height   string       `xml:"height,attr,omitempty"`
+	ViewBox  string       `xml:"viewBox,attr,omitempty"`
+	Xmlns    string       `xml:"xmlns,attr,omitempty"`
 	Elements []SVGElement `xml:",any"`
 }
 
@@ -30,76 +33,76 @@ type SVGElement interface {
 
 // SVGPath represents an SVG path element
 type SVGPath struct {
-	XMLName xml.Name `xml:"path"`
-	D       string   `xml:"d,attr"`
-	Fill    string   `xml:"fill,attr,omitempty"`
-	Stroke  string   `xml:"stroke,attr,omitempty"`
-	StrokeWidth string `xml:"stroke-width,attr,omitempty"`
-	Transform string `xml:"transform,attr,omitempty"`
-	path    *Path
+	XMLName     xml.Name `xml:"path"`
+	D           string   `xml:"d,attr"`
+	Fill        string   `xml:"fill,attr,omitempty"`
+	Stroke      string   `xml:"stroke,attr,omitempty"`
+	StrokeWidth string   `xml:"stroke-width,attr,omitempty"`
+	Transform   string   `xml:"transform,attr,omitempty"`
+	path        *Path
 }
 
 // SVGRect represents an SVG rectangle element
 type SVGRect struct {
-	XMLName xml.Name `xml:"rect"`
-	X       string   `xml:"x,attr,omitempty"`
-	Y       string   `xml:"y,attr,omitempty"`
-	Width   string   `xml:"width,attr,omitempty"`
-	Height  string   `xml:"height,attr,omitempty"`
-	Fill    string   `xml:"fill,attr,omitempty"`
-	Stroke  string   `xml:"stroke,attr,omitempty"`
-	Transform string `xml:"transform,attr,omitempty"`
+	XMLName   xml.Name `xml:"rect"`
+	X         string   `xml:"x,attr,omitempty"`
+	Y         string   `xml:"y,attr,omitempty"`
+	Width     string   `xml:"width,attr,omitempty"`
+	Height    string   `xml:"height,attr,omitempty"`
+	Fill      string   `xml:"fill,attr,omitempty"`
+	Stroke    string   `xml:"stroke,attr,omitempty"`
+	Transform string   `xml:"transform,attr,omitempty"`
 }
 
 // SVGCircle represents an SVG circle element
 type SVGCircle struct {
-	XMLName xml.Name `xml:"circle"`
-	CX      string   `xml:"cx,attr,omitempty"`
-	CY      string   `xml:"cy,attr,omitempty"`
-	R       string   `xml:"r,attr,omitempty"`
-	Fill    string   `xml:"fill,attr,omitempty"`
-	Stroke  string   `xml:"stroke,attr,omitempty"`
-	Transform string `xml:"transform,attr,omitempty"`
+	XMLName   xml.Name `xml:"circle"`
+	CX        string   `xml:"cx,attr,omitempty"`
+	CY        string   `xml:"cy,attr,omitempty"`
+	R         string   `xml:"r,attr,omitempty"`
+	Fill      string   `xml:"fill,attr,omitempty"`
+	Stroke    string   `xml:"stroke,attr,omitempty"`
+	Transform string   `xml:"transform,attr,omitempty"`
 }
 
 // SVGEllipse represents an SVG ellipse element
 type SVGEllipse struct {
-	XMLName xml.Name `xml:"ellipse"`
-	CX      string   `xml:"cx,attr,omitempty"`
-	CY      string   `xml:"cy,attr,omitempty"`
-	RX      string   `xml:"rx,attr,omitempty"`
-	RY      string   `xml:"ry,attr,omitempty"`
-	Fill    string   `xml:"fill,attr,omitempty"`
-	Stroke  string   `xml:"stroke,attr,omitempty"`
-	Transform string `xml:"transform,attr,omitempty"`
+	XMLName   xml.Name `xml:"ellipse"`
+	CX        string   `xml:"cx,attr,omitempty"`
+	CY        string   `xml:"cy,attr,omitempty"`
+	RX        string   `xml:"rx,attr,omitempty"`
+	RY        string   `xml:"ry,attr,omitempty"`
+	Fill      string   `xml:"fill,attr,omitempty"`
+	Stroke    string   `xml:"stroke,attr,omitempty"`
+	Transform string   `xml:"transform,attr,omitempty"`
 }
 
 // SVGLine represents an SVG line element
 type SVGLine struct {
-	XMLName xml.Name `xml:"line"`
-	X1      string   `xml:"x1,attr,omitempty"`
-	Y1      string   `xml:"y1,attr,omitempty"`
-	X2      string   `xml:"x2,attr,omitempty"`
-	Y2      string   `xml:"y2,attr,omitempty"`
-	Stroke  string   `xml:"stroke,attr,omitempty"`
-	StrokeWidth string `xml:"stroke-width,attr,omitempty"`
-	Transform string `xml:"transform,attr,omitempty"`
+	XMLName     xml.Name `xml:"line"`
+	X1          string   `xml:"x1,attr,omitempty"`
+	Y1          string   `xml:"y1,attr,omitempty"`
+	X2          string   `xml:"x2,attr,omitempty"`
+	Y2          string   `xml:"y2,attr,omitempty"`
+	Stroke      string   `xml:"stroke,attr,omitempty"`
+	StrokeWidth string   `xml:"stroke-width,attr,omitempty"`
+	Transform   string   `xml:"transform,attr,omitempty"`
 }
 
 // SVGGroup represents an SVG group element
 type SVGGroup struct {
-	XMLName   xml.Name `xml:"g"`
-	Transform string   `xml:"transform,attr,omitempty"`
+	XMLName   xml.Name     `xml:"g"`
+	Transform string       `xml:"transform,attr,omitempty"`
 	Elements  []SVGElement `xml:",any"`
 }
 
 // NewSVGDocument creates a new SVG document
 func NewSVGDocument(width, height float64) *SVGDocument {
 	return &SVGDocument{
-		Width:   fmt.Sprintf("%.2f", width),
-		Height:  fmt.Sprintf("%.2f", height),
-		ViewBox: fmt.Sprintf("0 0 %.2f %.2f", width, height),
-		Xmlns:   "http://www.w3.org/2000/svg",
+		Width:    fmt.Sprintf("%.2f", width),
+		Height:   fmt.Sprintf("%.2f", height),
+		ViewBox:  fmt.Sprintf("0 0 %.2f %.2f", width, height),
+		Xmlns:    "http://www.w3.org/2000/svg",
 		Elements: make([]SVGElement, 0),
 	}
 }
@@ -113,12 +116,12 @@ func (doc *SVGDocument) AddElement(element SVGElement) {
 func (doc *SVGDocument) WriteTo(w io.Writer) error {
 	encoder := xml.NewEncoder(w)
 	encoder.Indent("", "  ")
-	
+
 	// Write XML header
 	if _, err := w.Write([]byte(`<?xml version="1.0" encoding="UTF-8"?>` + "\n")); err != nil {
 		return err
 	}
-	
+
 	return encoder.Encode(doc)
 }
 
@@ -126,12 +129,12 @@ func (doc *SVGDocument) WriteTo(w io.Writer) error {
 func ParseSVG(r io.Reader) (*SVGDocument, error) {
 	var doc SVGDocument
 	decoder := xml.NewDecoder(r)
-	
+
 	err := decoder.Decode(&doc)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return &doc, nil
 }
 
@@ -142,13 +145,13 @@ func (p *SVGPath) Draw(ctx *Context) {
 	if p.path == nil {
 		p.path = parseSVGPath(p.D)
 	}
-	
+
 	// Apply transform if present
 	if p.Transform != "" {
 		matrix := parseSVGTransform(p.Transform)
 		p.path.Transform(matrix)
 	}
-	
+
 	// Set fill color
 	if p.Fill != "" && p.Fill != "none" {
 		color := parseSVGColor(p.Fill)
@@ -156,7 +159,7 @@ func (p *SVGPath) Draw(ctx *Context) {
 		ctx.DrawPath(p.path)
 		ctx.Fill()
 	}
-	
+
 	// Set stroke
 	if p.Stroke != "" && p.Stroke != "none" {
 		color := parseSVGColor(p.Stroke)
@@ -177,20 +180,20 @@ func (r *SVGRect) Draw(ctx *Context) {
 	y := parseFloat(r.Y)
 	width := parseFloat(r.Width)
 	height := parseFloat(r.Height)
-	
+
 	// Apply transform if present
 	if r.Transform != "" {
 		matrix := parseSVGTransform(r.Transform)
 		x, y = matrix.Transform(x, y)
 	}
-	
+
 	// Set fill color
 	if r.Fill != "" && r.Fill != "none" {
 		color := parseSVGColor(r.Fill)
 		ctx.SetColor(color)
 		ctx.DrawRectangle(x, y, width, height)
 	}
-	
+
 	// Set stroke
 	if r.Stroke != "" && r.Stroke != "none" {
 		color := parseSVGColor(r.Stroke)
@@ -205,20 +208,20 @@ func (c *SVGCircle) Draw(ctx *Context) {
 	cx := parseFloat(c.CX)
 	cy := parseFloat(c.CY)
 	r := parseFloat(c.R)
-	
+
 	// Apply transform if present
 	if c.Transform != "" {
 		matrix := parseSVGTransform(c.Transform)
 		cx, cy = matrix.Transform(cx, cy)
 	}
-	
+
 	// Set fill color
 	if c.Fill != "" && c.Fill != "none" {
 		color := parseSVGColor(c.Fill)
 		ctx.SetColor(color)
 		ctx.DrawCircle(cx, cy, r)
 	}
-	
+
 	// Set stroke
 	if c.Stroke != "" && c.Stroke != "none" {
 		color := parseSVGColor(c.Stroke)
@@ -234,20 +237,20 @@ func (e *SVGEllipse) Draw(ctx *Context) {
 	cy := parseFloat(e.CY)
 	rx := parseFloat(e.RX)
 	ry := parseFloat(e.RY)
-	
+
 	// Apply transform if present
 	if e.Transform != "" {
 		matrix := parseSVGTransform(e.Transform)
 		cx, cy = matrix.Transform(cx, cy)
 	}
-	
+
 	// Set fill color
 	if e.Fill != "" && e.Fill != "none" {
 		color := parseSVGColor(e.Fill)
 		ctx.SetColor(color)
 		ctx.DrawEllipse(cx, cy, rx, ry)
 	}
-	
+
 	// Set stroke
 	if e.Stroke != "" && e.Stroke != "none" {
 		color := parseSVGColor(e.Stroke)
@@ -263,14 +266,14 @@ func (l *SVGLine) Draw(ctx *Context) {
 	y1 := parseFloat(l.Y1)
 	x2 := parseFloat(l.X2)
 	y2 := parseFloat(l.Y2)
-	
+
 	// Apply transform if present
 	if l.Transform != "" {
 		matrix := parseSVGTransform(l.Transform)
 		x1, y1 = matrix.Transform(x1, y1)
 		x2, y2 = matrix.Transform(x2, y2)
 	}
-	
+
 	// Set stroke
 	if l.Stroke != "" && l.Stroke != "none" {
 		color := parseSVGColor(l.Stroke)
@@ -292,7 +295,7 @@ func (g *SVGGroup) Draw(ctx *Context) {
 		// Apply transform to context
 		ctx.transform = ctx.transform.Multiply(matrix)
 	}
-	
+
 	// Draw all elements in the group
 	for _, element := range g.Elements {
 		element.Draw(ctx)
@@ -342,7 +345,7 @@ func (g *SVGGroup) GetBounds() (float64, float64, float64, float64) {
 	if len(g.Elements) == 0 {
 		return 0, 0, 0, 0
 	}
-	
+
 	minX, minY, maxX, maxY := g.Elements[0].GetBounds()
 	for i := 1; i < len(g.Elements); i++ {
 		x1, y1, x2, y2 := g.Elements[i].GetBounds()
@@ -359,7 +362,7 @@ func (g *SVGGroup) GetBounds() (float64, float64, float64, float64) {
 			maxY = y2
 		}
 	}
-	
+
 	return minX, minY, maxX, maxY
 }
 
@@ -400,7 +403,7 @@ func parseSVGPath(d string) *Path {
 	path := NewPath()
 	// Simplified path parsing - in a real implementation, this would be much more comprehensive
 	commands := strings.Fields(d)
-	
+
 	for i := 0; i < len(commands); i++ {
 		cmd := commands[i]
 		switch cmd {
@@ -433,7 +436,7 @@ func parseSVGPath(d string) *Path {
 			path.ClosePath()
 		}
 	}
-	
+
 	return path
 }
 
@@ -441,7 +444,7 @@ func parseSVGPath(d string) *Path {
 func parseSVGTransform(transform string) Matrix {
 	// Simplified transform parsing - in a real implementation, this would handle all transform types
 	matrix := NewIdentityMatrix()
-	
+
 	if strings.Contains(transform, "translate") {
 		// Parse translate transform
 		start := strings.Index(transform, "(")
@@ -455,7 +458,7 @@ func parseSVGTransform(transform string) Matrix {
 			}
 		}
 	}
-	
+
 	return matrix
 }
 
@@ -471,7 +474,7 @@ func parseSVGColor(color string) *RGBColor {
 			return &RGBColor{uint8(r), uint8(g), uint8(b), 255}
 		}
 	}
-	
+
 	// Named colors
 	switch color {
 	case "red":
@@ -519,9 +522,9 @@ func (c *RGBColor) RGBA() (r, g, b, a uint32) {
 // ExportToSVG exports the current context to SVG
 func (c *Context) ExportToSVG() *SVGDocument {
 	doc := NewSVGDocument(float64(c.width), float64(c.height))
-	
+
 	// Convert context content to SVG elements
 	// This is a simplified implementation - a real version would be much more comprehensive
-	
+
 	return doc
 }

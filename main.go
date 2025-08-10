@@ -149,6 +149,25 @@ var (
 	Shear     = core.Shear
 )
 
+// Image resizing functions
+// Also export algorithms/types for users
+type ResizeAlgorithm = core.ResizeAlgorithm
+
+const (
+	ResizeNearestNeighbor = core.ResizeNearestNeighbor
+	ResizeBilinear        = core.ResizeBilinear
+	ResizeBicubic         = core.ResizeBicubic
+	ResizeLanczos         = core.ResizeLanczos
+)
+
+var (
+	ResizeImage              = core.ResizeImage
+	ResizeImageFit           = core.ResizeImageFit
+	ResizeImageFill          = core.ResizeImageFill
+	ResizeImageWithAlgorithm = core.ResizeImageWithAlgorithm
+	ScaleImage               = core.ScaleImage
+)
+
 // Image filter functions
 var (
 	Grayscale     = core.Grayscale

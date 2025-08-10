@@ -196,3 +196,33 @@
 - Layer Compositing Modes, SVG Parser/Loader, Object Model, Pattern Transforms, Hit Testing, Animation Support, SVG/PDF Export
 
 **AdvanceGG is production-ready with world-class features!** 🚀
+
+
+## internal/advance Upgrade Roadmap
+
+Scope: high-level helpers that sit on top of core (SVG, CSS-like patterns/filters, simple text-on-path, utilities)
+
+- SVG subsystem
+  - [ ] Stabilize build: ensure svg helpers compile behind a build tag and/or integrate types via main package re-exports
+  - [ ] SVG parser: robust path data (M/L/Q/C/A), groups, transforms, styles (fill, stroke, stroke-width, opacity)
+  - [ ] Style resolution: inline + presentation attributes + basic CSS parsing (subset)
+  - [ ] Transform matrix mapping to core.Matrix (scale/rotate/translate/skew; nested groups)
+  - [ ] Exporter: serialize core paths/shapes back to SVG (nice-to-have)
+  - [ ] Examples + golden tests for roundtrip of simple shapes and paths
+
+- Patterns & CSS Filters bridge
+  - [ ] Map internal/advance CSS-like filters to core filter pipeline with parity tests
+  - [ ] Pattern transforms independent of canvas state (pattern matrix)
+  - [ ] Add convenience constructors and ensure Repeat modes align with core
+
+- Text on Path (simple)
+  - [ ] API polish and docs; add alignment/spacing tests
+  - [ ] Examples for circle/wave/spiral text paths
+
+- Testing & Docs
+  - [ ] Unit tests for svg parsing (path count, bounds, transforms)
+  - [ ] Integration tests: render fixtures and compare image hashes (tolerant)
+  - [ ] Benchmarks where applicable; docs pages for internal/advance
+
+- Packaging
+  - [ ] Decide on default build tags or separate module for svg helpers to avoid affecting default builds
