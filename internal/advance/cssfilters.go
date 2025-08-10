@@ -164,9 +164,13 @@ func (f InvertFilter) Apply(img image.Image) image.Image {
 			rf, gf, bf := float64(r>>8), float64(g>>8), float64(b>>8)
 
 			// Interpolate between original and inverted
-			newR := uint8(rf + (255-rf)*f.Amount)
-			newG := uint8(gf + (255-gf)*f.Amount)
-			newB := uint8(bf + (255-bf)*f.Amount)
+			invertedR := 255 - rf
+			invertedG := 255 - gf
+			invertedB := 255 - bf
+
+			newR := uint8(rf + (invertedR-rf)*f.Amount)
+			newG := uint8(gf + (invertedG-gf)*f.Amount)
+			newB := uint8(bf + (invertedB-bf)*f.Amount)
 
 			result.Set(x, y, color.RGBA{newR, newG, newB, uint8(a >> 8)})
 		}

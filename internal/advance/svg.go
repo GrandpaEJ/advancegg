@@ -10,6 +10,8 @@ import (
 	"math"
 	"strconv"
 	"strings"
+
+	"github.com/GrandpaEJ/advancegg/internal/core"
 )
 
 // SVG support for vector graphics import/export
@@ -26,9 +28,9 @@ type SVGDocument struct {
 
 // SVGElement represents any SVG element
 type SVGElement interface {
-	Draw(ctx *Context)
+	Draw(ctx *core.Context)
 	GetBounds() (float64, float64, float64, float64)
-	Transform(matrix Matrix)
+	Transform(matrix core.Matrix)
 }
 
 // SVGPath represents an SVG path element
@@ -39,7 +41,7 @@ type SVGPath struct {
 	Stroke      string   `xml:"stroke,attr,omitempty"`
 	StrokeWidth string   `xml:"stroke-width,attr,omitempty"`
 	Transform   string   `xml:"transform,attr,omitempty"`
-	path        *Path
+	path        *core.Path
 }
 
 // SVGRect represents an SVG rectangle element

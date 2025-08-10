@@ -11,6 +11,79 @@ type Pattern interface {
 	ColorAt(x, y float64) color.Color
 }
 
+// TransformablePattern represents a pattern that can be transformed independently
+type TransformablePattern struct {
+	Pattern   Pattern
+	Transform PatternTransform
+}
+
+// PatternTransform represents a transformation matrix for patterns
+type PatternTransform struct {
+	XX, XY, X0 float64
+	YX, YY, Y0 float64
+}
+
+// NewPatternTransform creates a new pattern transform (identity by default)
+func NewPatternTransform() PatternTransform {
+	return PatternTransform{
+		XX: 1, XY: 0, X0: 0,
+		YX: 0, YY: 1, Y0: 0,
+	}
+}
+
+// Translate adds translation to the pattern transform
+func (pt PatternTransform) Translate(dx, dy float64) PatternTransform {
+	return PatternTransform{
+		XX: pt.XX, XY: pt.XY, X0: pt.X0 + dx,
+		YX: pt.YX, YY: pt.YY, Y0: pt.Y0 + dy,
+	}
+}
+
+// Scale adds scaling to the pattern transform
+func (pt PatternTransform) Scale(sx, sy float64) PatternTransform {
+	return PatternTransform{
+		XX: pt.XX * sx, XY: pt.XY * sy, X0: pt.X0,
+		YX: pt.YX * sx, YY: pt.YY * sy, Y0: pt.Y0,
+	}
+}
+
+// Rotate adds rotation to the pattern transform
+func (pt PatternTransform) Rotate(angle float64) PatternTransform {
+	cos := math.Cos(angle)
+	sin := math.Sin(angle)
+	return PatternTransform{
+		XX: pt.XX*cos - pt.XY*sin, XY: pt.XX*sin + pt.XY*cos, X0: pt.X0,
+		YX: pt.YX*cos - pt.YY*sin, YY: pt.YX*sin + pt.YY*cos, Y0: pt.Y0,
+	}
+}
+
+// transformPoint applies the pattern transform to a point
+func (pt PatternTransform) transformPoint(x, y float64) (float64, float64) {
+	return pt.XX*x + pt.XY*y + pt.X0, pt.YX*x + pt.YY*y + pt.Y0
+}
+
+// ColorAt applies the transform and returns the color at the transformed coordinates
+func (tp TransformablePattern) ColorAt(x, y float64) color.Color {
+	// Apply inverse transform to get pattern coordinates
+	det := tp.Transform.XX*tp.Transform.YY - tp.Transform.XY*tp.Transform.YX
+	if det == 0 {
+		return color.RGBA{0, 0, 0, 0} // Transparent for degenerate transform
+	}
+
+	// Inverse transform
+	invXX := tp.Transform.YY / det
+	invXY := -tp.Transform.XY / det
+	invYX := -tp.Transform.YX / det
+	invYY := tp.Transform.XX / det
+	invX0 := (tp.Transform.XY*tp.Transform.Y0 - tp.Transform.YY*tp.Transform.X0) / det
+	invY0 := (tp.Transform.YX*tp.Transform.X0 - tp.Transform.XX*tp.Transform.Y0) / det
+
+	px := invXX*x + invXY*y + invX0
+	py := invYX*x + invYY*y + invY0
+
+	return tp.Pattern.ColorAt(px, py)
+}
+
 // LinearGradientPattern creates a linear gradient pattern
 type LinearGradientPattern struct {
 	X1, Y1, X2, Y2 float64
@@ -19,7 +92,7 @@ type LinearGradientPattern struct {
 
 // ColorStop represents a color stop in a gradient
 type ColorStop struct {
-	Position float64    // 0.0 to 1.0
+	Position float64 // 0.0 to 1.0
 	Color    color.Color
 }
 
@@ -29,27 +102,27 @@ func (p LinearGradientPattern) ColorAt(x, y float64) color.Color {
 	dx := p.X2 - p.X1
 	dy := p.Y2 - p.Y1
 	length := math.Sqrt(dx*dx + dy*dy)
-	
+
 	if length == 0 {
 		return p.ColorStops[0].Color
 	}
-	
+
 	// Project point onto gradient line
 	t := ((x-p.X1)*dx + (y-p.Y1)*dy) / (length * length)
 	t = math.Max(0, math.Min(1, t))
-	
+
 	// Find color stops to interpolate between
 	for i := 0; i < len(p.ColorStops)-1; i++ {
 		stop1 := p.ColorStops[i]
 		stop2 := p.ColorStops[i+1]
-		
+
 		if t >= stop1.Position && t <= stop2.Position {
 			// Interpolate between colors
 			ratio := (t - stop1.Position) / (stop2.Position - stop1.Position)
 			return interpolateColors(stop1.Color, stop2.Color, ratio)
 		}
 	}
-	
+
 	// Return last color if beyond range
 	return p.ColorStops[len(p.ColorStops)-1].Color
 }
@@ -67,22 +140,22 @@ func (p RadialGradientPattern) ColorAt(x, y float64) color.Color {
 	dx := x - p.CX
 	dy := y - p.CY
 	distance := math.Sqrt(dx*dx + dy*dy)
-	
+
 	// Normalize distance
 	t := distance / p.Radius
 	t = math.Max(0, math.Min(1, t))
-	
+
 	// Find color stops to interpolate between
 	for i := 0; i < len(p.ColorStops)-1; i++ {
 		stop1 := p.ColorStops[i]
 		stop2 := p.ColorStops[i+1]
-		
+
 		if t >= stop1.Position && t <= stop2.Position {
 			ratio := (t - stop1.Position) / (stop2.Position - stop1.Position)
 			return interpolateColors(stop1.Color, stop2.Color, ratio)
 		}
 	}
-	
+
 	return p.ColorStops[len(p.ColorStops)-1].Color
 }
 
@@ -97,7 +170,7 @@ type CheckerboardPattern struct {
 func (p CheckerboardPattern) ColorAt(x, y float64) color.Color {
 	cellX := int(math.Floor(x / p.Size))
 	cellY := int(math.Floor(y / p.Size))
-	
+
 	if (cellX+cellY)%2 == 0 {
 		return p.Color1
 	}
@@ -106,10 +179,10 @@ func (p CheckerboardPattern) ColorAt(x, y float64) color.Color {
 
 // StripePattern creates a stripe pattern
 type StripePattern struct {
-	Width     float64
-	Angle     float64 // In radians
-	Color1    color.Color
-	Color2    color.Color
+	Width  float64
+	Angle  float64 // In radians
+	Color1 color.Color
+	Color2 color.Color
 }
 
 // ColorAt returns the color at the specified coordinates
@@ -118,7 +191,7 @@ func (p StripePattern) ColorAt(x, y float64) color.Color {
 	cos := math.Cos(p.Angle)
 	sin := math.Sin(p.Angle)
 	rotX := x*cos - y*sin
-	
+
 	// Determine stripe
 	stripe := int(math.Floor(rotX / p.Width))
 	if stripe%2 == 0 {
@@ -140,15 +213,15 @@ func (p PolkaDotPattern) ColorAt(x, y float64) color.Color {
 	// Find nearest dot center
 	cellX := math.Floor(x / p.SpacingX)
 	cellY := math.Floor(y / p.SpacingY)
-	
+
 	centerX := (cellX + 0.5) * p.SpacingX
 	centerY := (cellY + 0.5) * p.SpacingY
-	
+
 	// Calculate distance to center
 	dx := x - centerX
 	dy := y - centerY
 	distance := math.Sqrt(dx*dx + dy*dy)
-	
+
 	if distance <= p.Radius {
 		return p.DotColor
 	}
@@ -166,16 +239,16 @@ type NoisePattern struct {
 func (p NoisePattern) ColorAt(x, y float64) color.Color {
 	// Simple noise function (pseudo-random)
 	noise := p.simpleNoise(x*p.Scale, y*p.Scale)
-	
+
 	r, g, b, a := p.BaseColor.RGBA()
-	
+
 	// Apply noise
 	factor := 1.0 + (noise-0.5)*p.Intensity
-	
+
 	newR := uint8(math.Max(0, math.Min(255, float64(r>>8)*factor)))
 	newG := uint8(math.Max(0, math.Min(255, float64(g>>8)*factor)))
 	newB := uint8(math.Max(0, math.Min(255, float64(b>>8)*factor)))
-	
+
 	return color.RGBA{newR, newG, newB, uint8(a >> 8)}
 }
 
@@ -188,11 +261,11 @@ func (p NoisePattern) simpleNoise(x, y float64) float64 {
 
 // WavePattern creates a wave pattern
 type WavePattern struct {
-	Wavelength  float64
-	Amplitude   float64
-	Angle       float64
-	Color1      color.Color
-	Color2      color.Color
+	Wavelength float64
+	Amplitude  float64
+	Angle      float64
+	Color1     color.Color
+	Color2     color.Color
 }
 
 // ColorAt returns the color at the specified coordinates
@@ -201,10 +274,10 @@ func (p WavePattern) ColorAt(x, y float64) color.Color {
 	cos := math.Cos(p.Angle)
 	sin := math.Sin(p.Angle)
 	rotX := x*cos - y*sin
-	
+
 	// Calculate wave
 	wave := math.Sin(2*math.Pi*rotX/p.Wavelength) * p.Amplitude
-	
+
 	// Interpolate between colors based on wave value
 	t := (wave + p.Amplitude) / (2 * p.Amplitude) // Normalize to 0-1
 	return interpolateColors(p.Color1, p.Color2, t)
@@ -214,21 +287,21 @@ func (p WavePattern) ColorAt(x, y float64) color.Color {
 func interpolateColors(c1, c2 color.Color, t float64) color.Color {
 	r1, g1, b1, a1 := c1.RGBA()
 	r2, g2, b2, a2 := c2.RGBA()
-	
+
 	t = math.Max(0, math.Min(1, t))
-	
+
 	r := uint8((float64(r1>>8)*(1-t) + float64(r2>>8)*t))
 	g := uint8((float64(g1>>8)*(1-t) + float64(g2>>8)*t))
 	b := uint8((float64(b1>>8)*(1-t) + float64(b2>>8)*t))
 	a := uint8((float64(a1>>8)*(1-t) + float64(a2>>8)*t))
-	
+
 	return color.RGBA{r, g, b, a}
 }
 
 // PatternFill fills an image with a pattern
 func PatternFill(img *image.RGBA, pattern Pattern) {
 	bounds := img.Bounds()
-	
+
 	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
 			c := pattern.ColorAt(float64(x), float64(y))
@@ -248,7 +321,7 @@ func CreateLinearGradient(width, height float64, colors ...color.Color) LinearGr
 			Color:    c,
 		}
 	}
-	
+
 	return LinearGradientPattern{
 		X1: 0, Y1: 0,
 		X2: 0, Y2: height,
@@ -265,7 +338,7 @@ func CreateRadialGradient(cx, cy, radius float64, colors ...color.Color) RadialG
 			Color:    c,
 		}
 	}
-	
+
 	return RadialGradientPattern{
 		CX: cx, CY: cy,
 		Radius:     radius,
@@ -298,7 +371,41 @@ func CreatePolkaDots(spacing, radius float64) PolkaDotPattern {
 		SpacingX:        spacing,
 		SpacingY:        spacing,
 		Radius:          radius,
-		DotColor:        color.RGBA{255, 0, 0, 255}, // Red dots
+		DotColor:        color.RGBA{255, 0, 0, 255},     // Red dots
 		BackgroundColor: color.RGBA{255, 255, 255, 255}, // White background
+	}
+}
+
+// Pattern transform convenience functions
+
+// NewTransformablePattern creates a new transformable pattern
+func NewTransformablePattern(pattern Pattern) *TransformablePattern {
+	return &TransformablePattern{
+		Pattern:   pattern,
+		Transform: NewPatternTransform(),
+	}
+}
+
+// WithTranslation creates a pattern with translation applied
+func WithTranslation(pattern Pattern, dx, dy float64) *TransformablePattern {
+	return &TransformablePattern{
+		Pattern:   pattern,
+		Transform: NewPatternTransform().Translate(dx, dy),
+	}
+}
+
+// WithScale creates a pattern with scaling applied
+func WithScale(pattern Pattern, sx, sy float64) *TransformablePattern {
+	return &TransformablePattern{
+		Pattern:   pattern,
+		Transform: NewPatternTransform().Scale(sx, sy),
+	}
+}
+
+// WithRotation creates a pattern with rotation applied
+func WithRotation(pattern Pattern, angle float64) *TransformablePattern {
+	return &TransformablePattern{
+		Pattern:   pattern,
+		Transform: NewPatternTransform().Rotate(angle),
 	}
 }

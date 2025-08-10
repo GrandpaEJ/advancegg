@@ -402,3 +402,52 @@ var (
 	CreateGradientStroke = core.CreateGradientStroke
 	CreateTaperedStroke  = core.CreateTaperedStroke
 )
+
+// Advanced Pattern exports from internal/advance
+type AdvancedPattern = advance.Pattern
+type LinearGradientPattern = advance.LinearGradientPattern
+type RadialGradientPattern = advance.RadialGradientPattern
+type CheckerboardPattern = advance.CheckerboardPattern
+type StripePattern = advance.StripePattern
+type PolkaDotPattern = advance.PolkaDotPattern
+type NoisePattern = advance.NoisePattern
+type WavePattern = advance.WavePattern
+type AdvancedColorStop = advance.ColorStop
+type TransformablePattern = advance.TransformablePattern
+type PatternTransform = advance.PatternTransform
+
+var (
+	CreateLinearGradientPattern = advance.CreateLinearGradient
+	CreateRadialGradientPattern = advance.CreateRadialGradient
+	CreateCheckerboard          = advance.CreateCheckerboard
+	CreateStripes               = advance.CreateStripes
+	CreatePolkaDots             = advance.CreatePolkaDots
+	PatternFill                 = advance.PatternFill
+	NewTransformablePattern     = advance.NewTransformablePattern
+	NewPatternTransform         = advance.NewPatternTransform
+	WithTranslation             = advance.WithTranslation
+	WithScale                   = advance.WithScale
+	WithRotation                = advance.WithRotation
+)
+
+// CSS Filter exports from internal/advance
+type CSSFilter = advance.CSSFilter
+type FilterChain = advance.FilterChain
+type BrightnessFilter = advance.BrightnessFilter
+type ContrastFilter = advance.ContrastFilter
+type SaturateFilter = advance.SaturateFilter
+type HueRotateFilter = advance.HueRotateFilter
+type InvertFilter = advance.InvertFilter
+type OpacityFilter = advance.OpacityFilter
+type BlurFilter = advance.BlurFilter
+type SepiaFilter = advance.SepiaFilter
+
+var (
+	NewFilterChain = advance.NewFilterChain
+	Instagram      = advance.Instagram
+	Vintage        = advance.Vintage
+	Dramatic       = advance.Dramatic
+	BlackAndWhite  = advance.BlackAndWhite
+	Warm           = advance.Warm
+	Cool           = advance.Cool
+)
