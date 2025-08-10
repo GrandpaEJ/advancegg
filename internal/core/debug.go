@@ -369,7 +369,7 @@ func (dc *DebugContext) PrintDebugSummary() {
 		fmt.Printf("  %s: %d calls, %v total, %v avg\n", op, count, opTimes[op], avgTime)
 	}
 
-	fmt.Println("=====================\n")
+	fmt.Println("=====================")
 }
 
 // Debug utilities

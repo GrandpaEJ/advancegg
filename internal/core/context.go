@@ -119,6 +119,10 @@ func NewContextForImage(im image.Image) *Context {
 func NewContextForRGBA(im *image.RGBA) *Context {
 	w := im.Bounds().Size().X
 	h := im.Bounds().Size().Y
+
+	// Initialize text shaper for Unicode support
+	textShaper := NewTextShaper()
+
 	return &Context{
 		width:         w,
 		height:        h,
@@ -132,6 +136,7 @@ func NewContextForRGBA(im *image.RGBA) *Context {
 		fontFace:      basicfont.Face7x13,
 		fontHeight:    13,
 		matrix:        Identity(),
+		textShaper:    textShaper,
 	}
 }
 
@@ -1071,6 +1076,13 @@ func (dc *Context) FontHeight() float64 {
 }
 
 func (dc *Context) drawString(im *image.RGBA, s string, x, y float64) {
+	// Use text shaper if available for proper Unicode handling
+	if dc.textShaper != nil {
+		dc.drawShapedString(im, s, x, y)
+		return
+	}
+
+	// Fallback to basic font drawing
 	d := &font.Drawer{
 		Dst:  im,
 		Src:  image.NewUniform(dc.color),
@@ -1101,6 +1113,39 @@ func (dc *Context) drawString(im *image.RGBA, s string, x, y float64) {
 		})
 		d.Dot.X += advance
 		prevC = c
+	}
+}
+
+// drawShapedString draws text using the text shaper for proper Unicode support
+func (dc *Context) drawShapedString(im *image.RGBA, s string, x, y float64) {
+	shaped := dc.textShaper.ShapeText(s)
+
+	d := &font.Drawer{
+		Dst:  im,
+		Src:  image.NewUniform(dc.color),
+		Face: dc.fontFace,
+	}
+
+	// Draw each shaped glyph
+	for _, glyph := range shaped.Glyphs {
+		glyphX := x + glyph.X
+		glyphY := y + glyph.Y
+
+		d.Dot = fixp(glyphX, glyphY)
+
+		// For now, use the character as fallback since we don't have proper glyph mapping
+		dr, mask, maskp, _, ok := d.Face.Glyph(d.Dot, glyph.Character)
+		if ok {
+			sr := dr.Sub(dr.Min)
+			transformer := draw.BiLinear
+			fx, fy := float64(dr.Min.X), float64(dr.Min.Y)
+			m := dc.matrix.Translate(fx, fy)
+			s2d := f64.Aff3{m.XX, m.XY, m.X0, m.YX, m.YY, m.Y0}
+			transformer.Transform(d.Dst, s2d, d.Src, sr, draw.Over, &draw.Options{
+				SrcMask:  mask,
+				SrcMaskP: maskp,
+			})
+		}
 	}
 }
 
