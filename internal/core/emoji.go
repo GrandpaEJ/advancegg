@@ -6,10 +6,10 @@ import (
 	"image/color"
 	"image/draw"
 	"os"
-	"path/filepath"
 	"strings"
 
-	"github.com/benoitkugler/textlayout/fonts"
+	"github.com/golang/freetype/truetype"
+	"golang.org/x/image/font"
 )
 
 // Emoji rendering support with color fonts and fallback
@@ -23,9 +23,10 @@ type EmojiRenderer struct {
 	EnableBitmap bool
 	Cache        map[string]*image.RGBA
 
-	// Color font support
-	colorFontFaces map[string]fonts.Face
-	loadedFonts    []string
+	// Font support for actual emoji rendering
+	emojiFont     *truetype.Font
+	emojiFontFace font.Face
+	fontLoaded    bool
 }
 
 // NewEmojiRenderer creates a new emoji renderer
@@ -37,13 +38,12 @@ func NewEmojiRenderer() *EmojiRenderer {
 			"Noto Color Emoji",
 			"Android Emoji",
 		},
-		FallbackFont:   "Arial",
-		EmojiSize:      16,
-		EnableSVG:      true,
-		EnableBitmap:   true,
-		Cache:          make(map[string]*image.RGBA),
-		colorFontFaces: make(map[string]fonts.Face),
-		loadedFonts:    make([]string, 0),
+		FallbackFont: "Arial",
+		EmojiSize:    16,
+		EnableSVG:    true,
+		EnableBitmap: true,
+		Cache:        make(map[string]*image.RGBA),
+		fontLoaded:   false,
 	}
 
 	// Try to load system emoji fonts
@@ -238,11 +238,56 @@ func (er *EmojiRenderer) RenderEmoji(sequence EmojiSequence, size float64) *imag
 	return result
 }
 
-// renderColorEmoji renders emoji using color fonts
+// renderColorEmoji renders emoji using actual font glyphs
 func (er *EmojiRenderer) renderColorEmoji(sequence EmojiSequence, size float64) *image.RGBA {
-	// This would integrate with actual color font rendering
-	// For now, create a placeholder colored emoji
+	// Try to render using actual emoji font first
+	if er.fontLoaded && er.emojiFontFace != nil {
+		return er.renderWithFont(sequence, size)
+	}
 
+	// Fallback to simple colored representation
+	return er.renderSimpleEmoji(sequence, size)
+}
+
+// renderWithFont renders emoji using the loaded emoji font
+func (er *EmojiRenderer) renderWithFont(sequence EmojiSequence, size float64) *image.RGBA {
+	// For now, always fall back to simple rendering since color emoji fonts
+	// require special handling that freetype doesn't support well
+	// TODO: Implement proper COLR/CPAL color emoji font rendering
+	return er.renderSimpleEmoji(sequence, size)
+
+	/*
+		// This code would work for regular fonts but not color emoji fonts
+		img := image.NewRGBA(image.Rect(0, 0, int(size), int(size)))
+
+		// Fill with transparent background
+		draw.Draw(img, img.Bounds(), &image.Uniform{color.RGBA{0, 0, 0, 0}}, image.ZP, draw.Src)
+
+		// Create freetype context
+		c := freetype.NewContext()
+		c.SetDPI(72)
+		c.SetFont(er.emojiFont)
+		c.SetFontSize(size * 0.8) // Slightly smaller than the canvas
+		c.SetClip(img.Bounds())
+		c.SetDst(img)
+		c.SetSrc(image.NewUniform(color.RGBA{0, 0, 0, 255})) // Black color for now
+
+		// Calculate position to center the emoji
+		pt := freetype.Pt(int(size*0.1), int(size*0.8))
+
+		// Draw the emoji text
+		_, err := c.DrawString(sequence.Text, pt)
+		if err != nil {
+			// If font rendering fails, fall back to simple rendering
+			return er.renderSimpleEmoji(sequence, size)
+		}
+
+		return img
+	*/
+}
+
+// renderSimpleEmoji creates a simple colored emoji representation
+func (er *EmojiRenderer) renderSimpleEmoji(sequence EmojiSequence, size float64) *image.RGBA {
 	img := image.NewRGBA(image.Rect(0, 0, int(size), int(size)))
 
 	// Create a simple colored representation based on category
@@ -299,28 +344,49 @@ func (er *EmojiRenderer) applySkinToneModification(base color.RGBA, skinTone str
 	}
 }
 
-// drawSimpleEmoji draws a simple emoji representation
+// drawSimpleEmoji draws a recognizable emoji representation
 func (er *EmojiRenderer) drawSimpleEmoji(img *image.RGBA, baseColor color.RGBA, sequence EmojiSequence, size float64) {
 	bounds := img.Bounds()
 	center := image.Point{bounds.Dx() / 2, bounds.Dy() / 2}
 	radius := int(size / 3)
 
-	// Draw based on emoji type
-	if sequence.Category == EmojiCategorySmileys {
-		// Draw a simple smiley face
-		er.drawCircle(img, center, radius, baseColor)
+	// Draw based on specific emoji if we can recognize it
+	if len(sequence.Runes) > 0 {
+		emoji := sequence.Runes[0]
+		switch emoji {
+		case 0x1F600: // 😀 grinning face
+			er.drawGrinningFace(img, center, radius)
+			return
+		case 0x1F603: // 😃 grinning face with big eyes
+			er.drawGrinningFace(img, center, radius) // Same as grinning for now
+			return
+		case 0x1F604: // 😄 grinning face with smiling eyes
+			er.drawGrinningFace(img, center, radius) // Same as grinning for now
+			return
+		case 0x1F44B: // 👋 waving hand
+			er.drawWavingHand(img, center, radius)
+			return
+		case 0x1F44D: // 👍 thumbs up
+			er.drawThumbsUp(img, center, radius)
+			return
+		case 0x2764: // ❤ red heart
+			er.drawHeart(img, center, radius)
+			return
+		case 0x1F31F: // 🌟 glowing star
+			er.drawStar(img, center, radius)
+			return
+		}
+	}
 
-		// Eyes
-		eyeColor := color.RGBA{0, 0, 0, 255}
-		leftEye := image.Point{center.X - radius/3, center.Y - radius/3}
-		rightEye := image.Point{center.X + radius/3, center.Y - radius/3}
-		er.drawCircle(img, leftEye, radius/6, eyeColor)
-		er.drawCircle(img, rightEye, radius/6, eyeColor)
-
-		// Smile
-		er.drawArc(img, center, radius/2, 0, 180, eyeColor)
-	} else {
-		// Draw a simple colored circle for other categories
+	// Fallback to category-based rendering
+	switch sequence.Category {
+	case EmojiCategorySmileys:
+		er.drawGrinningFace(img, center, radius)
+	case EmojiCategoryPeople:
+		er.drawGenericPerson(img, center, radius, baseColor)
+	case EmojiCategoryAnimals:
+		er.drawGenericAnimal(img, center, radius, baseColor)
+	default:
 		er.drawCircle(img, center, radius, baseColor)
 	}
 }
@@ -531,6 +597,7 @@ func (er *EmojiRenderer) loadSystemEmojiFonts() {
 		"/usr/share/fonts/truetype/noto-color-emoji/NotoColorEmoji.ttf",
 		"/usr/share/fonts/noto-color-emoji/NotoColorEmoji.ttf",
 		"/usr/share/fonts/TTF/NotoColorEmoji.ttf",
+		"/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf",
 		// Android
 		"/system/fonts/NotoColorEmoji.ttf",
 	}
@@ -538,6 +605,7 @@ func (er *EmojiRenderer) loadSystemEmojiFonts() {
 	for _, fontPath := range fontPaths {
 		if er.loadEmojiFont(fontPath) {
 			fmt.Printf("Loaded emoji font: %s\n", fontPath)
+			break // Only load the first available font
 		}
 	}
 }
@@ -549,32 +617,225 @@ func (er *EmojiRenderer) loadEmojiFont(fontPath string) bool {
 		return false
 	}
 
-	// Read font file (for future COLR/CPAL parsing)
-	_, err := os.Stat(fontPath) // Just verify it's readable for now
+	// Read font file
+	fontData, err := os.ReadFile(fontPath)
 	if err != nil {
 		return false
 	}
 
-	// Parse font - for now, just mark as loaded without parsing
-	// TODO: Implement proper COLR/CPAL font parsing for color emoji
-	// The textlayout library has different font interfaces than expected
+	// Parse font using freetype
+	font, err := truetype.Parse(fontData)
+	if err != nil {
+		// Many emoji fonts are in special formats that freetype can't parse
+		// This is expected for color emoji fonts like Noto Color Emoji
+		return false
+	}
 
-	// Store the font path for now
-	fontName := filepath.Base(fontPath)
-	er.loadedFonts = append(er.loadedFonts, fontName)
+	// Create font face
+	er.emojiFont = font
+	er.emojiFontFace = truetype.NewFace(font, &truetype.Options{
+		Size: er.EmojiSize,
+		DPI:  72,
+	})
+	er.fontLoaded = true
 
 	return true
 }
 
 // hasColorFont checks if any color fonts are loaded
 func (er *EmojiRenderer) hasColorFont() bool {
-	return len(er.loadedFonts) > 0
+	return er.fontLoaded
 }
 
-// getColorFont gets the first available color font
-func (er *EmojiRenderer) getColorFont() fonts.Face {
-	if len(er.loadedFonts) > 0 {
-		return er.colorFontFaces[er.loadedFonts[0]]
+// getEmojiFont gets the loaded emoji font face
+func (er *EmojiRenderer) getEmojiFont() font.Face {
+	if er.fontLoaded {
+		return er.emojiFontFace
 	}
 	return nil
+}
+
+// Specific emoji drawing methods
+
+// drawGrinningFace draws a grinning face emoji 😀
+func (er *EmojiRenderer) drawGrinningFace(img *image.RGBA, center image.Point, radius int) {
+	// Yellow face
+	faceColor := color.RGBA{255, 220, 100, 255}
+	er.drawCircle(img, center, radius, faceColor)
+
+	// Black eyes
+	eyeColor := color.RGBA{0, 0, 0, 255}
+	leftEye := image.Point{center.X - radius/3, center.Y - radius/3}
+	rightEye := image.Point{center.X + radius/3, center.Y - radius/3}
+	er.drawCircle(img, leftEye, radius/8, eyeColor)
+	er.drawCircle(img, rightEye, radius/8, eyeColor)
+
+	// Big smile
+	er.drawSmile(img, center, radius, eyeColor)
+}
+
+// drawWavingHand draws a waving hand emoji 👋
+func (er *EmojiRenderer) drawWavingHand(img *image.RGBA, center image.Point, radius int) {
+	// Skin color
+	handColor := color.RGBA{255, 200, 150, 255}
+
+	// Draw palm (oval)
+	er.drawOval(img, center, radius, radius*3/4, handColor)
+
+	// Draw fingers
+	fingerColor := handColor
+	for i := 0; i < 4; i++ {
+		fingerX := center.X - radius/2 + i*radius/4
+		fingerY := center.Y - radius
+		finger := image.Point{fingerX, fingerY}
+		er.drawOval(img, finger, radius/6, radius/3, fingerColor)
+	}
+}
+
+// drawThumbsUp draws a thumbs up emoji 👍
+func (er *EmojiRenderer) drawThumbsUp(img *image.RGBA, center image.Point, radius int) {
+	// Skin color
+	handColor := color.RGBA{255, 200, 150, 255}
+
+	// Draw thumb (vertical oval)
+	thumbCenter := image.Point{center.X, center.Y - radius/4}
+	er.drawOval(img, thumbCenter, radius/3, radius, handColor)
+
+	// Draw fist base
+	fistCenter := image.Point{center.X, center.Y + radius/2}
+	er.drawOval(img, fistCenter, radius*2/3, radius/2, handColor)
+}
+
+// drawHeart draws a heart emoji ❤
+func (er *EmojiRenderer) drawHeart(img *image.RGBA, center image.Point, radius int) {
+	heartColor := color.RGBA{255, 50, 50, 255}
+
+	// Draw two circles for the top of the heart
+	leftTop := image.Point{center.X - radius/3, center.Y - radius/4}
+	rightTop := image.Point{center.X + radius/3, center.Y - radius/4}
+	er.drawCircle(img, leftTop, radius/2, heartColor)
+	er.drawCircle(img, rightTop, radius/2, heartColor)
+
+	// Draw triangle for bottom of heart
+	er.drawTriangle(img, center, radius, heartColor)
+}
+
+// drawStar draws a star emoji 🌟
+func (er *EmojiRenderer) drawStar(img *image.RGBA, center image.Point, radius int) {
+	starColor := color.RGBA{255, 255, 100, 255}
+
+	// Draw a simple 5-pointed star
+	er.drawStarShape(img, center, radius, starColor)
+}
+
+// drawGenericPerson draws a generic person emoji
+func (er *EmojiRenderer) drawGenericPerson(img *image.RGBA, center image.Point, radius int, baseColor color.RGBA) {
+	// Head
+	headColor := color.RGBA{255, 200, 150, 255}
+	headCenter := image.Point{center.X, center.Y - radius/2}
+	er.drawCircle(img, headCenter, radius/2, headColor)
+
+	// Body
+	bodyCenter := image.Point{center.X, center.Y + radius/4}
+	er.drawOval(img, bodyCenter, radius/2, radius/2, baseColor)
+}
+
+// drawGenericAnimal draws a generic animal emoji
+func (er *EmojiRenderer) drawGenericAnimal(img *image.RGBA, center image.Point, radius int, baseColor color.RGBA) {
+	// Body
+	er.drawCircle(img, center, radius, baseColor)
+
+	// Ears
+	earColor := color.RGBA{baseColor.R - 30, baseColor.G - 30, baseColor.B - 30, 255}
+	leftEar := image.Point{center.X - radius/2, center.Y - radius}
+	rightEar := image.Point{center.X + radius/2, center.Y - radius}
+	er.drawCircle(img, leftEar, radius/4, earColor)
+	er.drawCircle(img, rightEar, radius/4, earColor)
+
+	// Eyes
+	eyeColor := color.RGBA{0, 0, 0, 255}
+	leftEye := image.Point{center.X - radius/4, center.Y - radius/4}
+	rightEye := image.Point{center.X + radius/4, center.Y - radius/4}
+	er.drawCircle(img, leftEye, radius/8, eyeColor)
+	er.drawCircle(img, rightEye, radius/8, eyeColor)
+}
+
+// Helper drawing methods
+
+// drawSmile draws a smile arc
+func (er *EmojiRenderer) drawSmile(img *image.RGBA, center image.Point, radius int, c color.RGBA) {
+	// Draw a simple smile as a curved line
+	smileY := center.Y + radius/4
+	for x := center.X - radius/2; x <= center.X+radius/2; x++ {
+		// Simple parabolic curve for smile
+		dx := float64(x - center.X)
+		y := smileY + int(dx*dx/float64(radius*2))
+		if y >= 0 && y < img.Bounds().Dy() && x >= 0 && x < img.Bounds().Dx() {
+			img.SetRGBA(x, y, c)
+			// Make it thicker
+			if y+1 < img.Bounds().Dy() {
+				img.SetRGBA(x, y+1, c)
+			}
+		}
+	}
+}
+
+// drawOval draws a filled oval
+func (er *EmojiRenderer) drawOval(img *image.RGBA, center image.Point, radiusX, radiusY int, c color.RGBA) {
+	bounds := img.Bounds()
+	for y := center.Y - radiusY; y <= center.Y+radiusY; y++ {
+		for x := center.X - radiusX; x <= center.X+radiusX; x++ {
+			if x >= bounds.Min.X && x < bounds.Max.X && y >= bounds.Min.Y && y < bounds.Max.Y {
+				dx := float64(x - center.X)
+				dy := float64(y - center.Y)
+				// Ellipse equation: (x/a)² + (y/b)² <= 1
+				if (dx*dx)/float64(radiusX*radiusX)+(dy*dy)/float64(radiusY*radiusY) <= 1 {
+					img.SetRGBA(x, y, c)
+				}
+			}
+		}
+	}
+}
+
+// drawTriangle draws a filled triangle pointing down (for heart bottom)
+func (er *EmojiRenderer) drawTriangle(img *image.RGBA, center image.Point, radius int, c color.RGBA) {
+	bounds := img.Bounds()
+	// Simple triangle pointing down
+	for y := center.Y; y <= center.Y+radius; y++ {
+		width := radius - (y - center.Y)
+		for x := center.X - width; x <= center.X+width; x++ {
+			if x >= bounds.Min.X && x < bounds.Max.X && y >= bounds.Min.Y && y < bounds.Max.Y {
+				img.SetRGBA(x, y, c)
+			}
+		}
+	}
+}
+
+// drawStarShape draws a 5-pointed star
+func (er *EmojiRenderer) drawStarShape(img *image.RGBA, center image.Point, radius int, c color.RGBA) {
+	// Simple star - draw as overlapping triangles
+	// This is a simplified star shape
+	bounds := img.Bounds()
+
+	// Draw a diamond shape as a simple star
+	for y := center.Y - radius; y <= center.Y+radius; y++ {
+		for x := center.X - radius; x <= center.X+radius; x++ {
+			if x >= bounds.Min.X && x < bounds.Max.X && y >= bounds.Min.Y && y < bounds.Max.Y {
+				dx := abs(x - center.X)
+				dy := abs(y - center.Y)
+				// Diamond shape
+				if dx+dy <= radius {
+					img.SetRGBA(x, y, c)
+				}
+			}
+		}
+	}
+}
+
+// abs returns absolute value of an integer
+func abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
 }

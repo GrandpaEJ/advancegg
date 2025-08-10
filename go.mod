@@ -11,5 +11,6 @@ require (
 
 require (
 	github.com/benoitkugler/textlayout v0.3.1 // indirect
+	github.com/kyokomi/emoji/v2 v2.2.13 // indirect
 	golang.org/x/text v0.28.0 // indirect
 )
