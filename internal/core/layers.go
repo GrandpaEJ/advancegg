@@ -5,6 +5,7 @@ import (
 	"image"
 	"image/color"
 	"image/draw"
+	"math"
 	"time"
 )
 
@@ -284,6 +285,34 @@ func (lm *LayerManager) applyBlendMode(src, dst color.RGBA, mode BlendMode) colo
 			B: overlayBlend(src.B, dst.B),
 			A: src.A,
 		}
+	case BlendModeSoftLight:
+		return color.RGBA{
+			R: softLightBlend(src.R, dst.R),
+			G: softLightBlend(src.G, dst.G),
+			B: softLightBlend(src.B, dst.B),
+			A: src.A,
+		}
+	case BlendModeHardLight:
+		return color.RGBA{
+			R: hardLightBlend(src.R, dst.R),
+			G: hardLightBlend(src.G, dst.G),
+			B: hardLightBlend(src.B, dst.B),
+			A: src.A,
+		}
+	case BlendModeColorDodge:
+		return color.RGBA{
+			R: colorDodgeBlend(src.R, dst.R),
+			G: colorDodgeBlend(src.G, dst.G),
+			B: colorDodgeBlend(src.B, dst.B),
+			A: src.A,
+		}
+	case BlendModeColorBurn:
+		return color.RGBA{
+			R: colorBurnBlend(src.R, dst.R),
+			G: colorBurnBlend(src.G, dst.G),
+			B: colorBurnBlend(src.B, dst.B),
+			A: src.A,
+		}
 	case BlendModeDarken:
 		return color.RGBA{
 			R: minUint8(src.R, dst.R),
@@ -296,6 +325,20 @@ func (lm *LayerManager) applyBlendMode(src, dst color.RGBA, mode BlendMode) colo
 			R: maxUint8(src.R, dst.R),
 			G: maxUint8(src.G, dst.G),
 			B: maxUint8(src.B, dst.B),
+			A: src.A,
+		}
+	case BlendModeDifference:
+		return color.RGBA{
+			R: uint8(absInt(int(src.R) - int(dst.R))),
+			G: uint8(absInt(int(src.G) - int(dst.G))),
+			B: uint8(absInt(int(src.B) - int(dst.B))),
+			A: src.A,
+		}
+	case BlendModeExclusion:
+		return color.RGBA{
+			R: uint8(int(src.R) + int(dst.R) - 2*int(src.R)*int(dst.R)/255),
+			G: uint8(int(src.G) + int(dst.G) - 2*int(src.G)*int(dst.G)/255),
+			B: uint8(int(src.B) + int(dst.B) - 2*int(src.B)*int(dst.B)/255),
 			A: src.A,
 		}
 	default:
@@ -311,6 +354,55 @@ func overlayBlend(src, dst uint8) uint8 {
 	return uint8(255 - 2*(255-int(src))*(255-int(dst))/255)
 }
 
+func softLightBlend(src, dst uint8) uint8 {
+	s := float64(src) / 255.0
+	d := float64(dst) / 255.0
+
+	var result float64
+	if s <= 0.5 {
+		result = d - (1-2*s)*d*(1-d)
+	} else {
+		var g float64
+		if d <= 0.25 {
+			g = ((16*d-12)*d + 4) * d
+		} else {
+			g = math.Sqrt(d)
+		}
+		result = d + (2*s-1)*(g-d)
+	}
+
+	return uint8(clampFloat(result*255, 0, 255))
+}
+
+func hardLightBlend(src, dst uint8) uint8 {
+	if src < 128 {
+		return uint8(2 * int(src) * int(dst) / 255)
+	}
+	return uint8(255 - 2*(255-int(src))*(255-int(dst))/255)
+}
+
+func colorDodgeBlend(src, dst uint8) uint8 {
+	if src == 255 {
+		return 255
+	}
+	result := int(dst) * 255 / (255 - int(src))
+	if result > 255 {
+		return 255
+	}
+	return uint8(result)
+}
+
+func colorBurnBlend(src, dst uint8) uint8 {
+	if src == 0 {
+		return 0
+	}
+	result := 255 - (255-int(dst))*255/int(src)
+	if result < 0 {
+		return 0
+	}
+	return uint8(result)
+}
+
 func minUint8(a, b uint8) uint8 {
 	if a < b {
 		return a
@@ -323,6 +415,23 @@ func maxUint8(a, b uint8) uint8 {
 		return a
 	}
 	return b
+}
+
+func absInt(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
+}
+
+func clampFloat(value, min, max float64) float64 {
+	if value < min {
+		return min
+	}
+	if value > max {
+		return max
+	}
+	return value
 }
 
 func alphaBlend(src, dst color.RGBA, alpha float64) color.RGBA {
