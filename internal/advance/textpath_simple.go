@@ -4,6 +4,8 @@ import (
 	"math"
 
 	"github.com/GrandpaEJ/advancegg/internal/core"
+	"github.com/golang/freetype/raster"
+	"golang.org/x/image/math/fixed"
 )
 
 // Simplified Text-on-Path functionality
@@ -374,4 +376,176 @@ func (stp *SimpleTextOnPath) estimateBezierLength(x0, y0, x1, y1, x2, y2 float64
 	poly := math.Sqrt((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0)) +
 		math.Sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1))
 	return (chord + poly) / 2
+}
+
+// Advanced text-on-path features
+
+// DrawTextOnPath draws text along a custom path using flattened points
+func DrawTextOnPath(dc *core.Context, text string, path *core.Path2D) {
+	if text == "" || path == nil || path.IsEmpty() {
+		return
+	}
+
+	textOnPath := NewSimpleTextOnPath(text)
+	textOnPath.renderOnFlattenedPath(dc, path)
+}
+
+// renderOnFlattenedPath renders text along a flattened path
+func (stp *SimpleTextOnPath) renderOnFlattenedPath(dc *core.Context, path *core.Path2D) {
+	// Flatten the path to get points
+	rasterPath := path.GetPath()
+	flatPaths := flattenPath(rasterPath)
+
+	if len(flatPaths) == 0 {
+		return
+	}
+
+	// Use the first path (for simplicity)
+	points := flatPaths[0]
+	if len(points) < 2 {
+		return
+	}
+
+	// Calculate total path length
+	totalLength := stp.calculateFlatPathLength(points)
+	textWidth := stp.estimateTextWidth()
+
+	// Calculate starting position based on alignment
+	startDistance := stp.Offset
+	switch stp.Alignment {
+	case SimpleAlignCenter:
+		startDistance += (totalLength - textWidth) / 2
+	case SimpleAlignEnd:
+		startDistance += totalLength - textWidth
+	}
+
+	currentDistance := startDistance
+
+	for _, r := range stp.Text {
+		if currentDistance >= totalLength {
+			break
+		}
+
+		// Find position and tangent at current distance
+		x, y, tangent := stp.getPositionAtDistanceFlat(points, currentDistance)
+
+		// Render character
+		stp.renderCharacter(dc, r, x, y, tangent)
+
+		// Advance distance
+		charWidth := stp.getCharacterWidth(r)
+		currentDistance += charWidth * stp.Spacing
+	}
+}
+
+// calculateFlatPathLength calculates the total length of a flattened path
+func (stp *SimpleTextOnPath) calculateFlatPathLength(points []core.Point) float64 {
+	if len(points) < 2 {
+		return 0
+	}
+
+	totalLength := 0.0
+	for i := 1; i < len(points); i++ {
+		dx := points[i].X - points[i-1].X
+		dy := points[i].Y - points[i-1].Y
+		totalLength += math.Sqrt(dx*dx + dy*dy)
+	}
+
+	return totalLength
+}
+
+// getPositionAtDistanceFlat finds position and tangent at distance along flattened path
+func (stp *SimpleTextOnPath) getPositionAtDistanceFlat(points []core.Point, targetDistance float64) (float64, float64, float64) {
+	if len(points) < 2 {
+		return points[0].X, points[0].Y, 0
+	}
+
+	currentDistance := 0.0
+
+	for i := 1; i < len(points); i++ {
+		dx := points[i].X - points[i-1].X
+		dy := points[i].Y - points[i-1].Y
+		segmentLength := math.Sqrt(dx*dx + dy*dy)
+
+		if currentDistance+segmentLength >= targetDistance {
+			// Target is on this segment
+			if segmentLength == 0 {
+				return points[i-1].X, points[i-1].Y, 0
+			}
+
+			t := (targetDistance - currentDistance) / segmentLength
+			x := points[i-1].X + t*dx
+			y := points[i-1].Y + t*dy
+			tangent := math.Atan2(dy, dx)
+			return x, y, tangent
+		}
+
+		currentDistance += segmentLength
+	}
+
+	// If we reach here, return the last point
+	lastPoint := points[len(points)-1]
+	return lastPoint.X, lastPoint.Y, 0
+}
+
+// Helper function to access flattenPath from core package
+func flattenPath(p raster.Path) [][]core.Point {
+	// This function is defined in internal/core/path.go
+	// We need to make it accessible or reimplement it
+	var result [][]core.Point
+	var path []core.Point
+	var cx, cy float64
+
+	for i := 0; i < len(p); {
+		switch p[i] {
+		case 0: // MoveTo
+			if len(path) > 0 {
+				result = append(result, path)
+				path = nil
+			}
+			x := unfix(p[i+1])
+			y := unfix(p[i+2])
+			path = append(path, core.Point{X: x, Y: y})
+			cx, cy = x, y
+			i += 4
+		case 1: // LineTo
+			x := unfix(p[i+1])
+			y := unfix(p[i+2])
+			path = append(path, core.Point{X: x, Y: y})
+			cx, cy = x, y
+			i += 4
+		case 2: // QuadTo
+			x1 := unfix(p[i+1])
+			y1 := unfix(p[i+2])
+			x2 := unfix(p[i+3])
+			y2 := unfix(p[i+4])
+			points := core.QuadraticBezier(cx, cy, x1, y1, x2, y2)
+			path = append(path, points...)
+			cx, cy = x2, y2
+			i += 6
+		case 3: // CubeTo
+			x1 := unfix(p[i+1])
+			y1 := unfix(p[i+2])
+			x2 := unfix(p[i+3])
+			y2 := unfix(p[i+4])
+			x3 := unfix(p[i+5])
+			y3 := unfix(p[i+6])
+			points := core.CubicBezier(cx, cy, x1, y1, x2, y2, x3, y3)
+			path = append(path, points...)
+			cx, cy = x3, y3
+			i += 8
+		default:
+			// Skip unknown commands
+			i++
+		}
+	}
+	if len(path) > 0 {
+		result = append(result, path)
+	}
+	return result
+}
+
+// Helper function to convert fixed.Int26_6 to float64
+func unfix(x fixed.Int26_6) float64 {
+	return float64(x) / 64
 }
