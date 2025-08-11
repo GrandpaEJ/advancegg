@@ -451,3 +451,77 @@ var (
 	Warm           = advance.Warm
 	Cool           = advance.Cool
 )
+
+// DOM-style Object Model exports
+type Element = core.Element
+type Shape = core.Shape
+type Document = core.Document
+type Style = core.Style
+type RectShape = core.RectShape
+type CircleShape = core.CircleShape
+type LineShape = core.LineShape
+type PathShape = core.PathShape
+type TextShape = core.TextShape
+
+var (
+	NewDocument  = core.NewDocument
+	NewElement   = core.NewElement
+	CreateRect   = core.CreateRect
+	CreateCircle = core.CreateCircle
+	CreateLine   = core.CreateLine
+	CreateText   = core.CreateText
+)
+
+// Hit Testing exports
+type HitTestable = core.HitTestable
+type HitTestManager = core.HitTestManager
+type HitTestRect = core.HitTestRect
+type HitTestCircle = core.HitTestCircle
+type HitTestEllipse = core.HitTestEllipse
+type HitTestPolygon = core.HitTestPolygon
+type HitTestLine = core.HitTestLine
+type HitTestPath = core.HitTestPath
+
+var (
+	NewHitTestManager    = core.NewHitTestManager
+	CreateHitTestRect    = core.CreateHitTestRect
+	CreateHitTestCircle  = core.CreateHitTestCircle
+	CreateHitTestEllipse = core.CreateHitTestEllipse
+	CreateHitTestPolygon = core.CreateHitTestPolygon
+	CreateHitTestLine    = core.CreateHitTestLine
+	CreateHitTestPath    = core.CreateHitTestPath
+)
+
+// Animation exports
+type Animator = core.Animator
+type AnimationFrame = core.AnimationFrame
+type AnimationSequence = core.AnimationSequence
+type AnimationStep = core.AnimationStep
+type EasingFunc = core.EasingFunc
+
+var (
+	NewAnimator          = core.NewAnimator
+	NewAnimationSequence = core.NewAnimationSequence
+	AnimateProperty      = core.AnimateProperty
+	AnimateColor         = core.AnimateColor
+	AnimatePoint         = core.AnimatePoint
+
+	// Easing functions
+	EaseLinear     = core.EaseLinear
+	EaseIn         = core.EaseIn
+	EaseOut        = core.EaseOut
+	EaseInOut      = core.EaseInOut
+	EaseInCubic    = core.EaseInCubic
+	EaseOutCubic   = core.EaseOutCubic
+	EaseInOutCubic = core.EaseInOutCubic
+	EaseBounce     = core.EaseBounce
+	EaseElastic    = core.EaseElastic
+
+	// Predefined animations
+	FadeIn     = core.FadeIn
+	FadeOut    = core.FadeOut
+	SlideIn    = core.SlideIn
+	AnimScale  = core.AnimScale
+	AnimRotate = core.AnimRotate
+	Pulse      = core.Pulse
+)
