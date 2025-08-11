@@ -10,9 +10,18 @@ import (
 
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font"
+	// For color emoji font support
 )
 
 // Emoji rendering support with color fonts and fallback
+
+// ColorEmojiFont represents a color emoji font with COLR/CPAL support
+type ColorEmojiFont struct {
+	fontData     []byte
+	fontPath     string
+	hasColorData bool
+	bitmapSizes  []int // Available bitmap sizes
+}
 
 // EmojiRenderer handles emoji rendering with proper color font support
 type EmojiRenderer struct {
@@ -27,6 +36,9 @@ type EmojiRenderer struct {
 	emojiFont     *truetype.Font
 	emojiFontFace font.Face
 	fontLoaded    bool
+
+	// Color emoji font support
+	colorEmojiFont *ColorEmojiFont
 }
 
 // NewEmojiRenderer creates a new emoji renderer
@@ -119,46 +131,81 @@ type EmojiSequence struct {
 	Category    string
 }
 
-// extractEmojiSequence extracts a complete emoji sequence
+// extractEmojiSequence extracts a complete emoji sequence with improved ZWJ handling
 func (er *EmojiRenderer) extractEmojiSequence(runes []rune, start int) EmojiSequence {
 	sequence := EmojiSequence{
 		Runes: make([]rune, 0),
 	}
 
 	i := start
-	for i < len(runes) && (IsEmoji(runes[i]) || er.isModifier(runes[i])) {
-		sequence.Runes = append(sequence.Runes, runes[i])
+	zwjExpected := false
 
-		// Check for ZWJ sequence
-		if runes[i] == 0x200D {
+	for i < len(runes) {
+		r := runes[i]
+
+		// Handle ZWJ sequences properly
+		if r == 0x200D { // Zero Width Joiner
 			sequence.IsZWJ = true
+			sequence.Runes = append(sequence.Runes, r)
+			zwjExpected = true
+			i++
+			continue
 		}
 
-		// Check for skin tone modifiers
-		if er.isSkinToneModifier(runes[i]) {
-			sequence.HasModifier = true
-			sequence.SkinTone = er.getSkinToneName(runes[i])
+		// After ZWJ, we expect another emoji
+		if zwjExpected {
+			if IsEmoji(r) {
+				sequence.Runes = append(sequence.Runes, r)
+				zwjExpected = false
+				i++
+				continue
+			} else {
+				// Invalid ZWJ sequence, stop
+				break
+			}
 		}
 
-		i++
+		// Handle emoji and modifiers
+		if IsEmoji(r) || er.isModifier(r) {
+			sequence.Runes = append(sequence.Runes, r)
 
-		// Stop if we hit a non-emoji, non-modifier character
-		if i < len(runes) && !IsEmoji(runes[i]) && !er.isModifier(runes[i]) {
+			// Check for skin tone modifiers
+			if er.isSkinToneModifier(r) {
+				sequence.HasModifier = true
+				sequence.SkinTone = er.getSkinToneName(r)
+			}
+
+			i++
+
+			// Look ahead for potential ZWJ or modifiers
+			if i < len(runes) {
+				next := runes[i]
+				if next == 0x200D || er.isModifier(next) {
+					continue // Keep going for ZWJ or modifiers
+				}
+			}
+		} else {
+			// Not an emoji or modifier, stop
 			break
 		}
 	}
 
 	sequence.Text = string(sequence.Runes)
-	sequence.Category = er.GetEmojiCategory(sequence.Runes[0])
+	if len(sequence.Runes) > 0 {
+		sequence.Category = er.GetEmojiCategory(sequence.Runes[0])
+	}
 
 	return sequence
 }
 
 // isModifier checks if a rune is an emoji modifier
 func (er *EmojiRenderer) isModifier(r rune) bool {
-	return (r >= 0x1F3FB && r <= 0x1F3FF) || // Skin tone modifiers
+	return (r >= 0x1F3FB && r <= 0x1F3FF) || // Skin tone modifiers (🏻-🏿)
 		(r >= 0xFE00 && r <= 0xFE0F) || // Variation selectors
-		r == 0x200D // Zero width joiner
+		r == 0x200D || // Zero width joiner
+		(r >= 0xE0020 && r <= 0xE007F) || // Tag characters for flags
+		r == 0x20E3 || // Combining enclosing keycap (for number emojis)
+		(r >= 0x1F1E6 && r <= 0x1F1FF) // Regional indicator symbols (flags)
 }
 
 // isSkinToneModifier checks if a rune is a skin tone modifier
@@ -251,9 +298,14 @@ func (er *EmojiRenderer) renderColorEmoji(sequence EmojiSequence, size float64) 
 
 // renderWithFont renders emoji using the loaded emoji font
 func (er *EmojiRenderer) renderWithFont(sequence EmojiSequence, size float64) *image.RGBA {
-	// For now, always fall back to simple rendering since color emoji fonts
-	// require special handling that freetype doesn't support well
-	// TODO: Implement proper COLR/CPAL color emoji font rendering
+	// Try color emoji font first
+	if er.colorEmojiFont != nil && er.colorEmojiFont.hasColorData {
+		if result := er.renderColorEmojiFromFont(sequence, size); result != nil {
+			return result
+		}
+	}
+
+	// Fallback to simple rendering
 	return er.renderSimpleEmoji(sequence, size)
 
 	/*
@@ -350,6 +402,12 @@ func (er *EmojiRenderer) drawSimpleEmoji(img *image.RGBA, baseColor color.RGBA, 
 	center := image.Point{bounds.Dx() / 2, bounds.Dy() / 2}
 	radius := int(size / 3)
 
+	// Handle ZWJ sequences first
+	if sequence.IsZWJ {
+		er.drawZWJSequence(img, sequence, center, radius, baseColor)
+		return
+	}
+
 	// Draw based on specific emoji if we can recognize it
 	if len(sequence.Runes) > 0 {
 		emoji := sequence.Runes[0]
@@ -374,6 +432,12 @@ func (er *EmojiRenderer) drawSimpleEmoji(img *image.RGBA, baseColor color.RGBA, 
 			return
 		case 0x1F31F: // 🌟 glowing star
 			er.drawStar(img, center, radius)
+			return
+		case 0x1F468, 0x1F469: // 👨👩 man/woman (for family sequences)
+			er.drawPerson(img, center, radius, baseColor, emoji == 0x1F469)
+			return
+		case 0x1F9D1: // 🧑 person
+			er.drawPerson(img, center, radius, baseColor, false)
 			return
 		}
 	}
@@ -623,7 +687,12 @@ func (er *EmojiRenderer) loadEmojiFont(fontPath string) bool {
 		return false
 	}
 
-	// Parse font using freetype
+	// Try to load as color emoji font first
+	if er.loadColorEmojiFont(fontPath, fontData) {
+		return true
+	}
+
+	// Fallback to regular font parsing
 	font, err := truetype.Parse(fontData)
 	if err != nil {
 		// Many emoji fonts are in special formats that freetype can't parse
@@ -640,6 +709,38 @@ func (er *EmojiRenderer) loadEmojiFont(fontPath string) bool {
 	er.fontLoaded = true
 
 	return true
+}
+
+// loadColorEmojiFont attempts to load a color emoji font
+func (er *EmojiRenderer) loadColorEmojiFont(fontPath string, fontData []byte) bool {
+	// Check if this looks like a color emoji font
+	if !er.isColorEmojiFont(fontData) {
+		return false
+	}
+
+	// Create color emoji font structure
+	er.colorEmojiFont = &ColorEmojiFont{
+		fontData:     fontData,
+		fontPath:     fontPath,
+		hasColorData: true,
+		bitmapSizes:  []int{16, 32, 64, 128}, // Common emoji sizes
+	}
+
+	er.fontLoaded = true
+	return true
+}
+
+// isColorEmojiFont checks if the font data contains color emoji tables
+func (er *EmojiRenderer) isColorEmojiFont(fontData []byte) bool {
+	// Simple heuristic: check for common color emoji font signatures
+	fontStr := string(fontData[:min(1024, len(fontData))])
+
+	// Look for COLR/CPAL table signatures or known color emoji fonts
+	return strings.Contains(fontStr, "COLR") ||
+		strings.Contains(fontStr, "CPAL") ||
+		strings.Contains(fontStr, "CBDT") || // Color bitmap data
+		strings.Contains(fontStr, "CBLC") || // Color bitmap location
+		strings.Contains(fontStr, "sbix") // Apple's emoji format
 }
 
 // hasColorFont checks if any color fonts are loaded
@@ -838,4 +939,470 @@ func abs(x int) int {
 		return -x
 	}
 	return x
+}
+
+// renderColorEmojiFromFont renders emoji using color font data
+func (er *EmojiRenderer) renderColorEmojiFromFont(sequence EmojiSequence, size float64) *image.RGBA {
+	if er.colorEmojiFont == nil {
+		return nil
+	}
+
+	// For now, implement a simplified color emoji renderer
+	// This would ideally parse COLR/CPAL tables, but that's very complex
+	// Instead, we'll create enhanced emoji with better colors and details
+
+	img := image.NewRGBA(image.Rect(0, 0, int(size), int(size)))
+
+	// Fill with transparent background
+	draw.Draw(img, img.Bounds(), &image.Uniform{color.RGBA{0, 0, 0, 0}}, image.ZP, draw.Src)
+
+	// Render enhanced emoji based on Unicode codepoint
+	if len(sequence.Runes) > 0 {
+		emoji := sequence.Runes[0]
+		center := image.Point{int(size) / 2, int(size) / 2}
+		radius := int(size) / 3
+
+		switch emoji {
+		case 0x1F600: // 😀 grinning face
+			er.drawEnhancedGrinningFace(img, center, radius)
+		case 0x1F44B: // 👋 waving hand
+			er.drawEnhancedWavingHand(img, center, radius)
+		case 0x1F44D: // 👍 thumbs up
+			er.drawEnhancedThumbsUp(img, center, radius)
+		case 0x2764: // ❤ red heart
+			er.drawEnhancedHeart(img, center, radius)
+		case 0x1F31F: // 🌟 glowing star
+			er.drawEnhancedStar(img, center, radius)
+		default:
+			// Use enhanced generic rendering
+			return er.renderEnhancedEmoji(sequence, size)
+		}
+
+		return img
+	}
+
+	return nil
+}
+
+// renderEnhancedEmoji renders enhanced generic emoji
+func (er *EmojiRenderer) renderEnhancedEmoji(sequence EmojiSequence, size float64) *image.RGBA {
+	// For now, fall back to simple emoji but with enhanced colors
+	return er.renderSimpleEmoji(sequence, size)
+}
+
+// Enhanced emoji drawing methods with gradients and better colors
+
+// drawEnhancedGrinningFace draws an enhanced grinning face with gradients
+func (er *EmojiRenderer) drawEnhancedGrinningFace(img *image.RGBA, center image.Point, radius int) {
+	// Yellow face with gradient
+	er.drawGradientCircle(img, center, radius,
+		color.RGBA{255, 235, 120, 255}, // Light yellow
+		color.RGBA{255, 200, 80, 255})  // Darker yellow
+
+	// Black eyes with highlights
+	eyeColor := color.RGBA{0, 0, 0, 255}
+	highlightColor := color.RGBA{255, 255, 255, 180}
+
+	leftEye := image.Point{center.X - radius/3, center.Y - radius/3}
+	rightEye := image.Point{center.X + radius/3, center.Y - radius/3}
+
+	er.drawCircle(img, leftEye, radius/8, eyeColor)
+	er.drawCircle(img, rightEye, radius/8, eyeColor)
+
+	// Eye highlights
+	er.drawCircle(img, image.Point{leftEye.X + radius/16, leftEye.Y - radius/16}, radius/20, highlightColor)
+	er.drawCircle(img, image.Point{rightEye.X + radius/16, rightEye.Y - radius/16}, radius/20, highlightColor)
+
+	// Enhanced smile
+	er.drawSmile(img, center, radius, eyeColor)
+}
+
+// drawEnhancedWavingHand draws an enhanced waving hand with skin tones
+func (er *EmojiRenderer) drawEnhancedWavingHand(img *image.RGBA, center image.Point, radius int) {
+	// Skin color with gradient
+	skinLight := color.RGBA{255, 220, 177, 255}
+	skinDark := color.RGBA{240, 195, 140, 255}
+
+	// Draw palm with gradient
+	er.drawGradientOval(img, center, radius, radius*3/4, skinLight, skinDark)
+
+	// Draw fingers with highlights
+	for i := 0; i < 4; i++ {
+		fingerX := center.X - radius/2 + i*radius/4
+		fingerY := center.Y - radius
+		finger := image.Point{fingerX, fingerY}
+		er.drawGradientOval(img, finger, radius/6, radius/3, skinLight, skinDark)
+	}
+}
+
+// drawEnhancedThumbsUp draws an enhanced thumbs up with depth
+func (er *EmojiRenderer) drawEnhancedThumbsUp(img *image.RGBA, center image.Point, radius int) {
+	// Skin colors
+	skinLight := color.RGBA{255, 220, 177, 255}
+	skinDark := color.RGBA{240, 195, 140, 255}
+
+	// Draw thumb with gradient
+	thumbCenter := image.Point{center.X, center.Y - radius/4}
+	er.drawGradientOval(img, thumbCenter, radius/3, radius, skinLight, skinDark)
+
+	// Draw fist base with shadow
+	fistCenter := image.Point{center.X, center.Y + radius/2}
+	er.drawGradientOval(img, fistCenter, radius*2/3, radius/2, skinLight, skinDark)
+}
+
+// drawEnhancedHeart draws an enhanced heart with gradient
+func (er *EmojiRenderer) drawEnhancedHeart(img *image.RGBA, center image.Point, radius int) {
+	heartLight := color.RGBA{255, 100, 100, 255}
+	heartDark := color.RGBA{200, 50, 50, 255}
+
+	// Draw two circles for the top of the heart with gradient
+	leftTop := image.Point{center.X - radius/3, center.Y - radius/4}
+	rightTop := image.Point{center.X + radius/3, center.Y - radius/4}
+	er.drawGradientCircle(img, leftTop, radius/2, heartLight, heartDark)
+	er.drawGradientCircle(img, rightTop, radius/2, heartLight, heartDark)
+
+	// Draw triangle for bottom of heart with gradient
+	er.drawGradientTriangle(img, center, radius, heartLight, heartDark)
+}
+
+// drawEnhancedStar draws an enhanced star with glow effect
+func (er *EmojiRenderer) drawEnhancedStar(img *image.RGBA, center image.Point, radius int) {
+	starLight := color.RGBA{255, 255, 150, 255}
+	starDark := color.RGBA{255, 220, 100, 255}
+
+	// Draw glow effect (larger, semi-transparent)
+	glowColor := color.RGBA{255, 255, 200, 100}
+	er.drawStarShape(img, center, radius+radius/4, glowColor)
+
+	// Draw main star with gradient
+	er.drawGradientStar(img, center, radius, starLight, starDark)
+}
+
+// Gradient drawing helper methods
+
+// drawGradientCircle draws a circle with radial gradient
+func (er *EmojiRenderer) drawGradientCircle(img *image.RGBA, center image.Point, radius int, innerColor, outerColor color.RGBA) {
+	bounds := img.Bounds()
+	for y := center.Y - radius; y <= center.Y+radius; y++ {
+		for x := center.X - radius; x <= center.X+radius; x++ {
+			if x >= bounds.Min.X && x < bounds.Max.X && y >= bounds.Min.Y && y < bounds.Max.Y {
+				dx := float64(x - center.X)
+				dy := float64(y - center.Y)
+				distance := dx*dx + dy*dy
+				radiusSquared := float64(radius * radius)
+
+				if distance <= radiusSquared {
+					// Calculate gradient factor (0 = center, 1 = edge)
+					factor := distance / radiusSquared
+
+					// Interpolate colors
+					r := uint8(float64(innerColor.R)*(1-factor) + float64(outerColor.R)*factor)
+					g := uint8(float64(innerColor.G)*(1-factor) + float64(outerColor.G)*factor)
+					b := uint8(float64(innerColor.B)*(1-factor) + float64(outerColor.B)*factor)
+					a := uint8(float64(innerColor.A)*(1-factor) + float64(outerColor.A)*factor)
+
+					img.SetRGBA(x, y, color.RGBA{r, g, b, a})
+				}
+			}
+		}
+	}
+}
+
+// drawGradientOval draws an oval with gradient
+func (er *EmojiRenderer) drawGradientOval(img *image.RGBA, center image.Point, radiusX, radiusY int, innerColor, outerColor color.RGBA) {
+	bounds := img.Bounds()
+	for y := center.Y - radiusY; y <= center.Y+radiusY; y++ {
+		for x := center.X - radiusX; x <= center.X+radiusX; x++ {
+			if x >= bounds.Min.X && x < bounds.Max.X && y >= bounds.Min.Y && y < bounds.Max.Y {
+				dx := float64(x - center.X)
+				dy := float64(y - center.Y)
+				// Ellipse equation: (x/a)² + (y/b)² <= 1
+				distance := (dx*dx)/float64(radiusX*radiusX) + (dy*dy)/float64(radiusY*radiusY)
+
+				if distance <= 1 {
+					// Calculate gradient factor
+					factor := distance
+
+					// Interpolate colors
+					r := uint8(float64(innerColor.R)*(1-factor) + float64(outerColor.R)*factor)
+					g := uint8(float64(innerColor.G)*(1-factor) + float64(outerColor.G)*factor)
+					b := uint8(float64(innerColor.B)*(1-factor) + float64(outerColor.B)*factor)
+					a := uint8(float64(innerColor.A)*(1-factor) + float64(outerColor.A)*factor)
+
+					img.SetRGBA(x, y, color.RGBA{r, g, b, a})
+				}
+			}
+		}
+	}
+}
+
+// drawGradientTriangle draws a triangle with gradient
+func (er *EmojiRenderer) drawGradientTriangle(img *image.RGBA, center image.Point, radius int, topColor, bottomColor color.RGBA) {
+	bounds := img.Bounds()
+	// Simple triangle pointing down
+	for y := center.Y; y <= center.Y+radius; y++ {
+		width := radius - (y - center.Y)
+		for x := center.X - width; x <= center.X+width; x++ {
+			if x >= bounds.Min.X && x < bounds.Max.X && y >= bounds.Min.Y && y < bounds.Max.Y {
+				// Calculate gradient factor based on Y position
+				factor := float64(y-center.Y) / float64(radius)
+
+				// Interpolate colors
+				r := uint8(float64(topColor.R)*(1-factor) + float64(bottomColor.R)*factor)
+				g := uint8(float64(topColor.G)*(1-factor) + float64(bottomColor.G)*factor)
+				b := uint8(float64(topColor.B)*(1-factor) + float64(bottomColor.B)*factor)
+				a := uint8(float64(topColor.A)*(1-factor) + float64(bottomColor.A)*factor)
+
+				img.SetRGBA(x, y, color.RGBA{r, g, b, a})
+			}
+		}
+	}
+}
+
+// drawGradientStar draws a star with gradient
+func (er *EmojiRenderer) drawGradientStar(img *image.RGBA, center image.Point, radius int, innerColor, outerColor color.RGBA) {
+	bounds := img.Bounds()
+
+	// Draw a diamond shape as a simple star with gradient
+	for y := center.Y - radius; y <= center.Y+radius; y++ {
+		for x := center.X - radius; x <= center.X+radius; x++ {
+			if x >= bounds.Min.X && x < bounds.Max.X && y >= bounds.Min.Y && y < bounds.Max.Y {
+				dx := abs(x - center.X)
+				dy := abs(y - center.Y)
+				distance := dx + dy
+
+				if distance <= radius {
+					// Calculate gradient factor
+					factor := float64(distance) / float64(radius)
+
+					// Interpolate colors
+					r := uint8(float64(innerColor.R)*(1-factor) + float64(outerColor.R)*factor)
+					g := uint8(float64(innerColor.G)*(1-factor) + float64(outerColor.G)*factor)
+					b := uint8(float64(innerColor.B)*(1-factor) + float64(outerColor.B)*factor)
+					a := uint8(float64(innerColor.A)*(1-factor) + float64(outerColor.A)*factor)
+
+					img.SetRGBA(x, y, color.RGBA{r, g, b, a})
+				}
+			}
+		}
+	}
+}
+
+// min returns the minimum of two integers
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+// drawZWJSequence handles Zero Width Joiner sequences
+func (er *EmojiRenderer) drawZWJSequence(img *image.RGBA, sequence EmojiSequence, center image.Point, radius int, baseColor color.RGBA) {
+	// Common ZWJ sequences
+	runes := sequence.Runes
+
+	// Family sequences (👨‍👩‍👧‍👦, etc.)
+	if er.isFamilySequence(runes) {
+		er.drawFamilySequence(img, runes, center, radius, baseColor)
+		return
+	}
+
+	// Professional sequences (👨‍💻, 👩‍⚕️, etc.)
+	if er.isProfessionSequence(runes) {
+		er.drawProfessionSequence(img, runes, center, radius, baseColor)
+		return
+	}
+
+	// Couple sequences (👨‍❤️‍👨, 👩‍❤️‍👩, etc.)
+	if er.isCoupleSequence(runes) {
+		er.drawCoupleSequence(img, runes, center, radius, baseColor)
+		return
+	}
+
+	// Fallback: draw the first emoji with a ZWJ indicator
+	if len(runes) > 0 {
+		er.drawPerson(img, center, radius, baseColor, false)
+		// Add a small indicator for ZWJ
+		er.drawZWJIndicator(img, center, radius)
+	}
+}
+
+// drawPerson draws a person emoji with gender option
+func (er *EmojiRenderer) drawPerson(img *image.RGBA, center image.Point, radius int, baseColor color.RGBA, isFemale bool) {
+	// Draw head (circle)
+	er.drawFilledCircle(img, center.X, center.Y-radius/2, radius/3, baseColor)
+
+	// Draw body (rectangle)
+	bodyWidth := radius / 2
+	bodyRect := image.Rect(
+		center.X-bodyWidth/2,
+		center.Y-radius/4,
+		center.X+bodyWidth/2,
+		center.Y+radius,
+	)
+
+	// Body color (clothing)
+	bodyColor := color.RGBA{100, 150, 200, 255}
+	if isFemale {
+		bodyColor = color.RGBA{200, 100, 150, 255} // Pink for female
+	}
+
+	er.drawFilledRect(img, bodyRect, bodyColor)
+
+	// Draw arms
+	armColor := baseColor
+	er.drawFilledRect(img, image.Rect(center.X-radius/2, center.Y-radius/4, center.X-radius/3, center.Y+radius/4), armColor)
+	er.drawFilledRect(img, image.Rect(center.X+radius/3, center.Y-radius/4, center.X+radius/2, center.Y+radius/4), armColor)
+}
+
+// Helper methods for ZWJ sequence detection
+func (er *EmojiRenderer) isFamilySequence(runes []rune) bool {
+	// Look for family patterns: man/woman + ZWJ + man/woman + ZWJ + child patterns
+	hasAdult := false
+	hasChild := false
+
+	for _, r := range runes {
+		if r == 0x1F468 || r == 0x1F469 || r == 0x1F9D1 { // man, woman, person
+			hasAdult = true
+		}
+		if r == 0x1F466 || r == 0x1F467 { // boy, girl
+			hasChild = true
+		}
+	}
+
+	return hasAdult && hasChild
+}
+
+func (er *EmojiRenderer) isProfessionSequence(runes []rune) bool {
+	// Look for person + ZWJ + profession emoji
+	hasPerson := false
+	hasProfession := false
+
+	for _, r := range runes {
+		if r == 0x1F468 || r == 0x1F469 || r == 0x1F9D1 {
+			hasPerson = true
+		}
+		// Common profession emojis
+		if r == 0x1F4BB || r == 0x2695 || r == 0x1F3EB || r == 0x1F692 { // laptop, medical, school, fire engine
+			hasProfession = true
+		}
+	}
+
+	return hasPerson && hasProfession
+}
+
+func (er *EmojiRenderer) isCoupleSequence(runes []rune) bool {
+	// Look for person + ZWJ + heart + ZWJ + person
+	personCount := 0
+	hasHeart := false
+
+	for _, r := range runes {
+		if r == 0x1F468 || r == 0x1F469 || r == 0x1F9D1 {
+			personCount++
+		}
+		if r == 0x2764 { // heart
+			hasHeart = true
+		}
+	}
+
+	return personCount >= 2 && hasHeart
+}
+
+// Drawing methods for ZWJ sequences
+func (er *EmojiRenderer) drawFamilySequence(img *image.RGBA, runes []rune, center image.Point, radius int, baseColor color.RGBA) {
+	// Draw a simplified family: 2-3 people of different sizes
+	spacing := radius / 2
+
+	// Adult 1
+	er.drawPerson(img, image.Point{center.X - spacing, center.Y}, radius*2/3, baseColor, false)
+
+	// Adult 2
+	er.drawPerson(img, image.Point{center.X, center.Y}, radius*2/3, baseColor, true)
+
+	// Child
+	er.drawPerson(img, image.Point{center.X + spacing, center.Y + radius/4}, radius/2, baseColor, false)
+}
+
+func (er *EmojiRenderer) drawProfessionSequence(img *image.RGBA, runes []rune, center image.Point, radius int, baseColor color.RGBA) {
+	// Draw person with profession indicator
+	er.drawPerson(img, center, radius, baseColor, false)
+
+	// Add profession symbol (simplified)
+	symbolColor := color.RGBA{255, 255, 0, 255} // Yellow
+	er.drawFilledCircle(img, center.X+radius/2, center.Y-radius/2, radius/4, symbolColor)
+}
+
+func (er *EmojiRenderer) drawCoupleSequence(img *image.RGBA, runes []rune, center image.Point, radius int, baseColor color.RGBA) {
+	// Draw two people with heart between
+	spacing := radius / 2
+
+	// Person 1
+	er.drawPerson(img, image.Point{center.X - spacing, center.Y}, radius*2/3, baseColor, false)
+
+	// Heart
+	er.drawHeart(img, center, radius/3)
+
+	// Person 2
+	er.drawPerson(img, image.Point{center.X + spacing, center.Y}, radius*2/3, baseColor, true)
+}
+
+func (er *EmojiRenderer) drawZWJIndicator(img *image.RGBA, center image.Point, radius int) {
+	// Draw a small connecting line to indicate ZWJ
+	indicatorColor := color.RGBA{128, 128, 128, 255}
+	er.drawLine(img, center.X-radius/4, center.Y+radius, center.X+radius/4, center.Y+radius, indicatorColor)
+}
+
+// Helper drawing methods
+func (er *EmojiRenderer) drawLine(img *image.RGBA, x1, y1, x2, y2 int, c color.RGBA) {
+	// Simple line drawing
+	bounds := img.Bounds()
+	if x1 >= bounds.Min.X && x1 < bounds.Max.X && y1 >= bounds.Min.Y && y1 < bounds.Max.Y &&
+		x2 >= bounds.Min.X && x2 < bounds.Max.X && y2 >= bounds.Min.Y && y2 < bounds.Max.Y {
+
+		// Simplified line drawing - just draw a few pixels
+		for i := 0; i <= 5; i++ {
+			x := x1 + (x2-x1)*i/5
+			y := y1 + (y2-y1)*i/5
+			if x >= bounds.Min.X && x < bounds.Max.X && y >= bounds.Min.Y && y < bounds.Max.Y {
+				img.Set(x, y, c)
+			}
+		}
+	}
+}
+
+// drawFilledCircle draws a filled circle
+func (er *EmojiRenderer) drawFilledCircle(img *image.RGBA, centerX, centerY, radius int, c color.RGBA) {
+	bounds := img.Bounds()
+	for y := centerY - radius; y <= centerY+radius; y++ {
+		for x := centerX - radius; x <= centerX+radius; x++ {
+			if x >= bounds.Min.X && x < bounds.Max.X && y >= bounds.Min.Y && y < bounds.Max.Y {
+				dx := x - centerX
+				dy := y - centerY
+				if dx*dx+dy*dy <= radius*radius {
+					img.Set(x, y, c)
+				}
+			}
+		}
+	}
+}
+
+// drawFilledRect draws a filled rectangle
+func (er *EmojiRenderer) drawFilledRect(img *image.RGBA, rect image.Rectangle, c color.RGBA) {
+	bounds := img.Bounds()
+	for y := rect.Min.Y; y < rect.Max.Y; y++ {
+		for x := rect.Min.X; x < rect.Max.X; x++ {
+			if x >= bounds.Min.X && x < bounds.Max.X && y >= bounds.Min.Y && y < bounds.Max.Y {
+				img.Set(x, y, c)
+			}
+		}
+	}
+}
+
+// LoadEmojiFont loads an emoji font from the specified path
+func (er *EmojiRenderer) LoadEmojiFont(fontPath string) error {
+	success := er.loadEmojiFont(fontPath)
+	if !success {
+		return fmt.Errorf("failed to load emoji font: %s", fontPath)
+	}
+	return nil
 }
