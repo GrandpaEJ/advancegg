@@ -7,9 +7,25 @@ func main() {
 	dc := advancegg.NewContext(S, S)
 	dc.SetRGB(1, 1, 1)
 	dc.Clear()
-	if err := dc.LoadFontFace("/Library/Fonts/Impact.ttf", 96); err != nil {
-		panic(err)
+	// Try to load a bold system font, fallback to default if not found
+	fontPaths := []string{
+		"/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+		"/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+		"/usr/share/fonts/TTF/DejaVuSans-Bold.ttf",
+		"/System/Library/Fonts/Impact.ttf",                // macOS
+		"/Library/Fonts/Impact.ttf",                       // macOS
+		"C:/Windows/Fonts/impact.ttf",                     // Windows
+		"/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", // fallback to regular
 	}
+
+	var err error
+	for _, fontPath := range fontPaths {
+		err = dc.LoadFontFace(fontPath, 96)
+		if err == nil {
+			break
+		}
+	}
+	// Continue with default font if none found
 	dc.SetRGB(0, 0, 0)
 	s := "ONE DOES NOT SIMPLY"
 	n := 6 // "stroke" size

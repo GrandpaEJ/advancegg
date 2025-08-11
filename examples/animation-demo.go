@@ -27,10 +27,10 @@ func main() {
 func createBasicAnimationDemo() {
 	fmt.Println("Creating basic animation...")
 
-	// Create a simple bouncing ball animation
+	// Create a simple bouncing ball animation (optimized for faster generation)
 	width, height := 400, 300
-	fps := 30.0
-	duration := 3 * time.Second
+	fps := 10.0                 // Reduced FPS for faster generation
+	duration := 2 * time.Second // Shorter duration
 
 	animator := advancegg.NewAnimator(width, height, fps, duration)
 	frameCount := int(fps * duration.Seconds())
@@ -77,10 +77,10 @@ func createBasicAnimationDemo() {
 func createEasingDemo() {
 	fmt.Println("Creating easing functions demo...")
 
-	// Create animation showing different easing functions
+	// Create animation showing different easing functions (optimized)
 	width, height := 600, 400
-	fps := 30.0
-	duration := 4 * time.Second
+	fps := 10.0                 // Reduced FPS
+	duration := 2 * time.Second // Shorter duration
 
 	animator := advancegg.NewAnimator(width, height, fps, duration)
 	frameCount := int(fps * duration.Seconds())
@@ -252,8 +252,8 @@ func createComplexSequenceDemo() {
 		ctx.Pop()
 	}, advancegg.EaseIn)
 
-	// Render sequence to animation
-	fps := 30.0
+	// Render sequence to animation (optimized)
+	fps := 10.0 // Reduced FPS
 	animator := seq.Render(width, height, fps)
 
 	// Save as GIF
@@ -272,8 +272,8 @@ func demonstrateColorAnimation() {
 	fmt.Println("Creating color animation demo...")
 
 	width, height := 400, 300
-	fps := 30.0
-	duration := 3 * time.Second
+	fps := 10.0                 // Reduced FPS
+	duration := 2 * time.Second // Shorter duration
 
 	animator := advancegg.NewAnimator(width, height, fps, duration)
 	frameCount := int(fps * duration.Seconds())
@@ -319,8 +319,8 @@ func demonstratePointAnimation() {
 	fmt.Println("Creating point animation demo...")
 
 	width, height := 400, 300
-	fps := 30.0
-	duration := 2 * time.Second
+	fps := 10.0                 // Reduced FPS
+	duration := 1 * time.Second // Shorter duration
 
 	animator := advancegg.NewAnimator(width, height, fps, duration)
 	frameCount := int(fps * duration.Seconds())

@@ -10,9 +10,22 @@ func main() {
 	dc.SetRGB(1, 1, 1)
 	dc.Clear()
 	dc.SetRGB(0, 0, 0)
-	if err := dc.LoadFontFace("Xolonium-Regular.ttf", F); err != nil {
-		panic(err)
+	// Try to load a Unicode-capable font
+	fontPaths := []string{
+		"/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+		"/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+		"/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf",
+		"/System/Library/Fonts/Arial.ttf", // macOS
+		"/Library/Fonts/Arial.ttf",        // macOS
+		"C:/Windows/Fonts/arial.ttf",      // Windows
 	}
+
+	for _, fontPath := range fontPaths {
+		if dc.LoadFontFace(fontPath, F) == nil {
+			break
+		}
+	}
+	// Continue with default font if none found
 	for r := 0; r < 256; r++ {
 		for c := 0; c < 256; c++ {
 			i := r*256 + c

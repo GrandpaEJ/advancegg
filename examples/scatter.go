@@ -11,7 +11,7 @@ func CreatePoints(n int) []advancegg.Point {
 	for i := 0; i < n; i++ {
 		x := 0.5 + rand.NormFloat64()*0.1
 		y := x + rand.NormFloat64()*0.1
-		points[i] = advancegg.Point{x, y}
+		points[i] = advancegg.Point{X: x, Y: y}
 	}
 	return points
 }
@@ -54,12 +54,36 @@ func main() {
 	// draw text
 	dc.Identity()
 	dc.SetRGB(0, 0, 0)
-	if err := dc.LoadFontFace("/Library/Fonts/Arial Bold.ttf", 24); err != nil {
-		panic(err)
+
+	// Try to load bold font for title
+	boldFontPaths := []string{
+		"/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+		"/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+		"/System/Library/Fonts/Arial Bold.ttf", // macOS
+		"/Library/Fonts/Arial Bold.ttf",        // macOS
+		"C:/Windows/Fonts/arialbd.ttf",         // Windows
+	}
+
+	for _, fontPath := range boldFontPaths {
+		if dc.LoadFontFace(fontPath, 24) == nil {
+			break
+		}
 	}
 	dc.DrawStringAnchored("Chart Title", S/2, P/2, 0.5, 0.5)
-	if err := dc.LoadFontFace("/Library/Fonts/Arial.ttf", 18); err != nil {
-		panic(err)
+
+	// Try to load regular font for axis
+	regularFontPaths := []string{
+		"/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+		"/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+		"/System/Library/Fonts/Arial.ttf", // macOS
+		"/Library/Fonts/Arial.ttf",        // macOS
+		"C:/Windows/Fonts/arial.ttf",      // Windows
+	}
+
+	for _, fontPath := range regularFontPaths {
+		if dc.LoadFontFace(fontPath, 18) == nil {
+			break
+		}
 	}
 	dc.DrawStringAnchored("X Axis Title", S/2, S-P/2, 0.5, 0.5)
 	dc.SavePNG("out.png")
