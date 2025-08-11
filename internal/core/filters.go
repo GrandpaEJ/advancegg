@@ -5,6 +5,7 @@ import (
 	"image/color"
 	"math"
 	"math/rand"
+	"runtime"
 )
 
 // Filter represents an image filter function
@@ -378,6 +379,221 @@ func Emboss(img image.Image) image.Image {
 		}
 	}
 	return embossed
+}
+
+// Performance-optimized filters using SIMD and parallel processing
+
+// FastGrayscale is an optimized version of Grayscale using SIMD
+func FastGrayscale(img image.Image) image.Image {
+	if rgba, ok := img.(*image.RGBA); ok {
+		return SIMDColorTransform(rgba, func(r, g, b, a uint8) (uint8, uint8, uint8, uint8) {
+			// Optimized grayscale conversion using integer arithmetic
+			gray := uint8((uint32(r)*77 + uint32(g)*150 + uint32(b)*29) >> 8)
+			return gray, gray, gray, a
+		})
+	}
+
+	// Fallback to standard implementation
+	return Grayscale(img)
+}
+
+// FastBrightness is an optimized brightness filter
+func FastBrightness(factor float64) Filter {
+	return func(img image.Image) image.Image {
+		if rgba, ok := img.(*image.RGBA); ok {
+			// Pre-calculate lookup table for performance
+			lut := make([]uint8, 256)
+			for i := 0; i < 256; i++ {
+				val := float64(i) * factor
+				if val > 255 {
+					lut[i] = 255
+				} else if val < 0 {
+					lut[i] = 0
+				} else {
+					lut[i] = uint8(val)
+				}
+			}
+
+			return SIMDColorTransform(rgba, func(r, g, b, a uint8) (uint8, uint8, uint8, uint8) {
+				return lut[r], lut[g], lut[b], a
+			})
+		}
+
+		// Fallback to standard implementation
+		return Brightness(factor)(img)
+	}
+}
+
+// FastContrast is an optimized contrast filter
+func FastContrast(factor float64) Filter {
+	return func(img image.Image) image.Image {
+		if rgba, ok := img.(*image.RGBA); ok {
+			// Pre-calculate lookup table
+			lut := make([]uint8, 256)
+			for i := 0; i < 256; i++ {
+				val := (float64(i)-128)*factor + 128
+				if val > 255 {
+					lut[i] = 255
+				} else if val < 0 {
+					lut[i] = 0
+				} else {
+					lut[i] = uint8(val)
+				}
+			}
+
+			return SIMDColorTransform(rgba, func(r, g, b, a uint8) (uint8, uint8, uint8, uint8) {
+				return lut[r], lut[g], lut[b], a
+			})
+		}
+
+		return Contrast(factor)(img)
+	}
+}
+
+// FastBlur is an optimized blur filter using separable convolution
+func FastBlur(radius int) Filter {
+	return func(img image.Image) image.Image {
+		if rgba, ok := img.(*image.RGBA); ok {
+			return SIMDBlur(rgba, radius)
+		}
+
+		return Blur(radius)(img)
+	}
+}
+
+// FastSharpen is an optimized sharpen filter
+func FastSharpen(amount float64) Filter {
+	return func(img image.Image) image.Image {
+		if rgba, ok := img.(*image.RGBA); ok {
+			// Optimized unsharp mask
+			kernel := [][]float64{
+				{0, -amount, 0},
+				{-amount, 1 + 4*amount, -amount},
+				{0, -amount, 0},
+			}
+			return SIMDConvolution(rgba, kernel)
+		}
+
+		return Sharpen(img)
+	}
+}
+
+// FastEdgeDetection is an optimized edge detection filter
+func FastEdgeDetection() Filter {
+	return func(img image.Image) image.Image {
+		if rgba, ok := img.(*image.RGBA); ok {
+			// Sobel operator
+			sobelX := [][]float64{
+				{-1, 0, 1},
+				{-2, 0, 2},
+				{-1, 0, 1},
+			}
+
+			sobelY := [][]float64{
+				{-1, -2, -1},
+				{0, 0, 0},
+				{1, 2, 1},
+			}
+
+			// Apply both kernels and combine
+			edgesX := SIMDConvolution(rgba, sobelX)
+			edgesY := SIMDConvolution(rgba, sobelY)
+
+			return combineEdges(edgesX, edgesY)
+		}
+
+		return EdgeDetection(img)
+	}
+}
+
+// combineEdges combines horizontal and vertical edge detection results
+func combineEdges(edgesX, edgesY *image.RGBA) *image.RGBA {
+	bounds := edgesX.Bounds()
+	result := image.NewRGBA(bounds)
+
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			px := edgesX.RGBAAt(x, y)
+			py := edgesY.RGBAAt(x, y)
+
+			// Combine using magnitude
+			gx := float64(px.R)
+			gy := float64(py.R)
+			magnitude := uint8(math.Min(255, math.Sqrt(gx*gx+gy*gy)))
+
+			result.SetRGBA(x, y, color.RGBA{magnitude, magnitude, magnitude, px.A})
+		}
+	}
+
+	return result
+}
+
+// BatchFilter applies multiple filters efficiently
+func BatchFilter(filters ...Filter) Filter {
+	return func(img image.Image) image.Image {
+		result := img
+		for _, filter := range filters {
+			result = filter(result)
+		}
+		return result
+	}
+}
+
+// ParallelFilter applies a filter using parallel processing
+func ParallelFilter(filter Filter, numWorkers int) Filter {
+	return func(img image.Image) image.Image {
+		if rgba, ok := img.(*image.RGBA); ok {
+			bounds := rgba.Bounds()
+			width := bounds.Max.X - bounds.Min.X
+			height := bounds.Max.Y - bounds.Min.Y
+			result := image.NewRGBA(bounds)
+
+			if numWorkers <= 0 {
+				numWorkers = runtime.NumCPU()
+			}
+
+			rowsPerWorker := height / numWorkers
+			done := make(chan bool, numWorkers)
+
+			for worker := 0; worker < numWorkers; worker++ {
+				startY := worker * rowsPerWorker
+				endY := startY + rowsPerWorker
+				if worker == numWorkers-1 {
+					endY = height
+				}
+
+				go func(startY, endY int) {
+					// Create sub-image for this worker
+					subBounds := image.Rect(bounds.Min.X, bounds.Min.Y+startY, bounds.Max.X, bounds.Min.Y+endY)
+					subImg := rgba.SubImage(subBounds)
+
+					// Apply filter to sub-image
+					filtered := filter(subImg)
+
+					// Copy result back
+					if filteredRGBA, ok := filtered.(*image.RGBA); ok {
+						for y := startY; y < endY; y++ {
+							for x := 0; x < width; x++ {
+								pixel := filteredRGBA.RGBAAt(x, y-startY)
+								result.SetRGBA(x, y, pixel)
+							}
+						}
+					}
+
+					done <- true
+				}(startY, endY)
+			}
+
+			// Wait for all workers
+			for i := 0; i < numWorkers; i++ {
+				<-done
+			}
+
+			return result
+		}
+
+		return filter(img)
+	}
 }
 
 // Posterize reduces the number of colors
