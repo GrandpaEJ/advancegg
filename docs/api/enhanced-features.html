@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Features API - AdvanceGG</title>
+    <meta name="description" content="Complete API reference for AdvanceGG's enhanced features including layer compositing, DOM object model, hit testing, and animation support.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        .api-section {
+            border-left: 4px solid #667eea;
+            padding-left: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        .method-signature {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        .parameter-table {
+            font-size: 0.875rem;
+        }
+        .return-type {
+            color: #667eea;
+            font-weight: 600;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            margin: 1rem 0;
+        }
+        .badge-new {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .toc {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .toc ul ul {
+            padding-left: 1.5rem;
+            margin-top: 0.5rem;
+        }
+        .toc a {
+            text-decoration: none;
+            color: #495057;
+            padding: 0.25rem 0;
+            display: block;
+            transition: color 0.2s ease;
+        }
+        .toc a:hover {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../index.html">
+                🎨 AdvanceGG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../getting-started.html">Getting Started</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../examples/index.html">Examples</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">API Reference</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/GrandpaEJ/advancegg" target="_blank">GitHub</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-3">
+                <!-- Table of Contents -->
+                <div class="toc sticky-top" style="top: 2rem;">
+                    <h5 class="fw-bold mb-3">Enhanced Features API</h5>
+                    <ul>
+                        <li><a href="#layer-compositing">Layer Compositing</a>
+                            <ul>
+                                <li><a href="#layer-manager">LayerManager</a></li>
+                                <li><a href="#blend-modes">Blend Modes</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#dom-object-model">DOM Object Model</a>
+                            <ul>
+                                <li><a href="#document">Document</a></li>
+                                <li><a href="#element">Element</a></li>
+                                <li><a href="#shapes">Shapes</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#hit-testing">Hit Testing</a>
+                            <ul>
+                                <li><a href="#hit-test-manager">HitTestManager</a></li>
+                                <li><a href="#hit-testable">HitTestable</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#animation">Animation</a>
+                            <ul>
+                                <li><a href="#animator">Animator</a></li>
+                                <li><a href="#easing-functions">Easing Functions</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="col-lg-9">
+                <h1 class="display-5 fw-bold mb-4">
+                    Enhanced Features API <span class="badge-new">New</span>
+                </h1>
+                <p class="lead mb-5">
+                    Complete API reference for AdvanceGG's latest enhanced features including layer compositing, DOM-style object model, hit testing, and animation support.
+                </p>
+
+                <!-- Layer Compositing -->
+                <section id="layer-compositing" class="api-section">
+                    <h2 class="h3 fw-bold mb-4">Layer Compositing System</h2>
+                    <p>Professional multi-layer compositing with 13 blend modes for advanced graphics composition.</p>
+
+                    <h4 id="layer-manager">LayerManager</h4>
+                    <div class="method-signature">
+                        <strong>EnableLayers()</strong><br>
+                        <span class="return-type">void</span>
+                    </div>
+                    <p>Enables the layer system for the current context.</p>
+
+                    <div class="method-signature">
+                        <strong>GetLayerManager()</strong><br>
+                        <span class="return-type">*LayerManager</span>
+                    </div>
+                    <p>Returns the layer manager for the current context.</p>
+
+                    <div class="method-signature">
+                        <strong>AddLayer(name string)</strong><br>
+                        <span class="return-type">*Layer</span>
+                    </div>
+                    <p>Creates and adds a new layer with the specified name.</p>
+
+                    <h4 id="blend-modes">Blend Modes</h4>
+                    <p>Available blend modes for layer compositing:</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul>
+                                <li><code>BlendModeNormal</code></li>
+                                <li><code>BlendModeMultiply</code></li>
+                                <li><code>BlendModeScreen</code></li>
+                                <li><code>BlendModeOverlay</code></li>
+                                <li><code>BlendModeSoftLight</code></li>
+                                <li><code>BlendModeHardLight</code></li>
+                                <li><code>BlendModeColorDodge</code></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul>
+                                <li><code>BlendModeColorBurn</code></li>
+                                <li><code>BlendModeDarken</code></li>
+                                <li><code>BlendModeLighten</code></li>
+                                <li><code>BlendModeDifference</code></li>
+                                <li><code>BlendModeExclusion</code></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="code-block">
+<pre><code>// Enable layers and create layer manager
+dc.EnableLayers()
+lm := dc.GetLayerManager()
+
+// Create layers with different blend modes
+bgLayer := lm.GetActiveLayer()
+bgLayer.Name = "Background"
+
+overlayLayer := lm.AddLayer("Overlay")
+overlayLayer.SetBlendMode(advancegg.BlendModeMultiply)
+overlayLayer.SetOpacity(0.8)
+
+// Draw on specific layers
+lm.SetActiveLayer(1)
+dc.SetRGB(1, 0, 0)
+dc.DrawCircle(100, 100, 50)
+dc.Fill()
+
+// Composite all layers
+result := lm.Composite()</code></pre>
+                    </div>
+                </section>
+
+                <!-- DOM Object Model -->
+                <section id="dom-object-model" class="api-section">
+                    <h2 class="h3 fw-bold mb-4">DOM-Style Object Model</h2>
+                    <p>Modern web-like API with tree structure for shapes, IDs, CSS-like classes, and style inheritance.</p>
+
+                    <h4 id="document">Document</h4>
+                    <div class="method-signature">
+                        <strong>NewDocument()</strong><br>
+                        <span class="return-type">*Document</span>
+                    </div>
+                    <p>Creates a new document for managing graphics elements.</p>
+
+                    <div class="method-signature">
+                        <strong>AddElement(element *Element)</strong><br>
+                        <span class="return-type">void</span>
+                    </div>
+                    <p>Adds an element to the document.</p>
+
+                    <div class="method-signature">
+                        <strong>GetElementByID(id string)</strong><br>
+                        <span class="return-type">*Element</span>
+                    </div>
+                    <p>Retrieves an element by its ID.</p>
+
+                    <h4 id="element">Element</h4>
+                    <div class="method-signature">
+                        <strong>AddClass(class string)</strong><br>
+                        <span class="return-type">void</span>
+                    </div>
+                    <p>Adds a CSS-like class to the element.</p>
+
+                    <div class="method-signature">
+                        <strong>SetStyle(property string, value interface{})</strong><br>
+                        <span class="return-type">void</span>
+                    </div>
+                    <p>Sets a style property on the element.</p>
+
+                    <h4 id="shapes">Shape Creation Functions</h4>
+                    <div class="method-signature">
+                        <strong>CreateRect(id string, x, y, width, height float64)</strong><br>
+                        <span class="return-type">*Element</span>
+                    </div>
+
+                    <div class="method-signature">
+                        <strong>CreateCircle(id string, x, y, radius float64)</strong><br>
+                        <span class="return-type">*Element</span>
+                    </div>
+
+                    <div class="code-block">
+<pre><code>// Create document and elements
+doc := advancegg.NewDocument()
+
+// Create shapes with IDs and classes
+circle := advancegg.CreateCircle("circle1", 100, 100, 40)
+circle.AddClass("shape")
+circle.AddClass("primary")
+circle.SetStyle("fill", color.RGBA{255, 100, 100, 255})
+
+// Add CSS-like styles
+doc.AddStyle(".primary", advancegg.Style{
+    Fill: color.RGBA{255, 100, 100, 255},
+    Stroke: color.RGBA{200, 50, 50, 255},
+})
+
+doc.AddElement(circle)
+doc.Render(ctx)</code></pre>
+                    </div>
+                </section>
+
+                <!-- Hit Testing -->
+                <section id="hit-testing" class="api-section">
+                    <h2 class="h3 fw-bold mb-4">Hit Testing System</h2>
+                    <p>Point-in-path detection for interactive graphics with spatial indexing for optimal performance.</p>
+
+                    <h4 id="hit-test-manager">HitTestManager</h4>
+                    <div class="method-signature">
+                        <strong>NewHitTestManager()</strong><br>
+                        <span class="return-type">*HitTestManager</span>
+                    </div>
+                    <p>Creates a new hit test manager.</p>
+
+                    <div class="method-signature">
+                        <strong>AddObject(obj HitTestable)</strong><br>
+                        <span class="return-type">void</span>
+                    </div>
+                    <p>Adds an object for hit testing.</p>
+
+                    <div class="method-signature">
+                        <strong>HitTest(x, y float64)</strong><br>
+                        <span class="return-type">[]HitTestable</span>
+                    </div>
+                    <p>Returns all objects that contain the specified point.</p>
+
+                    <h4 id="hit-testable">HitTestable Shapes</h4>
+                    <div class="method-signature">
+                        <strong>CreateHitTestRect(id string, x, y, width, height float64)</strong><br>
+                        <span class="return-type">*HitTestRect</span>
+                    </div>
+
+                    <div class="method-signature">
+                        <strong>CreateHitTestCircle(id string, x, y, radius float64)</strong><br>
+                        <span class="return-type">*HitTestCircle</span>
+                    </div>
+
+                    <div class="code-block">
+<pre><code>// Create hit test manager
+htm := advancegg.NewHitTestManager()
+
+// Add hit testable shapes
+rect := advancegg.CreateHitTestRect("rect1", 50, 50, 100, 80)
+circle := advancegg.CreateHitTestCircle("circle1", 200, 100, 40)
+
+htm.AddObject(rect)
+htm.AddObject(circle)
+
+// Test for hits at mouse position
+hits := htm.HitTest(mouseX, mouseY)
+if len(hits) > 0 {
+    fmt.Printf("Hit: %s\n", hits[0].GetID())
+}</code></pre>
+                    </div>
+                </section>
+
+                <!-- Animation -->
+                <section id="animation" class="api-section">
+                    <h2 class="h3 fw-bold mb-4">Animation Framework</h2>
+                    <p>Frame-based animation system with easing functions and GIF export capabilities.</p>
+
+                    <h4 id="animator">Animator</h4>
+                    <div class="method-signature">
+                        <strong>NewAnimator(width, height int, fps float64, duration time.Duration)</strong><br>
+                        <span class="return-type">*Animator</span>
+                    </div>
+                    <p>Creates a new animator with specified dimensions, frame rate, and duration.</p>
+
+                    <div class="method-signature">
+                        <strong>AddFrame(frame *image.RGBA)</strong><br>
+                        <span class="return-type">void</span>
+                    </div>
+                    <p>Adds a frame to the animation.</p>
+
+                    <div class="method-signature">
+                        <strong>SaveGIF(filename string)</strong><br>
+                        <span class="return-type">error</span>
+                    </div>
+                    <p>Exports the animation as a GIF file.</p>
+
+                    <h4 id="easing-functions">Easing Functions</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul>
+                                <li><code>EaseLinear</code></li>
+                                <li><code>EaseIn</code></li>
+                                <li><code>EaseOut</code></li>
+                                <li><code>EaseInOut</code></li>
+                                <li><code>EaseInCubic</code></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul>
+                                <li><code>EaseOutCubic</code></li>
+                                <li><code>EaseInOutCubic</code></li>
+                                <li><code>EaseBounce</code></li>
+                                <li><code>EaseElastic</code></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="code-block">
+<pre><code>// Create animator
+animator := advancegg.NewAnimator(400, 300, 30.0, 3*time.Second)
+
+// Generate frames with easing
+frameCount := int(30.0 * 3.0) // 30 fps * 3 seconds
+for i := 0; i < frameCount; i++ {
+    t := float64(i) / float64(frameCount-1)
+    
+    // Animate with bounce easing
+    x := advancegg.AnimateProperty(50, 350, t, advancegg.EaseLinear)
+    y := 150 + 80*advancegg.EaseBounce(t)
+    
+    // Create frame
+    ctx := advancegg.NewContext(400, 300)
+    ctx.SetRGB(1, 0.3, 0.3)
+    ctx.DrawCircle(x, y, 15)
+    ctx.Fill()
+    
+    animator.AddFrame(ctx.Image().(*image.RGBA))
+}
+
+// Export as GIF
+err := animator.SaveGIF("bouncing-ball.gif")</code></pre>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>AdvanceGG</h5>
+                    <p class="text-muted">The ultimate 2D graphics library for Go developers.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="text-muted">&copy; 2024 AdvanceGG Contributors. MIT License.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

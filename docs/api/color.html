@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color API - AdvanceGG</title>
+    <meta name="description" content="Complete color API reference for AdvanceGG graphics library including color spaces, gradients, and color manipulation functions.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <style>
+        .color-swatch {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            display: inline-block;
+            margin-right: 1rem;
+        }
+        .api-method {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .color-example {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../index.html">
+                🎨 AdvanceGG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../getting-started.html">Getting Started</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../examples/index.html">Examples</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">API Reference</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/GrandpaEJ/advancegg" target="_blank">GitHub</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <h1 class="display-5 fw-bold mb-4">Color API Reference</h1>
+        <p class="lead mb-5">
+            Comprehensive color management system with support for multiple color spaces, gradients, and advanced color manipulation.
+        </p>
+
+        <!-- Color Creation -->
+        <section class="mb-5">
+            <h2 class="h3 fw-bold mb-4">Color Creation</h2>
+            
+            <div class="api-method">
+                <strong>SetRGB(r, g, b float64)</strong><br>
+                <span class="text-muted">Sets the current color using RGB values (0.0 to 1.0)</span>
+            </div>
+
+            <div class="api-method">
+                <strong>SetRGBA(r, g, b, a float64)</strong><br>
+                <span class="text-muted">Sets the current color using RGBA values with alpha transparency</span>
+            </div>
+
+            <div class="api-method">
+                <strong>SetHSL(h, s, l float64)</strong><br>
+                <span class="text-muted">Sets the current color using HSL values (Hue, Saturation, Lightness)</span>
+            </div>
+
+            <div class="api-method">
+                <strong>SetHex(hex string)</strong><br>
+                <span class="text-muted">Sets the current color using hex color string (#RRGGBB or #RGB)</span>
+            </div>
+
+            <div class="color-example">
+<pre><code>// RGB colors
+dc.SetRGB(1.0, 0.5, 0.2)  // Orange
+dc.SetRGBA(0.2, 0.8, 0.4, 0.7)  // Semi-transparent green
+
+// HSL colors
+dc.SetHSL(240, 1.0, 0.5)  // Pure blue
+
+// Hex colors
+dc.SetHex("#FF6B35")  // Orange
+dc.SetHex("#3498DB")  // Blue</code></pre>
+            </div>
+        </section>
+
+        <!-- Color Spaces -->
+        <section class="mb-5">
+            <h2 class="h3 fw-bold mb-4">Color Spaces</h2>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>RGB Color Space</h4>
+                    <p>Red, Green, Blue additive color model</p>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="color-swatch" style="background: rgb(255, 0, 0);"></div>
+                        <code>RGB(255, 0, 0)</code>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="color-swatch" style="background: rgb(0, 255, 0);"></div>
+                        <code>RGB(0, 255, 0)</code>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="color-swatch" style="background: rgb(0, 0, 255);"></div>
+                        <code>RGB(0, 0, 255)</code>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h4>HSL Color Space</h4>
+                    <p>Hue, Saturation, Lightness intuitive color model</p>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="color-swatch" style="background: hsl(0, 100%, 50%);"></div>
+                        <code>HSL(0°, 100%, 50%)</code>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="color-swatch" style="background: hsl(120, 100%, 50%);"></div>
+                        <code>HSL(120°, 100%, 50%)</code>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="color-swatch" style="background: hsl(240, 100%, 50%);"></div>
+                        <code>HSL(240°, 100%, 50%)</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gradients -->
+        <section class="mb-5">
+            <h2 class="h3 fw-bold mb-4">Gradients</h2>
+            
+            <div class="api-method">
+                <strong>NewLinearGradient(x0, y0, x1, y1 float64) *LinearGradient</strong><br>
+                <span class="text-muted">Creates a linear gradient between two points</span>
+            </div>
+
+            <div class="api-method">
+                <strong>NewRadialGradient(x0, y0, r0, x1, y1, r1 float64) *RadialGradient</strong><br>
+                <span class="text-muted">Creates a radial gradient between two circles</span>
+            </div>
+
+            <div class="api-method">
+                <strong>AddColorStop(offset float64, color color.Color)</strong><br>
+                <span class="text-muted">Adds a color stop to the gradient at the specified offset (0.0 to 1.0)</span>
+            </div>
+
+            <div class="color-example">
+<pre><code>// Linear gradient
+gradient := advancegg.NewLinearGradient(0, 0, 200, 0)
+gradient.AddColorStop(0, color.RGBA{255, 0, 0, 255})    // Red
+gradient.AddColorStop(0.5, color.RGBA{255, 255, 0, 255}) // Yellow
+gradient.AddColorStop(1, color.RGBA{0, 255, 0, 255})    // Green
+
+dc.SetFillStyle(gradient)
+dc.DrawRectangle(0, 0, 200, 100)
+dc.Fill()
+
+// Radial gradient
+radial := advancegg.NewRadialGradient(100, 100, 0, 100, 100, 50)
+radial.AddColorStop(0, color.RGBA{255, 255, 255, 255})  // White center
+radial.AddColorStop(1, color.RGBA{0, 0, 0, 255})        // Black edge
+
+dc.SetFillStyle(radial)
+dc.DrawCircle(100, 100, 50)
+dc.Fill()</code></pre>
+            </div>
+        </section>
+
+        <!-- Color Manipulation -->
+        <section class="mb-5">
+            <h2 class="h3 fw-bold mb-4">Color Manipulation</h2>
+            
+            <div class="api-method">
+                <strong>Lighten(color color.Color, amount float64) color.Color</strong><br>
+                <span class="text-muted">Lightens a color by the specified amount (0.0 to 1.0)</span>
+            </div>
+
+            <div class="api-method">
+                <strong>Darken(color color.Color, amount float64) color.Color</strong><br>
+                <span class="text-muted">Darkens a color by the specified amount (0.0 to 1.0)</span>
+            </div>
+
+            <div class="api-method">
+                <strong>Saturate(color color.Color, amount float64) color.Color</strong><br>
+                <span class="text-muted">Increases color saturation by the specified amount</span>
+            </div>
+
+            <div class="api-method">
+                <strong>Desaturate(color color.Color, amount float64) color.Color</strong><br>
+                <span class="text-muted">Decreases color saturation by the specified amount</span>
+            </div>
+
+            <div class="color-example">
+<pre><code>// Color manipulation
+baseColor := color.RGBA{100, 150, 200, 255}
+
+// Lighten and darken
+lighter := advancegg.Lighten(baseColor, 0.3)
+darker := advancegg.Darken(baseColor, 0.3)
+
+// Saturate and desaturate
+saturated := advancegg.Saturate(baseColor, 0.5)
+desaturated := advancegg.Desaturate(baseColor, 0.5)
+
+// Mix colors
+mixed := advancegg.MixColors(baseColor, color.RGBA{255, 0, 0, 255}, 0.5)</code></pre>
+            </div>
+        </section>
+
+        <!-- Color Palettes -->
+        <section class="mb-5">
+            <h2 class="h3 fw-bold mb-4">Color Palettes</h2>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Material Design</h5>
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="color-swatch" style="background: #F44336;"></div>
+                        <code>#F44336</code>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="color-swatch" style="background: #2196F3;"></div>
+                        <code>#2196F3</code>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="color-swatch" style="background: #4CAF50;"></div>
+                        <code>#4CAF50</code>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h5>Flat UI</h5>
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="color-swatch" style="background: #E74C3C;"></div>
+                        <code>#E74C3C</code>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="color-swatch" style="background: #3498DB;"></div>
+                        <code>#3498DB</code>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="color-swatch" style="background: #2ECC71;"></div>
+                        <code>#2ECC71</code>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h5>Pastel</h5>
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="color-swatch" style="background: #FFB3BA;"></div>
+                        <code>#FFB3BA</code>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="color-swatch" style="background: #BAFFC9;"></div>
+                        <code>#BAFFC9</code>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="color-swatch" style="background: #BAE1FF;"></div>
+                        <code>#BAE1FF</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Examples -->
+        <section class="mb-5">
+            <h2 class="h3 fw-bold mb-4">Complete Examples</h2>
+            
+            <div class="color-example">
+<pre><code>// Rainbow gradient
+func createRainbow(dc *advancegg.Context) {
+    gradient := advancegg.NewLinearGradient(0, 0, 400, 0)
+    gradient.AddColorStop(0.0, color.RGBA{255, 0, 0, 255})    // Red
+    gradient.AddColorStop(0.17, color.RGBA{255, 165, 0, 255}) // Orange
+    gradient.AddColorStop(0.33, color.RGBA{255, 255, 0, 255}) // Yellow
+    gradient.AddColorStop(0.5, color.RGBA{0, 255, 0, 255})    // Green
+    gradient.AddColorStop(0.67, color.RGBA{0, 0, 255, 255})   // Blue
+    gradient.AddColorStop(0.83, color.RGBA{75, 0, 130, 255})  // Indigo
+    gradient.AddColorStop(1.0, color.RGBA{238, 130, 238, 255}) // Violet
+    
+    dc.SetFillStyle(gradient)
+    dc.DrawRectangle(0, 0, 400, 100)
+    dc.Fill()
+}
+
+// Color wheel
+func createColorWheel(dc *advancegg.Context) {
+    centerX, centerY := 200.0, 200.0
+    radius := 100.0
+    
+    for angle := 0.0; angle < 360.0; angle += 1.0 {
+        hue := angle
+        saturation := 1.0
+        lightness := 0.5
+        
+        dc.SetHSL(hue, saturation, lightness)
+        
+        x1 := centerX + math.Cos(angle*math.Pi/180) * radius * 0.8
+        y1 := centerY + math.Sin(angle*math.Pi/180) * radius * 0.8
+        x2 := centerX + math.Cos(angle*math.Pi/180) * radius
+        y2 := centerY + math.Sin(angle*math.Pi/180) * radius
+        
+        dc.SetLineWidth(2)
+        dc.MoveTo(x1, y1)
+        dc.LineTo(x2, y2)
+        dc.Stroke()
+    }
+}</code></pre>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>AdvanceGG</h5>
+                    <p class="text-muted">The ultimate 2D graphics library for Go developers.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="text-muted">&copy; 2024 AdvanceGG Contributors. MIT License.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

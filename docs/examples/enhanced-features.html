@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Features - AdvanceGG Examples</title>
+    <meta name="description" content="Explore the latest enhanced features in AdvanceGG including layer compositing, DOM-style object model, hit testing, and animation support.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        .feature-showcase {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0;
+        }
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .code-example {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+        .demo-image {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .badge-new {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .performance-metric {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../index.html">
+                🎨 AdvanceGG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../getting-started.html">Getting Started</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">Examples</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../api/index.html">API Reference</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/GrandpaEJ/advancegg" target="_blank">GitHub</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="feature-showcase">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">
+                        Enhanced Features <span class="badge-new">New</span>
+                    </h1>
+                    <p class="lead mb-4">
+                        Discover the latest powerful features that make AdvanceGG the most advanced 2D graphics library for Go.
+                    </p>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="performance-metric">13</div>
+                            <div>Blend Modes</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="performance-metric">9</div>
+                            <div>Easing Functions</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <img src="../../blend-modes-demo.png" alt="Blend Modes Demo" class="demo-image">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-5">
+        <div class="container">
+            <!-- Layer Compositing -->
+            <div class="feature-card">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <div class="feature-icon">🏗️</div>
+                        <h2 class="h3 fw-bold mb-3">Multi-Layer Compositing System</h2>
+                        <p class="text-muted mb-4">
+                            Professional Photoshop-style layer management with 13 blend modes including Normal, Multiply, Screen, Overlay, Soft Light, Hard Light, Color Dodge, Color Burn, Darken, Lighten, Difference, and Exclusion.
+                        </p>
+                        <div class="code-example">
+<pre><code>// Enable layer system
+dc.EnableLayers()
+lm := dc.GetLayerManager()
+
+// Create layers with different blend modes
+layer1 := lm.AddLayer("background")
+layer1.SetBlendMode(advancegg.BlendModeNormal)
+
+layer2 := lm.AddLayer("overlay")
+layer2.SetBlendMode(advancegg.BlendModeMultiply)
+layer2.SetOpacity(0.8)
+
+// Draw on specific layers
+lm.SetActiveLayer(1)
+dc.SetRGB(1, 0, 0)
+dc.DrawCircle(100, 100, 50)
+dc.Fill()
+
+// Composite all layers
+result := lm.Composite()</code></pre>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <img src="../../layer-effects-demo.png" alt="Layer Effects Demo" class="demo-image">
+                    </div>
+                </div>
+            </div>
+
+            <!-- DOM Object Model -->
+            <div class="feature-card">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 order-lg-2">
+                        <div class="feature-icon">🎪</div>
+                        <h2 class="h3 fw-bold mb-3">DOM-Style Object Model</h2>
+                        <p class="text-muted mb-4">
+                            Modern web-like API with tree structure for shapes, IDs, CSS-like classes, and style inheritance. Perfect for complex graphics applications.
+                        </p>
+                        <div class="code-example">
+<pre><code>// Create document with elements
+doc := advancegg.NewDocument()
+
+// Create elements with IDs and classes
+circle := advancegg.CreateCircle("circle1", 100, 100, 40)
+circle.AddClass("shape")
+circle.AddClass("primary")
+circle.SetStyle("fill", color.RGBA{255, 100, 100, 255})
+
+rect := advancegg.CreateRect("rect1", 200, 60, 80, 80)
+rect.AddClass("shape")
+rect.AddClass("secondary")
+
+// Add CSS-like styles
+doc.AddStyle(".primary", advancegg.Style{
+    Fill: color.RGBA{255, 100, 100, 255},
+    Stroke: color.RGBA{200, 50, 50, 255},
+})
+
+// Render document
+doc.Render(ctx)</code></pre>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 order-lg-1">
+                        <img src="../../dom-styling-demo.png" alt="DOM Styling Demo" class="demo-image">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hit Testing -->
+            <div class="feature-card">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <div class="feature-icon">🎯</div>
+                        <h2 class="h3 fw-bold mb-3">Advanced Hit Testing</h2>
+                        <p class="text-muted mb-4">
+                            Point-in-path detection for interactive graphics with spatial indexing for O(log n) performance. Perfect for UI elements and interactive applications.
+                        </p>
+                        <div class="code-example">
+<pre><code>// Create hit test manager
+htm := advancegg.NewHitTestManager()
+
+// Add hit testable shapes
+rect := advancegg.CreateHitTestRect("rect1", 50, 50, 100, 80)
+circle := advancegg.CreateHitTestCircle("circle1", 200, 100, 40)
+polygon := advancegg.CreateHitTestPolygon("triangle", trianglePoints)
+
+htm.AddObject(rect)
+htm.AddObject(circle)
+htm.AddObject(polygon)
+
+// Test for hits at mouse position
+hits := htm.HitTest(mouseX, mouseY)
+if len(hits) > 0 {
+    fmt.Printf("Hit: %s\n", hits[0].GetID())
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <img src="../../hit-testing-basic.png" alt="Hit Testing Demo" class="demo-image">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Animation System -->
+            <div class="feature-card">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 order-lg-2">
+                        <div class="feature-icon">🎬</div>
+                        <h2 class="h3 fw-bold mb-3">Animation Framework</h2>
+                        <p class="text-muted mb-4">
+                            Frame-based animation system with 9 easing functions and GIF export. Create smooth transitions and professional animations with ease.
+                        </p>
+                        <div class="code-example">
+<pre><code>// Create animator
+animator := advancegg.NewAnimator(400, 300, 30.0, 3*time.Second)
+
+// Generate frames with easing
+for i := 0; i < frameCount; i++ {
+    t := float64(i) / float64(frameCount-1)
+    
+    // Animate with bounce easing
+    x := advancegg.AnimateProperty(50, 350, t, advancegg.EaseLinear)
+    y := 150 + 80*advancegg.EaseBounce(t)
+    
+    // Create frame
+    ctx := advancegg.NewContext(400, 300)
+    ctx.DrawCircle(x, y, 15)
+    ctx.Fill()
+    
+    animator.AddFrame(ctx.Image())
+}
+
+// Export as GIF
+animator.SaveGIF("animation.gif")</code></pre>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 order-lg-1">
+                        <div class="text-center">
+                            <h4>Available Easing Functions</h4>
+                            <div class="row text-start">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li>✨ Linear</li>
+                                        <li>✨ Ease In/Out</li>
+                                        <li>✨ Cubic</li>
+                                        <li>✨ Bounce</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li>✨ Elastic</li>
+                                        <li>✨ Back</li>
+                                        <li>✨ Sine</li>
+                                        <li>✨ Expo</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Optimizations -->
+            <div class="feature-card">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <div class="feature-icon">⚡</div>
+                        <h2 class="h3 fw-bold mb-3">Performance Optimizations</h2>
+                        <p class="text-muted mb-4">
+                            Advanced performance features including spatial indexing, render caching, parallel processing, and memory optimization for professional applications.
+                        </p>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="performance-metric">4x</div>
+                                <div>Faster Rendering</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="performance-metric">2.7x</div>
+                                <div>Less Memory</div>
+                            </div>
+                        </div>
+                        <div class="code-example">
+<pre><code>// Batch rendering for performance
+colorGroups := make(map[color.RGBA][]Circle)
+for _, circle := range circles {
+    colorGroups[circle.color] = append(colorGroups[circle.color], circle)
+}
+
+// Render by color groups (fewer state changes)
+for col, group := range colorGroups {
+    dc.SetColor(col)
+    for _, circle := range group {
+        dc.DrawCircle(circle.x, circle.y, circle.radius)
+        dc.Fill()
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <img src="../../performance-basic.png" alt="Performance Demo" class="demo-image">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="py-5 bg-light">
+        <div class="container text-center">
+            <h2 class="h3 fw-bold mb-4">Ready to Get Started?</h2>
+            <p class="lead mb-4">
+                Install AdvanceGG and start creating amazing graphics with these powerful new features.
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="../getting-started.html" class="btn btn-primary btn-lg">Get Started</a>
+                <a href="https://github.com/GrandpaEJ/advancegg" class="btn btn-outline-primary btn-lg" target="_blank">View on GitHub</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>AdvanceGG</h5>
+                    <p class="text-muted">The ultimate 2D graphics library for Go developers.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="text-muted">&copy; 2024 AdvanceGG Contributors. MIT License.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdvanceGG - The Ultimate 2D Graphics Library for Go</title>
+    <meta name="description" content="The most advanced, feature-rich 2D graphics library for Go developers. Create stunning visualizations, professional charts, game graphics, and interactive applications with layer compositing, DOM-style object model, hit testing, and animation support.">
+    <meta name="keywords" content="go graphics library, golang 2d graphics, image processing go, data visualization golang, game development go, layer compositing, hit testing, animation, blend modes">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://advancegg.pages.dev/">
+    <meta property="og:title" content="AdvanceGG - The Ultimate 2D Graphics Library for Go">
+    <meta property="og:description" content="The most advanced, feature-rich 2D graphics library for Go developers with layer compositing, DOM-style object model, hit testing, and animation support.">
+    <meta property="og:image" content="https://advancegg.pages.dev/images/og-image.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://advancegg.pages.dev/">
+    <meta property="twitter:title" content="AdvanceGG - The Ultimate 2D Graphics Library for Go">
+    <meta property="twitter:description" content="The most advanced, feature-rich 2D graphics library for Go developers with enhanced features.">
+    <meta property="twitter:image" content="https://advancegg.pages.dev/images/twitter-image.png">
+
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        .badge-new {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 0.5rem;
+        }
+        .feature-highlight {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                🎨 AdvanceGG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="getting-started.html">Getting Started</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="examples/index.html">Examples</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="api/index.html">API Reference</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/GrandpaEJ/advancegg" target="_blank">GitHub</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center min-vh-100">
+                <div class="col-lg-6">
+                    <h1 class="display-3 fw-bold text-white mb-4">
+                        The Ultimate <span class="text-warning">2D Graphics Library</span> for Go
+                        <span class="badge-new">Enhanced</span>
+                    </h1>
+                    <p class="lead text-white-50 mb-4">
+                        Create stunning visualizations, professional charts, game graphics, and interactive applications with layer compositing, DOM-style object model, hit testing, and animation support.
+                    </p>
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center text-white">
+                                <span class="badge bg-success me-2">🚀</span>
+                                <span>Zero Dependencies</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center text-white">
+                                <span class="badge bg-info me-2">⚡</span>
+                                <span>SIMD Optimized</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center text-white">
+                                <span class="badge bg-warning me-2">🎨</span>
+                                <span>50+ Features</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center text-white">
+                                <span class="badge bg-primary me-2">📱</span>
+                                <span>Cross-Platform</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-3 mb-4">
+                        <a href="getting-started.html" class="btn btn-warning btn-lg">Get Started</a>
+                        <a href="examples/enhanced-features.html" class="btn btn-outline-light btn-lg">View Enhanced Features</a>
+                    </div>
+                    <div class="bg-dark p-3 rounded">
+                        <code class="text-light">go get github.com/GrandpaEJ/advancegg</code>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="text-center">
+                        <img src="../blend-modes-demo.png" alt="AdvanceGG Enhanced Features Demo" class="img-fluid rounded shadow-lg">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced Features Highlight -->
+    <section class="py-5">
+        <div class="container">
+            <div class="feature-highlight text-center">
+                <h2 class="h3 fw-bold mb-3">
+                    🎉 New Enhanced Features <span class="badge-new">Latest</span>
+                </h2>
+                <p class="lead mb-4">
+                    AdvanceGG now includes professional-grade features for advanced graphics programming
+                </p>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <div class="h4">🏗️</div>
+                        <div class="fw-bold">Layer Compositing</div>
+                        <div class="text-muted small">13 Blend Modes</div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="h4">🎪</div>
+                        <div class="fw-bold">DOM Object Model</div>
+                        <div class="text-muted small">CSS-like Styling</div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="h4">🎯</div>
+                        <div class="fw-bold">Hit Testing</div>
+                        <div class="text-muted small">Interactive Graphics</div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="h4">🎬</div>
+                        <div class="fw-bold">Animation</div>
+                        <div class="text-muted small">9 Easing Functions</div>
+                    </div>
+                </div>
+                <a href="examples/enhanced-features.html" class="btn btn-primary">Explore Enhanced Features</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Comprehensive Feature Set</h2>
+            <p class="section-subtitle">Everything you need for professional 2D graphics programming</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🏗️</div>
+                    <h3>Multi-Layer System</h3>
+                    <p>Photoshop-style layers with 13 blend modes including Multiply, Screen, Overlay, and more.</p>
+                    <a href="examples/layer-compositing.html" class="feature-link">View Example →</a>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🖌️</div>
+                    <h3>Advanced Stroke Styles</h3>
+                    <p>Dashed patterns, gradient strokes, tapered calligraphy effects, and custom line caps.</p>
+                    <a href="examples/advanced-strokes.html" class="feature-link">View Example →</a>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🎪</div>
+                    <h3>DOM-Style Object Model</h3>
+                    <p>Tree structure for shapes with IDs, CSS-like classes, and style inheritance.</p>
+                    <a href="examples/dom-object-model.html" class="feature-link">View Example →</a>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Hit Testing System</h3>
+                    <p>Point-in-path detection for interactive graphics and UI elements with spatial indexing.</p>
+                    <a href="examples/hit-testing.html" class="feature-link">View Example →</a>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🎬</div>
+                    <h3>Animation Framework</h3>
+                    <p>Frame-based animations with 9 easing functions and GIF export capabilities.</p>
+                    <a href="examples/animation-demo.html" class="feature-link">View Example →</a>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Performance Optimized</h3>
+                    <p>SIMD acceleration, spatial indexing, parallel processing, and intelligent caching.</p>
+                    <a href="examples/performance-optimizations.html" class="feature-link">View Example →</a>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h3>Unicode & Emoji</h3>
+                    <p>Full support for complex scripts, BiDi text, and color emoji rendering.</p>
+                    <a href="examples/unicode-emoji.html" class="feature-link">View Example →</a>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🖼️</div>
+                    <h3>Image Processing</h3>
+                    <p>20+ professional filters including blur, sharpen, edge detection, and color correction.</p>
+                    <a href="examples/image-filters.html" class="feature-link">View Example →</a>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Data Visualization</h3>
+                    <p>Professional charts, graphs, and dashboards for business intelligence.</p>
+                    <a href="examples/data-visualization.html" class="feature-link">View Example →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Getting Started Section -->
+    <section id="getting-started" class="getting-started">
+        <div class="container">
+            <h2 class="section-title">Get Started in Minutes</h2>
+            <div class="getting-started-content">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Install AdvanceGG</h3>
+                        <pre><code class="language-bash">go get github.com/GrandpaEJ/advancegg</code></pre>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Create Your First Graphic</h3>
+                        <pre><code class="language-go">package main
+
+import "github.com/GrandpaEJ/advancegg"
+
+func main() {
+    dc := advancegg.NewContext(800, 600)
+    
+    // Create gradient background
+    gradient := advancegg.NewLinearGradient(0, 0, 0, 600)
+    gradient.AddColorStop(0, advancegg.ColorFromHex("#667eea"))
+    gradient.AddColorStop(1, advancegg.ColorFromHex("#764ba2"))
+    dc.SetFillStyle(gradient)
+    dc.DrawRectangle(0, 0, 800, 600)
+    dc.Fill()
+    
+    // Draw a circle with shadow
+    dc.SetRGBA(0, 0, 0, 0.3)
+    dc.DrawCircle(403, 303, 102) // Shadow
+    dc.Fill()
+    
+    dc.SetRGB(1, 0.3, 0.5)
+    dc.DrawCircle(400, 300, 100)
+    dc.Fill()
+    
+    // Add text
+    dc.LoadFontFace("fonts/arial.ttf", 48)
+    dc.SetRGB(1, 1, 1)
+    dc.DrawStringAnchored("Hello AdvanceGG!", 400, 400, 0.5, 0.5)
+    
+    dc.SavePNG("hello.png")
+}</code></pre>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Run and Enjoy!</h3>
+                        <pre><code class="language-bash">go run main.go</code></pre>
+                        <p>Your beautiful graphic is saved as <code>hello.png</code></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Performance Section -->
+    <section id="performance" class="performance">
+        <div class="container">
+            <h2 class="section-title">Blazing Fast Performance</h2>
+            <p class="section-subtitle">Engineered for speed with SIMD optimizations and smart caching</p>
+            
+            <div class="performance-grid">
+                <div class="performance-card">
+                    <div class="performance-metric">4x</div>
+                    <div class="performance-label">Faster Image Processing</div>
+                    <div class="performance-desc">SIMD-optimized blur and filters</div>
+                </div>
+                
+                <div class="performance-card">
+                    <div class="performance-metric">5x</div>
+                    <div class="performance-label">Faster Text Rendering</div>
+                    <div class="performance-desc">Optimized font caching</div>
+                </div>
+                
+                <div class="performance-card">
+                    <div class="performance-metric">2.7x</div>
+                    <div class="performance-label">Less Memory Usage</div>
+                    <div class="performance-desc">Smart memory pooling</div>
+                </div>
+                
+                <div class="performance-card">
+                    <div class="performance-metric">O(log n)</div>
+                    <div class="performance-label">Hit Testing</div>
+                    <div class="performance-desc">Spatial indexing optimization</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>AdvanceGG</h3>
+                    <p>The ultimate 2D graphics library for Go developers.</p>
+                    <div class="social-links">
+                        <a href="https://github.com/GrandpaEJ/advancegg" target="_blank">GitHub</a>
+                        <a href="https://discord.gg/advancegg" target="_blank">Discord</a>
+                        <a href="mailto:support@advancegg.dev">Email</a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Documentation</h4>
+                    <ul>
+                        <li><a href="getting-started.html">Getting Started</a></li>
+                        <li><a href="api/index.html">API Reference</a></li>
+                        <li><a href="examples/index.html">Examples</a></li>
+                        <li><a href="tutorials/index.html">Tutorials</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Community</h4>
+                    <ul>
+                        <li><a href="https://github.com/GrandpaEJ/advancegg/discussions">Discussions</a></li>
+                        <li><a href="https://github.com/GrandpaEJ/advancegg/issues">Issues</a></li>
+                        <li><a href="contributing.html">Contributing</a></li>
+                        <li><a href="changelog.html">Changelog</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="benchmarks.html">Benchmarks</a></li>
+                        <li><a href="comparison.html">Comparison</a></li>
+                        <li><a href="showcase.html">Showcase</a></li>
+                        <li><a href="license.html">License</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 AdvanceGG Contributors. Released under the MIT License.</p>
+                <p>Made with ❤️ by the AdvanceGG community</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
