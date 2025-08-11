@@ -30,72 +30,70 @@ type SVGDocument struct {
 type SVGElement interface {
 	Draw(ctx *core.Context)
 	GetBounds() (float64, float64, float64, float64)
-	Transform(matrix core.Matrix)
 }
 
 // SVGPath represents an SVG path element
 type SVGPath struct {
-	XMLName     xml.Name `xml:"path"`
-	D           string   `xml:"d,attr"`
-	Fill        string   `xml:"fill,attr,omitempty"`
-	Stroke      string   `xml:"stroke,attr,omitempty"`
-	StrokeWidth string   `xml:"stroke-width,attr,omitempty"`
-	Transform   string   `xml:"transform,attr,omitempty"`
-	path        *core.Path
+	XMLName       xml.Name `xml:"path"`
+	D             string   `xml:"d,attr"`
+	Fill          string   `xml:"fill,attr,omitempty"`
+	Stroke        string   `xml:"stroke,attr,omitempty"`
+	StrokeWidth   string   `xml:"stroke-width,attr,omitempty"`
+	TransformAttr string   `xml:"transform,attr,omitempty"`
 }
 
 // SVGRect represents an SVG rectangle element
 type SVGRect struct {
-	XMLName   xml.Name `xml:"rect"`
-	X         string   `xml:"x,attr,omitempty"`
-	Y         string   `xml:"y,attr,omitempty"`
-	Width     string   `xml:"width,attr,omitempty"`
-	Height    string   `xml:"height,attr,omitempty"`
-	Fill      string   `xml:"fill,attr,omitempty"`
-	Stroke    string   `xml:"stroke,attr,omitempty"`
-	Transform string   `xml:"transform,attr,omitempty"`
+	XMLName       xml.Name `xml:"rect"`
+	X             string   `xml:"x,attr,omitempty"`
+	Y             string   `xml:"y,attr,omitempty"`
+	Width         string   `xml:"width,attr,omitempty"`
+	Height        string   `xml:"height,attr,omitempty"`
+	Fill          string   `xml:"fill,attr,omitempty"`
+	Stroke        string   `xml:"stroke,attr,omitempty"`
+	TransformAttr string   `xml:"transform,attr,omitempty"`
 }
 
 // SVGCircle represents an SVG circle element
 type SVGCircle struct {
-	XMLName   xml.Name `xml:"circle"`
-	CX        string   `xml:"cx,attr,omitempty"`
-	CY        string   `xml:"cy,attr,omitempty"`
-	R         string   `xml:"r,attr,omitempty"`
-	Fill      string   `xml:"fill,attr,omitempty"`
-	Stroke    string   `xml:"stroke,attr,omitempty"`
-	Transform string   `xml:"transform,attr,omitempty"`
+	XMLName       xml.Name `xml:"circle"`
+	CX            string   `xml:"cx,attr,omitempty"`
+	CY            string   `xml:"cy,attr,omitempty"`
+	R             string   `xml:"r,attr,omitempty"`
+	Fill          string   `xml:"fill,attr,omitempty"`
+	Stroke        string   `xml:"stroke,attr,omitempty"`
+	TransformAttr string   `xml:"transform,attr,omitempty"`
 }
 
 // SVGEllipse represents an SVG ellipse element
 type SVGEllipse struct {
-	XMLName   xml.Name `xml:"ellipse"`
-	CX        string   `xml:"cx,attr,omitempty"`
-	CY        string   `xml:"cy,attr,omitempty"`
-	RX        string   `xml:"rx,attr,omitempty"`
-	RY        string   `xml:"ry,attr,omitempty"`
-	Fill      string   `xml:"fill,attr,omitempty"`
-	Stroke    string   `xml:"stroke,attr,omitempty"`
-	Transform string   `xml:"transform,attr,omitempty"`
+	XMLName       xml.Name `xml:"ellipse"`
+	CX            string   `xml:"cx,attr,omitempty"`
+	CY            string   `xml:"cy,attr,omitempty"`
+	RX            string   `xml:"rx,attr,omitempty"`
+	RY            string   `xml:"ry,attr,omitempty"`
+	Fill          string   `xml:"fill,attr,omitempty"`
+	Stroke        string   `xml:"stroke,attr,omitempty"`
+	TransformAttr string   `xml:"transform,attr,omitempty"`
 }
 
 // SVGLine represents an SVG line element
 type SVGLine struct {
-	XMLName     xml.Name `xml:"line"`
-	X1          string   `xml:"x1,attr,omitempty"`
-	Y1          string   `xml:"y1,attr,omitempty"`
-	X2          string   `xml:"x2,attr,omitempty"`
-	Y2          string   `xml:"y2,attr,omitempty"`
-	Stroke      string   `xml:"stroke,attr,omitempty"`
-	StrokeWidth string   `xml:"stroke-width,attr,omitempty"`
-	Transform   string   `xml:"transform,attr,omitempty"`
+	XMLName       xml.Name `xml:"line"`
+	X1            string   `xml:"x1,attr,omitempty"`
+	Y1            string   `xml:"y1,attr,omitempty"`
+	X2            string   `xml:"x2,attr,omitempty"`
+	Y2            string   `xml:"y2,attr,omitempty"`
+	Stroke        string   `xml:"stroke,attr,omitempty"`
+	StrokeWidth   string   `xml:"stroke-width,attr,omitempty"`
+	TransformAttr string   `xml:"transform,attr,omitempty"`
 }
 
 // SVGGroup represents an SVG group element
 type SVGGroup struct {
-	XMLName   xml.Name     `xml:"g"`
-	Transform string       `xml:"transform,attr,omitempty"`
-	Elements  []SVGElement `xml:",any"`
+	XMLName       xml.Name     `xml:"g"`
+	TransformAttr string       `xml:"transform,attr,omitempty"`
+	Elements      []SVGElement `xml:",any"`
 }
 
 // NewSVGDocument creates a new SVG document
@@ -143,26 +141,20 @@ func ParseSVG(r io.Reader) (*SVGDocument, error) {
 // Draw methods for SVG elements
 
 // Draw renders the SVG path
-func (p *SVGPath) Draw(ctx *Context) {
-	if p.path == nil {
-		p.path = parseSVGPath(p.D)
+func (p *SVGPath) Draw(ctx *core.Context) {
+	// Parse the path data and draw it
+	if p.D != "" {
+		drawSVGPath(ctx, p.D)
 	}
 
-	// Apply transform if present
-	if p.Transform != "" {
-		matrix := parseSVGTransform(p.Transform)
-		p.path.Transform(matrix)
-	}
-
-	// Set fill color
+	// Apply fill
 	if p.Fill != "" && p.Fill != "none" {
 		color := parseSVGColor(p.Fill)
 		ctx.SetColor(color)
-		ctx.DrawPath(p.path)
 		ctx.Fill()
 	}
 
-	// Set stroke
+	// Apply stroke
 	if p.Stroke != "" && p.Stroke != "none" {
 		color := parseSVGColor(p.Stroke)
 		ctx.SetColor(color)
@@ -171,7 +163,6 @@ func (p *SVGPath) Draw(ctx *Context) {
 				ctx.SetLineWidth(width)
 			}
 		}
-		ctx.DrawPath(p.path)
 		ctx.Stroke()
 	}
 }
