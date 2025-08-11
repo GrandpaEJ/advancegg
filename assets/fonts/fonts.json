@@ -1,0 +1,25 @@
+{
+  "fonts": {
+    "sans-serif": {
+      "regular": "NotoSans-Regular.ttf",
+      "bold": "NotoSans-Bold.ttf",
+      "fallback": ["LiberationSans-Regular.ttf", "arial.ttf", "Helvetica.ttc"]
+    },
+    "serif": {
+      "regular": "NotoSerif-Regular.ttf",
+      "fallback": ["times.ttf", "Times.ttc"]
+    },
+    "emoji": {
+      "color": "NotoColorEmoji.ttf",
+      "fallback": ["AppleColorEmoji.ttc", "seguiemj.ttf"]
+    },
+    "scripts": {
+      "arabic": "NotoSansArabic-Regular.ttf",
+      "hebrew": "NotoSansHebrew-Regular.ttf",
+      "devanagari": "NotoSansDevanagari-Regular.ttf",
+      "thai": "NotoSansThai-Regular.ttf"
+    }
+  },
+  "version": "1.0.0",
+  "description": "Font manifest for AdvanceGG testing and examples"
+}
