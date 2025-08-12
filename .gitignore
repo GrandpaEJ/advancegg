@@ -54,9 +54,9 @@ Thumbs.db
 !images/*.tiff
 !images/*.webp
 !images/*
-!images/gif/*.gif
-!examples/images/*.png
-!examples/images/*.jpg
+!docs/images/gif/*.gif
+!docs/images/*.png
+!docs/images/*.jpg
 
 # Build artifacts
 /build/
