@@ -264,29 +264,29 @@ func main() {
 <table>
 <tr>
 <td width="33%">
-<img src="images/data-visualization-demo.png" alt="Data Visualization" width="100%">
+<img src="docs/images/data-visualization-demo.png" alt="Data Visualization" width="100%">
 <p align="center"><strong>Interactive Dashboards</strong><br>Professional charts and graphs</p>
 </td>
 <td width="33%">
-<img src="images/creative-text-effects.png" alt="Text Effects" width="100%">
+<img src="docs/images/creative-text-effects.png" alt="Text Effects" width="100%">
 <p align="center"><strong>Typography Mastery</strong><br>Text-on-path and effects</p>
 </td>
 <td width="33%">
-<img src="images/layer-system-demo.png" alt="Layer System" width="100%">
+<img src="docs/images/layer-system-demo.png" alt="Layer System" width="100%">
 <p align="center"><strong>Layer Compositing</strong><br>Multi-layer blend modes</p>
 </td>
 </tr>
 <tr>
 <td width="33%">
-<img src="images/game-graphics-demo.png" alt="Game Graphics" width="100%">
+<img src="docs/images/game-graphics-demo.png" alt="Game Graphics" width="100%">
 <p align="center"><strong>Game Development</strong><br>Sprites and animations</p>
 </td>
 <td width="33%">
-<img src="images/filter-showcase.png" alt="Image Filters" width="100%">
+<img src="docs/images/filter-showcase.png" alt="Image Filters" width="100%">
 <p align="center"><strong>Image Processing</strong><br>Professional filters</p>
 </td>
 <td width="33%">
-<img src="images/advanced-stroke-effects.png" alt="Advanced Strokes" width="100%">
+<img src="docs/images/advanced-stroke-effects.png" alt="Advanced Strokes" width="100%">
 <p align="center"><strong>Advanced Strokes</strong><br>Artistic line effects</p>
 </td>
 </tr>
