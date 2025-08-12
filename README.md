@@ -6,7 +6,10 @@
 [![Examples](https://img.shields.io/badge/🎨_Examples-50+-orange?style=for-the-badge)](https://advancegg.pages.dev/examples/)
 [![GitHub Stars](https://img.shields.io/github/stars/GrandpaEJ/advancegg?style=for-the-badge&logo=github)](https://github.com/GrandpaEJ/advancegg/stargazers)
 
-> **The most advanced, feature-rich 2D graphics library for Go developers.** Create stunning visualizations, professional charts, game graphics, and interactive applications with unparalleled ease and performance.
+> **The most advanced, feature-rich 2D graphics library for Go developers.** Create stunning visualizations, professional charts, game graphics, and interactive applications with unparalleled ease and performance.<br>
+
+> **Graphics Demo**
+<img src="docs/images/gif/easing-demo.gif" alt="Image Filters" width="100%"><br>
 
 **AdvanceGG** transforms Go into a powerhouse for 2D graphics programming. Whether you're building data visualizations, creating game assets, designing user interfaces, or developing creative applications, AdvanceGG provides everything you need in one comprehensive, high-performance package.
 
