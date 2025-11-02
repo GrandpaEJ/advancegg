@@ -89,6 +89,13 @@ var (
 	NewContext         = core.NewContext
 	NewContextForImage = core.NewContextForImage
 	NewContextForRGBA  = core.NewContextForRGBA
+
+	// New image creation functions (Pillow-style)
+	CreateNew            = core.CreateNew
+	CreateNewRGBA        = core.CreateNewRGBA
+	CreateNewRGB         = core.CreateNewRGB
+	CreateNewGrayscale   = core.CreateNewGrayscale
+	CreateNewTransparent = core.CreateNewTransparent
 )
 
 // Path2D creation functions

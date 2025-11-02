@@ -10,7 +10,4 @@ require (
 	golang.org/x/image v0.30.0
 )
 
-require (
-	github.com/kyokomi/emoji/v2 v2.2.13 // indirect
-	golang.org/x/text v0.28.0 // indirect
-)
+require golang.org/x/text v0.28.0 // indirect
