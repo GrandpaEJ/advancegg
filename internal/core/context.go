@@ -970,6 +970,105 @@ func (dc *Context) DrawCircle(x, y, r float64) {
 	dc.ClosePath()
 }
 
+// DrawCircleOnImage draws a circle directly on an existing image at specified coordinates
+// This is useful for adding circles to loaded images without creating new contexts
+func (dc *Context) DrawCircleOnImage(x, y, r float64) {
+	dc.DrawCircle(x, y, r)
+	dc.Fill()
+}
+
+// DrawFilledCircle draws a filled circle
+func (dc *Context) DrawFilledCircle(x, y, r float64) {
+	dc.DrawCircle(x, y, r)
+	dc.Fill()
+}
+
+// DrawStrokedCircle draws a circle outline
+func (dc *Context) DrawStrokedCircle(x, y, r float64) {
+	dc.DrawCircle(x, y, r)
+	dc.Stroke()
+}
+
+// DrawCircleWithBorder draws a circle with fill and border
+func (dc *Context) DrawCircleWithBorder(x, y, r float64, fillColor, borderColor color.Color, borderWidth float64) {
+	// Draw border
+	dc.SetColor(borderColor)
+	dc.SetLineWidth(borderWidth)
+	dc.DrawStrokedCircle(x, y, r)
+
+	// Draw fill
+	dc.SetColor(fillColor)
+	dc.DrawFilledCircle(x, y, r-borderWidth/2)
+}
+
+// DrawEllipseOnImage draws an ellipse directly on the existing image
+func (dc *Context) DrawEllipseOnImage(x, y, rx, ry float64) {
+	dc.DrawEllipse(x, y, rx, ry)
+	dc.Fill()
+}
+
+// DrawRectangleOnImage draws a rectangle directly on the existing image
+func (dc *Context) DrawRectangleOnImage(x, y, w, h float64) {
+	dc.DrawRectangle(x, y, w, h)
+	dc.Fill()
+}
+
+// DrawRoundedRectangleOnImage draws a rounded rectangle on the existing image
+func (dc *Context) DrawRoundedRectangleOnImage(x, y, w, h, r float64) {
+	dc.DrawRoundedRectangle(x, y, w, h, r)
+	dc.Fill()
+}
+
+// DrawPolygon draws a regular polygon with n sides
+func (dc *Context) DrawPolygon(x, y, radius float64, sides int) {
+	dc.DrawRegularPolygon(sides, x, y, radius, 0)
+	dc.Fill()
+}
+
+// DrawStar draws a star shape
+func (dc *Context) DrawStar(x, y, outerRadius, innerRadius float64, points int) {
+	dc.NewSubPath()
+
+	angle := 2 * math.Pi / float64(points*2)
+	for i := 0; i < points*2; i++ {
+		r := outerRadius
+		if i%2 == 1 {
+			r = innerRadius
+		}
+		px := x + r*math.Cos(float64(i)*angle-math.Pi/2)
+		py := y + r*math.Sin(float64(i)*angle-math.Pi/2)
+
+		if i == 0 {
+			dc.MoveTo(px, py)
+		} else {
+			dc.LineTo(px, py)
+		}
+	}
+	dc.ClosePath()
+	dc.Fill()
+}
+
+// DrawPieSlice draws a pie slice (sector)
+func (dc *Context) DrawPieSlice(x, y, radius, startAngle, endAngle float64) {
+	dc.MoveTo(x, y)
+	dc.DrawArc(x, y, radius, startAngle, endAngle)
+	dc.ClosePath()
+	dc.Fill()
+}
+
+// DrawDonut draws a donut (ring) shape
+func (dc *Context) DrawDonut(x, y, outerRadius, innerRadius float64) {
+	// Outer circle
+	dc.NewSubPath()
+	dc.DrawCircle(x, y, outerRadius)
+
+	// Inner circle (reverse direction to create hole)
+	dc.MoveTo(x+innerRadius, y)
+	dc.DrawEllipticalArc(x, y, innerRadius, innerRadius, 0, -2*math.Pi)
+	dc.ClosePath()
+	dc.Fill()
+}
+
 func (dc *Context) DrawRegularPolygon(n int, x, y, r, rotation float64) {
 	angle := 2 * math.Pi / float64(n)
 	rotation -= math.Pi / 2
@@ -1008,6 +1107,74 @@ func (dc *Context) DrawImageAnchored(im image.Image, x, y int, ax, ay float64) {
 			DstMaskP: image.ZP,
 		})
 	}
+}
+
+// PasteImage pastes an image onto the context at the specified position
+// Similar to Pillow's paste() function
+func (dc *Context) PasteImage(im image.Image, x, y int) {
+	dc.DrawImage(im, x, y)
+}
+
+// PasteImageWithMask pastes an image with a mask (transparency)
+func (dc *Context) PasteImageWithMask(im image.Image, mask image.Image, x, y int) {
+	if mask == nil {
+		dc.PasteImage(im, x, y)
+		return
+	}
+
+	// Create a temporary image for compositing
+	temp := image.NewRGBA(dc.im.Bounds())
+	draw.Draw(temp, dc.im.Bounds(), dc.im, image.Point{}, draw.Src)
+
+	// Draw the source image with mask
+	bounds := im.Bounds()
+	srcRect := image.Rect(x, y, x+bounds.Dx(), y+bounds.Dy())
+	if srcRect.In(dc.im.Bounds()) {
+		draw.DrawMask(temp, srcRect, im, bounds.Min, mask, bounds.Min, draw.Over)
+	}
+
+	dc.im = temp
+}
+
+// CompositeImage composites two images using the specified blend mode
+func (dc *Context) CompositeImage(src image.Image, dstX, dstY int, blendMode draw.Op) {
+	bounds := src.Bounds()
+	srcRect := image.Rect(dstX, dstY, dstX+bounds.Dx(), dstY+bounds.Dy())
+
+	if srcRect.In(dc.im.Bounds()) {
+		draw.Draw(dc.im, srcRect, src, bounds.Min, blendMode)
+	}
+}
+
+// CreateNew creates a new image with specified dimensions and background color
+// Similar to Pillow's Image.new()
+func CreateNew(width, height int, backgroundColor color.Color) *Context {
+	dc := NewContext(width, height)
+	if backgroundColor != nil {
+		dc.SetColor(backgroundColor)
+		dc.Clear()
+	}
+	return dc
+}
+
+// CreateNewRGBA creates a new image with RGBA background
+func CreateNewRGBA(width, height int, r, g, b, a uint8) *Context {
+	return CreateNew(width, height, color.RGBA{r, g, b, a})
+}
+
+// CreateNewRGB creates a new image with RGB background (alpha = 255)
+func CreateNewRGB(width, height int, r, g, b uint8) *Context {
+	return CreateNew(width, height, color.RGBA{r, g, b, 255})
+}
+
+// CreateNewGrayscale creates a new grayscale image
+func CreateNewGrayscale(width, height int, gray uint8) *Context {
+	return CreateNew(width, height, color.Gray{gray})
+}
+
+// CreateNewTransparent creates a new transparent image
+func CreateNewTransparent(width, height int) *Context {
+	return CreateNew(width, height, color.Transparent)
 }
 
 // Text Functions
@@ -1197,6 +1364,90 @@ func (dc *Context) DrawStringWrapped(s string, x, y, ax, ay, width, lineSpacing 
 		dc.DrawStringAnchored(line, x, y, ax, ay)
 		y += dc.fontHeight * lineSpacing
 	}
+}
+
+// DrawTextBox draws text within a bounding box with automatic word wrapping
+// Similar to Pillow's textbbox functionality
+func (dc *Context) DrawTextBox(text string, x, y, width, height float64, align Align) {
+	lines := dc.WordWrap(text, width)
+
+	// Calculate total text height
+	lineHeight := dc.GetLineHeight()
+	totalHeight := float64(len(lines)) * lineHeight
+
+	// Adjust vertical position to fit within box
+	if totalHeight > height {
+		// If text is too tall, start from top
+		y = y
+	} else {
+		// Center vertically in box
+		y += (height - totalHeight) / 2
+	}
+
+	// Draw each line
+	for _, line := range lines {
+		dc.DrawStringAnchored(line, x, y, 0, 1) // Left align, baseline
+		y += lineHeight
+		if y > height {
+			break // Don't draw beyond box height
+		}
+	}
+}
+
+// DrawTextBoxAnchored draws text in a box with anchor positioning
+func (dc *Context) DrawTextBoxAnchored(text string, x, y, ax, ay, width, height float64, align Align) {
+	// Adjust position based on anchor
+	x -= ax * width
+	y -= ay * height
+
+	dc.DrawTextBox(text, x, y, width, height, align)
+}
+
+// GetTextBoxSize calculates the size needed for a text box
+func (dc *Context) GetTextBoxSize(text string, maxWidth float64) (width, height float64) {
+	lines := dc.WordWrap(text, maxWidth)
+	lineHeight := dc.GetLineHeight()
+
+	height = float64(len(lines)) * lineHeight
+
+	// Find the maximum line width
+	for _, line := range lines {
+		lineWidth, _ := dc.MeasureString(line)
+		if lineWidth > width {
+			width = lineWidth
+		}
+	}
+
+	return width, height
+}
+
+// DrawAlignedText draws text with various alignment options
+func (dc *Context) DrawAlignedText(text string, x, y, width float64, hAlign, vAlign Align) {
+	textWidth, textHeight := dc.MeasureString(text)
+
+	var drawX, drawY float64
+
+	// Horizontal alignment
+	switch hAlign {
+	case AlignLeft:
+		drawX = x
+	case AlignCenter:
+		drawX = x + (width-textWidth)/2
+	case AlignRight:
+		drawX = x + width - textWidth
+	}
+
+	// Vertical alignment (assuming baseline alignment)
+	switch vAlign {
+	case AlignLeft: // Top
+		drawY = y + textHeight
+	case AlignCenter:
+		drawY = y + textHeight/2
+	case AlignRight: // Bottom
+		drawY = y
+	}
+
+	dc.DrawString(text, drawX, drawY)
 }
 
 func (dc *Context) MeasureMultilineString(s string, lineSpacing float64) (width, height float64) {
