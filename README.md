@@ -452,7 +452,7 @@ AdvanceGG is engineered for speed. Here's how it performs in real-world scenario
 - **💡 [GitHub Discussions](https://github.com/GrandpaEJ/advancegg/discussions)** - Ask questions and share ideas
 - **🐛 [Issue Tracker](https://github.com/GrandpaEJ/advancegg/issues)** - Report bugs and request features
 - **📧 [Email Support](mailto:support@advancegg.dev)** - Direct support for enterprise users
-- **💬 [Discord Community](https://discord.gg/advancegg)** - Real-time chat with developers
+- **💬 [Discord Community](https://discord.gg/sRbws7sf)** - Real-time chat with developers
 
 ### 🎯 **Quick Help**
 
