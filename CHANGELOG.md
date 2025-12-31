@@ -6,6 +6,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [v1.5.0] - Blend Modes & Architecture Refactor
+
+### 🌟 **Major Features**
+
+#### **Porter-Duff Blend Modes**
+- **Added** support for 12 Porter-Duff compositing operators (`Clear`, `Source`, `Dest`, `SrcOver`, `DstOver`, `SrcIn`, `DstIn`, `SrcOut`, `DstOut`, `SrcAtop`, `DstAtop`, `Xor`)
+- **Added** new blend modes: `Add` (Linear Dodge) and `plus` operators
+- **Refactored** `compositeLayer` engine to distinguishing between color production and alpha composition
+- **Fixed** alpha blending math for handling semi-transparent source/destinations correctly
+
+### 🏗 **Architectural Improvements**
+
+#### **Project Restructuring**
+- **Reorganized** `examples/` directory into categorized submodules (`basics/`, `shapes/`, `text/`, `filters/`, etc.)
+- **Reorganized** image assets into structured `images/` subdirectories matching example categories
+- **Cleaned** project root by removing loose artifacts (`*.png`, `*.svg`, `*.gif`)
+- **Added** robust recursive example runner script (`scripts/run_examples.go`) for regression testing
+
+#### **Quality Assurance**
+- **Added** comprehensive unit tests for all blend modes in `internal/core/layers_blend_test.go`
+- **Added** visual verification generator `examples/layers/blend_modes_gen.go` including all 29 blend modes
+- **Verified** regression suite across 70+ examples
+
+### 🐛 **Bug Fixes**
+- **Fixed** `alphaBlend` function to correctly handle transparent destination backgrounds (critical for non-rectangular layers)
+- **Fixed** various example file paths to support new directory structure
+
 ### 🎨 **Major New Features Added**
 
 #### **Layer Compositing System**
