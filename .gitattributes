@@ -2,3 +2,5 @@
 # This prevents them from being downloaded via 'go get' while keeping them in the repo.
 images/ export-ignore
 images/** export-ignore
+assets/ export-ignore
+assets/** export-ignore
