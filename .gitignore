@@ -45,8 +45,8 @@ Thumbs.db
 *.bmp
 *.tiff
 *.webp
-# Ignore images directory locally and in distribution
-images/
+# Images (allowed in repo, excluded from export via .gitattributes)
+# images/ rule removed to allow tracking
 docs/images/*.gif
 !docs/images/*.png
 !docs/images/*.jpg
