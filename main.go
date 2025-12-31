@@ -227,6 +227,21 @@ const (
 	BlendModeSaturation = core.BlendModeSaturation
 	BlendModeColor      = core.BlendModeColor
 	BlendModeLuminosity = core.BlendModeLuminosity
+
+	// Porter-Duff
+	BlendModeClear   = core.BlendModeClear
+	BlendModeSource  = core.BlendModeSource
+	BlendModeDest    = core.BlendModeDest
+	BlendModeSrcOver = core.BlendModeSrcOver
+	BlendModeDstOver = core.BlendModeDstOver
+	BlendModeSrcIn   = core.BlendModeSrcIn
+	BlendModeDstIn   = core.BlendModeDstIn
+	BlendModeSrcOut  = core.BlendModeSrcOut
+	BlendModeDstOut  = core.BlendModeDstOut
+	BlendModeSrcAtop = core.BlendModeSrcAtop
+	BlendModeDstAtop = core.BlendModeDstAtop
+	BlendModeXor     = core.BlendModeXor
+	BlendModeAdd     = core.BlendModeAdd
 )
 
 var (
