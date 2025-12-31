@@ -5,8 +5,12 @@ import (
 	"strings"
 	"unicode"
 
+	"bytes"
+
 	"github.com/benoitkugler/textlayout/fonts"
+	tl_truetype "github.com/benoitkugler/textlayout/fonts/truetype"
 	"github.com/benoitkugler/textlayout/harfbuzz"
+	"github.com/benoitkugler/textlayout/language"
 )
 
 // Unicode shaping and complex script support with proper HarfBuzz integration
@@ -35,6 +39,11 @@ const (
 	ScriptKorean
 	ScriptCyrillic
 	ScriptGreek
+	ScriptBengali
+	ScriptTamil
+	ScriptTelugu
+	ScriptKhmer
+	ScriptMyanmar
 )
 
 // TextShaper handles complex text shaping using HarfBuzz
@@ -87,6 +96,31 @@ func (ts *TextShaper) SetFont(fontFace fonts.Face) error {
 
 	ts.fontFace = fontFace
 	ts.hbFont = harfbuzz.NewFont(fontFace)
+	return nil
+}
+
+// HasFont returns true if a font is loaded for shaping
+func (ts *TextShaper) HasFont() bool {
+	return ts.hbFont != nil
+}
+
+// SetFontBytes sets the font for shaping from raw SFNT bytes
+func (ts *TextShaper) SetFontBytes(fontData []byte, points float64) error {
+	f, err := tl_truetype.Parse(bytes.NewReader(fontData))
+	if err != nil {
+		return err
+	}
+
+	ts.fontFace = f
+	ts.hbFont = harfbuzz.NewFont(f)
+
+	// Set scale (points * 64 for 26.6 fixed point)
+	scale := int(points * 64)
+	ts.hbFont.XScale = int32(scale)
+	ts.hbFont.YScale = int32(scale)
+	ts.hbFont.XPpem = uint16(points)
+	ts.hbFont.YPpem = uint16(points)
+
 	return nil
 }
 
@@ -171,6 +205,11 @@ func (ts *TextShaper) detectScript(text string) ScriptType {
 	cjkCount := 0
 	cyrillicCount := 0
 	greekCount := 0
+	bengaliCount := 0
+	tamilCount := 0
+	teluguCount := 0
+	khmerCount := 0
+	myanmarCount := 0
 	totalCount := 0
 
 	for _, r := range text {
@@ -182,6 +221,16 @@ func (ts *TextShaper) detectScript(text string) ScriptType {
 			devanagariCount++
 		} else if unicode.In(r, unicode.Thai) {
 			thaiCount++
+		} else if unicode.In(r, unicode.Bengali) {
+			bengaliCount++
+		} else if unicode.In(r, unicode.Tamil) {
+			tamilCount++
+		} else if unicode.In(r, unicode.Telugu) {
+			teluguCount++
+		} else if unicode.In(r, unicode.Khmer) {
+			khmerCount++
+		} else if unicode.In(r, unicode.Myanmar) {
+			myanmarCount++
 		} else if unicode.In(r, unicode.Han) || unicode.In(r, unicode.Hiragana) || unicode.In(r, unicode.Katakana) || unicode.In(r, unicode.Hangul) {
 			cjkCount++
 		} else if unicode.In(r, unicode.Cyrillic) {
@@ -201,8 +250,18 @@ func (ts *TextShaper) detectScript(text string) ScriptType {
 		return ScriptDevanagari
 	} else if thaiCount > 0 {
 		return ScriptThai
+	} else if bengaliCount > 0 {
+		return ScriptBengali
+	} else if tamilCount > 0 {
+		return ScriptTamil
+	} else if teluguCount > 0 {
+		return ScriptTelugu
+	} else if khmerCount > 0 {
+		return ScriptKhmer
+	} else if myanmarCount > 0 {
+		return ScriptMyanmar
 	} else if cjkCount > 0 {
-		// Simplified CJK detection - in reality would need more sophisticated detection
+		// Simplified CJK detection
 		return ScriptChinese
 	} else if cyrillicCount > 0 {
 		return ScriptCyrillic
@@ -226,46 +285,83 @@ func (ts *TextShaper) shapeRun(run BidiRun) *ShapedText {
 	runes := []rune(run.Text)
 	buffer.AddRunes(runes, 0, len(runes))
 
-	// For now, use fallback shaping until we properly integrate HarfBuzz API
-	// The textlayout library has a different API than expected
-	return ts.fallbackShapeRun(run)
+	// Configure buffer direction
+	if run.Direction == TextDirectionRTL {
+		buffer.Props.Direction = harfbuzz.RightToLeft
+	} else {
+		buffer.Props.Direction = harfbuzz.LeftToRight
+	}
 
-	// TODO: Properly integrate with textlayout/harfbuzz API
-	/*
-		// Shape the text
-		harfbuzz.Shape(ts.hbFont, buffer, nil)
+	// Configure script
+	var scriptTag string
+	switch run.Script {
+	case ScriptArabic:
+		scriptTag = "Arab"
+	case ScriptHebrew:
+		scriptTag = "Hebr"
+	case ScriptDevanagari:
+		scriptTag = "Deva"
+	case ScriptThai:
+		scriptTag = "Thai"
+	case ScriptChinese:
+		scriptTag = "Hani" // Or Hans/Hant if we knew
+	case ScriptCyrillic:
+		scriptTag = "Cyrl"
+	case ScriptGreek:
+		scriptTag = "Grek"
+	case ScriptBengali:
+		scriptTag = "Beng"
+	case ScriptTamil:
+		scriptTag = "Taml"
+	case ScriptTelugu:
+		scriptTag = "Telu"
+	case ScriptKhmer:
+		scriptTag = "Khmr"
+	case ScriptMyanmar:
+		scriptTag = "Mymr"
+	default:
+		scriptTag = "Latn"
+	}
 
-		// Get glyph info and positions
-		glyphInfos := buffer.GetGlyphInfos()
-		glyphPositions := buffer.GetGlyphPositions()
+	scr, _ := language.ParseScript(scriptTag)
+	buffer.Props.Script = scr
 
-		shaped := &ShapedText{
-			Direction: run.Direction,
-			Glyphs:    make([]ShapedGlyph, len(glyphInfos)),
+	// Set approximate language if we can guess, to help choosing OpenType system?
+	// For now script is most critical.
+
+	// Shape the text
+	buffer.Shape(ts.hbFont, nil)
+
+	// Get glyph info and positions
+	glyphInfos := buffer.Info
+	glyphPositions := buffer.Pos
+
+	shaped := &ShapedText{
+		Direction: run.Direction,
+		Glyphs:    make([]ShapedGlyph, len(glyphInfos)),
+	}
+
+	currentX := 0.0
+	for i, info := range glyphInfos {
+		pos := glyphPositions[i]
+
+		shaped.Glyphs[i] = ShapedGlyph{
+			GlyphID:   uint32(info.Glyph),
+			X:         currentX + float64(pos.XOffset)/64.0,
+			Y:         float64(pos.YOffset) / 64.0,
+			AdvanceX:  float64(pos.XAdvance) / 64.0,
+			AdvanceY:  float64(pos.YAdvance) / 64.0,
+			Cluster:   int(info.Cluster),
+			Character: runes[info.Cluster],
 		}
 
-		currentX := 0.0
-		for i, info := range glyphInfos {
-			pos := glyphPositions[i]
+		currentX += shaped.Glyphs[i].AdvanceX
+	}
 
-			shaped.Glyphs[i] = ShapedGlyph{
-				GlyphID:   uint32(info.Glyph),
-				X:         currentX + float64(pos.XOffset)/64.0,
-				Y:         float64(pos.YOffset) / 64.0,
-				AdvanceX:  float64(pos.XAdvance) / 64.0,
-				AdvanceY:  float64(pos.YAdvance) / 64.0,
-				Cluster:   int(info.Cluster),
-				Character: []rune(run.Text)[info.Cluster],
-			}
+	shaped.Width = currentX
+	shaped.Height = 16.0 // Will be updated with proper font metrics
 
-			currentX += shaped.Glyphs[i].AdvanceX
-		}
-
-		shaped.Width = currentX
-		shaped.Height = 16.0 // Will be updated with proper font metrics
-
-		return shaped
-	*/
+	return shaped
 }
 
 // fallbackShapeText provides simple shaping when HarfBuzz is not available

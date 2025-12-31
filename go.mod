@@ -10,4 +10,7 @@ require (
 	golang.org/x/image v0.30.0
 )
 
-require golang.org/x/text v0.28.0 // indirect
+require (
+	github.com/dsnet/compress v0.0.1 // indirect
+	golang.org/x/text v0.28.0 // indirect
+)

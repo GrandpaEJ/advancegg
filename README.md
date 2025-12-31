@@ -36,7 +36,7 @@
 <summary><strong>📝 World-Class Typography</strong> - Click to expand</summary>
 
 - **🌍 Unicode Shaping** - Full support for Arabic, Hindi, Chinese, and complex scripts
-- **😀 Emoji Rendering** - Color emoji fonts with automatic fallback mechanisms
+<!-- - **😀 Emoji Rendering** - Color emoji fonts with automatic fallback mechanisms -->
 - **🌊 Text-on-Path** - Text following circles, waves, spirals, and custom Bézier curves
 - **📚 Font Management** - TTF/OTF loading with advanced metrics and kerning
 - **📏 Text Layout** - Word wrapping, alignment, line spacing, and paragraph formatting
@@ -337,7 +337,7 @@ result := parallelFilter(image)
 - **🌍 Advanced Font Loading** - Comprehensive font management
   - TTF, OTF, and system font support
   - Unicode text rendering (Arabic, Chinese, Japanese, etc.)
-  - Color emoji support with automatic fallback
+  <!-- - Color emoji support with automatic fallback -->
   - Font metrics and kerning information
 
 - **🌊 Text-on-Path Enhancements** - Professional text layout
@@ -361,11 +361,11 @@ advance.DrawTextOnWave(dc, "Wave Text", startX, startY, endX, amplitude, frequen
 <details>
 <summary><strong>🎨 Advanced Graphics Features</strong> - Click to expand</summary>
 
-- **🎭 Enhanced Emoji Rendering** - Full color emoji support
+<!-- - **🎭 Enhanced Emoji Rendering** - Full color emoji support
   - Color emoji fonts (NotoColorEmoji, Apple Color Emoji)
   - Emoji sequences and skin tone modifiers
   - Automatic fallback to monochrome when needed
-  - Performance-optimized emoji caching
+  - Performance-optimized emoji caching -->
 
 - **🔧 Improved Filter Pipeline** - Professional image processing
   - Non-destructive filter chains
@@ -374,10 +374,10 @@ advance.DrawTextOnWave(dc, "Wave Text", startX, startY, endX, amplitude, frequen
   - Real-time filter preview capabilities
 
 ```go
-// Color emoji rendering
-renderer := dc.GetEmojiRenderer()
-renderer.LoadEmojiFont("assets/fonts/NotoColorEmoji.ttf")
-dc.DrawString("👨‍👩‍👧‍👦 🏳️‍🌈 👍🏽", x, y)
+// // Color emoji rendering
+// renderer := dc.GetEmojiRenderer()
+// renderer.LoadEmojiFont("assets/fonts/NotoColorEmoji.ttf")
+// dc.DrawString("👨‍👩‍👧‍👦 🏳️‍🌈 👍🏽", x, y)
 
 // Custom SIMD filter
 customFilter := func(img image.Image) image.Image {
@@ -424,7 +424,7 @@ AdvanceGG is engineered for speed. Here's how it performs in real-world scenario
 | Feature | AdvanceGG | Cairo/Go | Gg | Imaging | Canvas |
 |---------|-----------|----------|----|---------| -------|
 | 🎨 **Layer System** | ✅ Full | ❌ No | ❌ No | ❌ No | ❌ No |
-| 📝 **Unicode/Emoji** | ✅ Complete | ⚠️ Basic | ⚠️ Basic | ❌ No | ❌ No |
+<!-- | 📝 **Unicode/Emoji** | ✅ Complete | ⚠️ Basic | ⚠️ Basic | ❌ No | ❌ No | -->
 | 🖼️ **Image Filters** | ✅ 20+ | ❌ No | ❌ No | ✅ 10+ | ❌ No |
 | ⚡ **Performance** | ✅ SIMD | ⚠️ Medium | ⚠️ Medium | ⚠️ Medium | ⚠️ Medium |
 | 📱 **WebAssembly** | ✅ Yes | ❌ No | ✅ Yes | ✅ Yes | ✅ Yes |
@@ -527,10 +527,10 @@ go run examples/generate-all.go
 
 ### 📜 **MIT License**
 
-AdvanceGG is released under the [MIT License](LICENSE), making it free for both personal and commercial use.
+AdvanceGG is released under the [MIT License](LICENSE)
 
 ```
-Copyright (c) 2024 AdvanceGG Contributors
+Copyright (c) 2024 GrandpaEJ
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -569,9 +569,7 @@ copies of the Software...
 If AdvanceGG has helped you create something amazing, consider:
 
 [![GitHub Sponsors](https://img.shields.io/badge/Sponsor-GitHub-pink?style=for-the-badge&logo=github)](https://github.com/sponsors/GrandpaEJ)
-[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/grandpa_ej)
-
-**Made with ❤️ by the AdvanceGG community**
+**Made with ❤️ by GrandpaEJ**
 
 ---
 

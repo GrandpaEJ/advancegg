@@ -53,7 +53,8 @@ Thumbs.db
 !images/*.bmp
 !images/*.tiff
 !images/*.webp
-!images/*
+!images/*/*
+!images/*/*/*
 !docs/images/gif/*.gif
 !docs/images/*.png
 !docs/images/*.jpg
