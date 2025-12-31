@@ -45,9 +45,17 @@ Thumbs.db
 *.bmp
 *.tiff
 *.webp
-# Images (allowed in repo, excluded from export via .gitattributes)
-# images/ rule removed to allow tracking
-docs/images/*.gif
+# Allow images in the images/ directory
+!images/*.png
+!images/*.jpg
+!images/*.jpeg
+!images/*.gif
+!images/*.bmp
+!images/*.tiff
+!images/*.webp
+!images/*/*
+!images/*/*/*
+!docs/images/gif/*.gif
 !docs/images/*.png
 !docs/images/*.jpg
 
