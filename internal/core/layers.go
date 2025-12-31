@@ -16,6 +16,7 @@ type BlendMode int
 
 const (
 	BlendModeNormal BlendMode = iota
+	// Photoshop-style Blend Modes
 	BlendModeMultiply
 	BlendModeScreen
 	BlendModeOverlay
@@ -31,6 +32,21 @@ const (
 	BlendModeSaturation
 	BlendModeColor
 	BlendModeLuminosity
+
+	// Porter-Duff Compositing Operators
+	BlendModeClear
+	BlendModeSource
+	BlendModeDest
+	BlendModeSrcOver // Alias for Normal but explicit
+	BlendModeDstOver
+	BlendModeSrcIn
+	BlendModeDstIn
+	BlendModeSrcOut
+	BlendModeDstOut
+	BlendModeSrcAtop
+	BlendModeDstAtop
+	BlendModeXor
+	BlendModeAdd
 )
 
 // Layer represents a single drawing layer
@@ -225,38 +241,213 @@ func (lm *LayerManager) Composite() *image.RGBA {
 // compositeLayer composites a single layer onto the result
 func (lm *LayerManager) compositeLayer(dst *image.RGBA, layer *Layer) {
 	bounds := dst.Bounds()
+	mode := layer.BlendMode
 
 	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
 			// Get source pixel
 			srcPixel := layer.Image.RGBAAt(x, y)
-			if srcPixel.A == 0 {
-				continue // Skip transparent pixels
-			}
 
 			// Apply layer opacity
-			alpha := float64(srcPixel.A) / 255.0 * layer.Opacity
-			if alpha <= 0 {
-				continue
+			if layer.Opacity < 1.0 {
+				srcPixel.A = uint8(float64(srcPixel.A) * layer.Opacity)
+				// Pre-multiply RGB by new Alpha if strictly needed, but BlendMode logic handles it
+				// For correctness in Composition, we might need PREMULTIPLIED alpha?
+				// Most Go image libraries work with NON-premultiplied RGBA struct, but math is often easier with premultiplied
+				// However, existing simple alphaBlend logic below assumed non-premultiplied.
+				// We will scale alpha here. RGB remains "straight" (associated with alpha).
 			}
 
 			// Apply mask if exists
 			if layer.Mask != nil {
 				maskAlpha := float64(layer.Mask.AlphaAt(x, y).A) / 255.0
-				alpha *= maskAlpha
+				srcPixel.A = uint8(float64(srcPixel.A) * maskAlpha)
+			}
+
+			// Skip completely transparent pixels ONLY if we are in a mode where source 0 means no change
+			// For modes like Clear, SrcIn, etc., transparent source DOES affect the output
+			if srcPixel.A == 0 && isStandardBlendMode(mode) {
+				continue
 			}
 
 			// Get destination pixel
 			dstPixel := dst.RGBAAt(x, y)
 
-			// Apply blend mode
-			blended := lm.applyBlendMode(srcPixel, dstPixel, layer.BlendMode)
+			var finalPixel color.RGBA
 
-			// Alpha blend
-			finalPixel := alphaBlend(blended, dstPixel, alpha)
+			// Handle Compositing Operators (Porter-Duff) vs Standard Blend Modes
+			if isCompositingOperator(mode) {
+				finalPixel = applyCompositingOperator(srcPixel, dstPixel, mode)
+			} else {
+				// Standard Photoshop-style Blend Modes (Source Over composition)
+				// 1. Blend Colors
+				blended := lm.applyBlendMode(srcPixel, dstPixel, mode)
+				// 2. Alpha Composite (SrcOver)
+				finalPixel = alphaBlend(blended, dstPixel, float64(srcPixel.A)/255.0)
+			}
+
 			dst.SetRGBA(x, y, finalPixel)
 		}
 	}
+}
+
+func isStandardBlendMode(mode BlendMode) bool {
+	return mode <= BlendModeLuminosity
+}
+
+func isCompositingOperator(mode BlendMode) bool {
+	return mode >= BlendModeClear
+}
+
+// applyCompositingOperator implements Porter-Duff compositing rules
+func applyCompositingOperator(src, dst color.RGBA, mode BlendMode) color.RGBA {
+	sR, sG, sB, sA := float64(src.R), float64(src.G), float64(src.B), float64(src.A)/255.0
+	dR, dG, dB, dA := float64(dst.R), float64(dst.G), float64(dst.B), float64(dst.A)/255.0
+
+	// Helper for byte conversion
+	toByte := func(v float64) uint8 {
+		if v < 0 {
+			return 0
+		}
+		if v > 255 {
+			return 255
+		}
+		return uint8(v)
+	}
+
+	switch mode {
+	case BlendModeClear:
+		return color.RGBA{0, 0, 0, 0}
+
+	case BlendModeSource:
+		return src
+
+	case BlendModeDest:
+		return dst
+
+	case BlendModeSrcOver, BlendModeNormal: // Use standard formula
+		// out = src + dst(1-sa)
+		outA := sA + dA*(1.0-sA)
+		if outA == 0 {
+			return color.RGBA{0, 0, 0, 0}
+		}
+		return color.RGBA{
+			R: toByte((sR*sA + dR*dA*(1.0-sA)) / outA),
+			G: toByte((sG*sA + dG*dA*(1.0-sA)) / outA),
+			B: toByte((sB*sA + dB*dA*(1.0-sA)) / outA),
+			A: toByte(outA * 255.0),
+		}
+
+	case BlendModeDstOver:
+		// out = dst + src(1-da)
+		outA := dA + sA*(1.0-dA)
+		if outA == 0 {
+			return color.RGBA{0, 0, 0, 0}
+		}
+		return color.RGBA{
+			R: toByte((dR*dA + sR*sA*(1.0-dA)) / outA),
+			G: toByte((dG*dA + sG*sA*(1.0-dA)) / outA),
+			B: toByte((dB*dA + sB*sA*(1.0-dA)) / outA),
+			A: toByte(outA * 255.0),
+		}
+
+	case BlendModeSrcIn:
+		// out = src * da
+		return color.RGBA{
+			R: toByte(sR * dA),
+			G: toByte(sG * dA),
+			B: toByte(sB * dA),
+			A: toByte(sA * 255.0 * dA),
+		}
+
+	case BlendModeDstIn:
+		// out = dst * sa
+		return color.RGBA{
+			R: toByte(dR * sA),
+			G: toByte(dG * sA),
+			B: toByte(dB * sA),
+			A: toByte(dA * 255.0 * sA),
+		}
+
+	case BlendModeSrcOut:
+		// out = src * (1-da)
+		f := 1.0 - dA
+		return color.RGBA{
+			R: toByte(sR * f),
+			G: toByte(sG * f),
+			B: toByte(sB * f),
+			A: toByte(sA * 255.0 * f),
+		}
+
+	case BlendModeDstOut:
+		// out = dst * (1-sa)
+		f := 1.0 - sA
+		return color.RGBA{
+			R: toByte(dR * f),
+			G: toByte(dG * f),
+			B: toByte(dB * f),
+			A: toByte(dA * 255.0 * f),
+		}
+
+	case BlendModeSrcAtop:
+		// out = src*da + dst*(1-sa)
+		// r = s*da + d*(1-sa)
+		// a = s*da + d*(1-sa) = da(s + 1 - sa)? No.
+		// A = sa*da + da*(1-sa) = da(sa + 1 - sa) = da. Correct.
+		// Result Alpha is always dA.
+		return color.RGBA{
+			R: toByte(sR*dA + dR*(1.0-sA)),
+			G: toByte(sG*dA + dG*(1.0-sA)),
+			B: toByte(sB*dA + dB*(1.0-sA)),
+			A: toByte(dA * 255.0),
+		}
+
+	case BlendModeDstAtop:
+		// out = dst*sa + src*(1-da)
+		// Result Alpha is always sA
+		return color.RGBA{
+			R: toByte(dR*sA + sR*(1.0-dA)),
+			G: toByte(dG*sA + sG*(1.0-dA)),
+			B: toByte(dB*sA + sB*(1.0-dA)),
+			A: toByte(sA * 255.0),
+		}
+
+	case BlendModeXor:
+		// out = src*(1-da) + dst*(1-sa)
+		outA := sA*(1.0-dA) + dA*(1.0-sA)
+		if outA == 0 {
+			return color.RGBA{0, 0, 0, 0}
+		}
+		// Colors roughly premultiplied in formula:
+		// R = (sR*sA)*(1-dA) + (dR*dA)*(1-sA)
+		// We have sR, dR as STRAIGHT colors.
+		// Formula using straight colors:
+		// C = (Cs * As * (1-Ad) + Cd * Ad * (1-As)) / Aout
+
+		r := (sR*sA*(1.0-dA) + dR*dA*(1.0-sA)) / outA
+		g := (sG*sA*(1.0-dA) + dG*dA*(1.0-sA)) / outA
+		b := (sB*sA*(1.0-dA) + dB*dA*(1.0-sA)) / outA
+
+		return color.RGBA{
+			R: toByte(r),
+			G: toByte(g),
+			B: toByte(b),
+			A: toByte(outA * 255.0),
+		}
+
+	case BlendModeAdd:
+		// Simple addition limited to 255
+		// R = min(255, sR + dR)
+		// A = min(255, sA + dA)
+		return color.RGBA{
+			R: toByte(math.Min(255, sR+dR)),
+			G: toByte(math.Min(255, sG+dG)),
+			B: toByte(math.Min(255, sB+dB)),
+			A: toByte(math.Min(255, float64(src.A)+float64(dst.A))),
+		}
+	}
+
+	return src // Fallback
 }
 
 // applyBlendMode applies the specified blend mode
@@ -434,14 +625,40 @@ func clampFloat(value, min, max float64) float64 {
 	return value
 }
 
-func alphaBlend(src, dst color.RGBA, alpha float64) color.RGBA {
-	invAlpha := 1.0 - alpha
-	return color.RGBA{
-		R: uint8(float64(src.R)*alpha + float64(dst.R)*invAlpha),
-		G: uint8(float64(src.G)*alpha + float64(dst.G)*invAlpha),
-		B: uint8(float64(src.B)*alpha + float64(dst.B)*invAlpha),
-		A: uint8(float64(src.A)*alpha + float64(dst.A)*invAlpha),
+func alphaBlend(src, dst color.RGBA, srcAlpha float64) color.RGBA {
+	// Standard Source-Over Composition:
+	// outA = srcA + dstA*(1-srcA)
+	// outC = (srcC*srcA + dstC*dstA*(1-srcA)) / outA
+
+	sA := srcAlpha
+	dA := float64(dst.A) / 255.0
+	outA := sA + dA*(1.0-sA)
+
+	if outA == 0 {
+		return color.RGBA{0, 0, 0, 0}
 	}
+
+	resultAlpha := uint8(outA * 255.0)
+
+	// Colors
+	sR, sG, sB := float64(src.R), float64(src.G), float64(src.B)
+	dR, dG, dB := float64(dst.R), float64(dst.G), float64(dst.B)
+
+	r := (sR*sA + dR*dA*(1.0-sA)) / outA
+	g := (sG*sA + dG*dA*(1.0-sA)) / outA
+	b := (sB*sA + dB*dA*(1.0-sA)) / outA
+
+	toByte := func(v float64) uint8 {
+		if v < 0 {
+			return 0
+		}
+		if v > 255 {
+			return 255
+		}
+		return uint8(v)
+	}
+
+	return color.RGBA{toByte(r), toByte(g), toByte(b), resultAlpha}
 }
 
 // generateLayerID generates a unique layer ID
