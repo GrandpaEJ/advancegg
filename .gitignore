@@ -45,17 +45,9 @@ Thumbs.db
 *.bmp
 *.tiff
 *.webp
-# Allow images in the images/ directory
-!images/*.png
-!images/*.jpg
-!images/*.jpeg
-!images/*.gif
-!images/*.bmp
-!images/*.tiff
-!images/*.webp
-!images/*/*
-!images/*/*/*
-!docs/images/gif/*.gif
+# Ignore images directory locally and in distribution
+images/
+docs/images/*.gif
 !docs/images/*.png
 !docs/images/*.jpg
 
