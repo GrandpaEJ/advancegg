@@ -1,5 +1,7 @@
-# AdvanceGG - The Ultimate 2D Graphics Library for Go 🎨
+# AdvanceGG - a high performance image manipulation and 2D Graphics Library for Go 🎨
 
+### Package gg provides a simple API for rendering 2D graphics in pure Go
+### advancegg more powerfull to do that same work , advancegg high performance image manipulation lib and rendering 2D graphics write in pure go.
 [![Go Version](https://img.shields.io/badge/Go-1.18+-00ADD8?style=for-the-badge&logo=go)](https://golang.org)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![Documentation](https://img.shields.io/badge/📚_Docs-Live-blue?style=for-the-badge)](https://advancegg.pages.dev/)
