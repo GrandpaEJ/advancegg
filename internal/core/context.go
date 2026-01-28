@@ -1515,7 +1515,8 @@ func (dc *Context) DrawTextBox(text string, x, y, width, height float64, align A
 	// Adjust vertical position to fit within box
 	if totalHeight > height {
 		// If text is too tall, start from top
-		y = y
+		// If text is too tall, start from top
+		// y = y (no-op)
 	} else {
 		// Center vertically in box
 		y += (height - totalHeight) / 2
