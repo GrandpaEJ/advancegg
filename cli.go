@@ -33,7 +33,7 @@ func (cli *CLI) ParseFlags() {
 
 // Version returns the library version
 func Version() string {
-	return "1.0.0"
+	return "1.6.0"
 }
 
 // Info prints library information
