@@ -260,6 +260,30 @@ var (
 	NewEditStack = core.NewEditStack
 )
 
+// Batch operation exports
+type Batch = core.Batch
+type BatchOperation = core.BatchOperation
+type BatchOpType = core.BatchOpType
+
+const (
+	BatchOpCircle    = core.BatchOpCircle
+	BatchOpRectangle = core.BatchOpRectangle
+	BatchOpLine      = core.BatchOpLine
+	BatchOpText      = core.BatchOpText
+	BatchOpImage     = core.BatchOpImage
+	BatchOpPath      = core.BatchOpPath
+)
+
+type BatchCircle = core.BatchCircle
+type BatchRectangle = core.BatchRectangle
+type BatchLine = core.BatchLine
+type BatchText = core.BatchText
+type BatchImage = core.BatchImage
+
+var (
+	NewBatch = core.NewBatch
+)
+
 // Guides and alignment exports
 type Guide = core.Guide
 type GuideManager = core.GuideManager
