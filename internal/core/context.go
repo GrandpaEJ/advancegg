@@ -125,6 +125,8 @@ func NewContextForRGBA(im *image.RGBA) *Context {
 
 	// Initialize text shaper for Unicode support
 	textShaper := NewTextShaper()
+	// Set default font face to shaper
+	textShaper.SetGoFontFace(basicfont.Face7x13)
 
 	return &Context{
 		width:         w,
@@ -1185,6 +1187,11 @@ func CreateNewTransparent(width, height int) *Context {
 func (dc *Context) SetFontFace(fontFace font.Face) {
 	dc.fontFace = fontFace
 	dc.fontHeight = float64(fontFace.Metrics().Height) / 64
+
+	// Update text shaper
+	if dc.textShaper != nil {
+		dc.textShaper.SetGoFontFace(fontFace)
+	}
 }
 
 func (dc *Context) LoadFontFace(path string, points float64) error {
@@ -1212,6 +1219,7 @@ func (dc *Context) LoadFontFace(path string, points float64) error {
 	// Update text shaper
 	if dc.textShaper != nil {
 		dc.textShaper.SetFontBytes(fontBytes, points)
+		dc.textShaper.SetGoFontFace(face)
 	}
 
 	return nil
@@ -1223,6 +1231,9 @@ func (dc *Context) LoadTTFFace(path string, points float64) error {
 	if err == nil {
 		dc.fontFace = face
 		dc.fontHeight = points * 72 / 96
+		if dc.textShaper != nil {
+			dc.textShaper.SetGoFontFace(face)
+		}
 	}
 	return err
 }
@@ -1233,6 +1244,9 @@ func (dc *Context) LoadOTFFace(path string, points float64) error {
 	if err == nil {
 		dc.fontFace = face
 		dc.fontHeight = points * 72 / 96
+		if dc.textShaper != nil {
+			dc.textShaper.SetGoFontFace(face)
+		}
 	}
 	return err
 }
@@ -1244,6 +1258,9 @@ func (dc *Context) LoadFontFaceFromBytes(fontBytes []byte, points float64) error
 	if err == nil {
 		dc.fontFace = face
 		dc.fontHeight = points * 72 / 96
+		if dc.textShaper != nil {
+			dc.textShaper.SetGoFontFace(face)
+		}
 	}
 	return err
 }
@@ -1258,6 +1275,9 @@ func (dc *Context) LoadFontFaceWithOptions(path string, options *truetype.Option
 	if err == nil {
 		dc.fontFace = face
 		dc.fontHeight = options.Size * 72 / 96
+		if dc.textShaper != nil {
+			dc.textShaper.SetGoFontFace(face)
+		}
 	}
 	return err
 }

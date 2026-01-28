@@ -11,6 +11,7 @@ import (
 	tl_truetype "github.com/benoitkugler/textlayout/fonts/truetype"
 	"github.com/benoitkugler/textlayout/harfbuzz"
 	"github.com/benoitkugler/textlayout/language"
+	"golang.org/x/image/font"
 )
 
 // Unicode shaping and complex script support with proper HarfBuzz integration
@@ -57,6 +58,9 @@ type TextShaper struct {
 	// HarfBuzz integration
 	hbFont   *harfbuzz.Font
 	fontFace fonts.Face
+
+	// Standard Go font face for fallback
+	GoFontFace font.Face
 }
 
 // NewTextShaper creates a new text shaper
@@ -97,6 +101,11 @@ func (ts *TextShaper) SetFont(fontFace fonts.Face) error {
 	ts.fontFace = fontFace
 	ts.hbFont = harfbuzz.NewFont(fontFace)
 	return nil
+}
+
+// SetGoFontFace sets the standard Go font face for fallback shaping
+func (ts *TextShaper) SetGoFontFace(face font.Face) {
+	ts.GoFontFace = face
 }
 
 // HasFont returns true if a font is loaded for shaping
@@ -374,12 +383,23 @@ func (ts *TextShaper) fallbackShapeText(text string) *ShapedText {
 	x := 0.0
 	cluster := 0
 
+	// Use standard font face metrics if available
+	hasFont := ts.GoFontFace != nil
+
 	for _, r := range text {
+		advance := 12.0 // Default fallback
+
+		if hasFont {
+			if adv, ok := ts.GoFontFace.GlyphAdvance(r); ok {
+				advance = float64(adv) / 64.0
+			}
+		}
+
 		glyph := ShapedGlyph{
 			GlyphID:   uint32(r),
 			X:         x,
 			Y:         0,
-			AdvanceX:  12, // Default advance
+			AdvanceX:  advance,
 			AdvanceY:  0,
 			Cluster:   cluster,
 			Character: r,
@@ -406,12 +426,23 @@ func (ts *TextShaper) fallbackShapeRun(run BidiRun) *ShapedText {
 	x := 0.0
 	cluster := 0
 
+	// Use standard font face metrics if available
+	hasFont := ts.GoFontFace != nil
+
 	for _, r := range run.Text {
+		advance := 12.0 // Default fallback
+
+		if hasFont {
+			if adv, ok := ts.GoFontFace.GlyphAdvance(r); ok {
+				advance = float64(adv) / 64.0
+			}
+		}
+
 		glyph := ShapedGlyph{
 			GlyphID:   uint32(r),
 			X:         x,
 			Y:         0,
-			AdvanceX:  12, // Default advance
+			AdvanceX:  advance,
 			AdvanceY:  0,
 			Cluster:   cluster,
 			Character: r,
