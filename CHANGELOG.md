@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.7.0] - Emoji Text Rendering
+
+### Features
+- **Emoji Rendering**: Full emoji text rendering support with automatic detection
+  - Automatic emoji detection and rendering in `DrawString` methods
+  - Color emoji font support (Noto Color Emoji, Apple Color Emoji, Segoe UI Emoji)
+  - ZWJ (Zero Width Joiner) sequence handling for complex emojis (families, professions, couples)
+  - Skin tone modifier support
+  - Emoji fallback rendering with category-based colors
+  - Performance-optimized emoji caching system
+- **API**: Added `SetEnableAutoEmoji()` and `GetEnableAutoEmoji()` for controlling automatic emoji rendering
+- **API**: Added `SetEmojiSize()` and `GetEmojiSize()` for emoji size control
+- **Examples**: Added `examples/emoji-rendering.go` demonstrating emoji usage
+
+### Implementation
+- Created `emoji_integration.go` with text/emoji segmentation and mixed rendering
+- Created `emoji_api.go` with public API methods for emoji control
+- Updated `DrawStringAnchored` to use `drawMixedString` for seamless text/emoji rendering
+- Emoji rendering enabled by default in new contexts
+
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
 
 ## [v1.6.0] - Fallback Fixes & Benchmarking Tools
 
