@@ -97,7 +97,8 @@ type Context struct {
 	// Unicode shaping
 	textShaper *TextShaper
 	// Emoji rendering
-	emojiRenderer *EmojiRenderer
+	emojiRenderer   *EmojiRenderer
+	enableAutoEmoji bool // Enable automatic emoji rendering in text
 	// Color management
 	colorProfile   *ICCProfile
 	colorConverter *ColorConverter
@@ -108,7 +109,9 @@ type Context struct {
 // NewContext creates a new image.RGBA with the specified width and height
 // and prepares a context for rendering onto that image.
 func NewContext(width, height int) *Context {
-	return NewContextForRGBA(image.NewRGBA(image.Rect(0, 0, width, height)))
+	ctx := NewContextForRGBA(image.NewRGBA(image.Rect(0, 0, width, height)))
+	ctx.enableAutoEmoji = true // Enable emoji by default
+	return ctx
 }
 
 // NewContextForImage copies the specified image into a new image.RGBA
@@ -1466,10 +1469,10 @@ func (dc *Context) DrawStringAnchored(s string, x, y, ax, ay float64) {
 	x -= ax * w
 	y += ay * h
 	if dc.mask == nil {
-		dc.drawString(dc.im, s, x, y)
+		dc.drawMixedString(dc.im, s, x, y)
 	} else {
 		im := image.NewRGBA(image.Rect(0, 0, dc.width, dc.height))
-		dc.drawString(im, s, x, y)
+		dc.drawMixedString(im, s, x, y)
 		draw.DrawMask(dc.im, dc.im.Bounds(), im, image.ZP, dc.mask, image.ZP, draw.Over)
 	}
 }
