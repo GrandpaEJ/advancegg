@@ -37,7 +37,7 @@
 <summary><strong>📝 World-Class Typography</strong> - Click to expand</summary>
 
 - **🌍 Unicode Shaping** - Full support for Arabic, Hindi, Chinese, and complex scripts
-<!-- - **😀 Emoji Rendering** - Color emoji fonts with automatic fallback mechanisms -->
+- **😀 Emoji Rendering** - Color emoji fonts with automatic fallback mechanisms
 - **🌊 Text-on-Path** - Text following circles, waves, spirals, and custom Bézier curves
 - **📚 Font Management** - TTF/OTF loading with advanced metrics and kerning
 - **📏 Text Layout** - Word wrapping, alignment, line spacing, and paragraph formatting
