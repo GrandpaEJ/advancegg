@@ -340,6 +340,7 @@ const (
 	ScriptKorean     = core.ScriptKorean
 	ScriptCyrillic   = core.ScriptCyrillic
 	ScriptGreek      = core.ScriptGreek
+	ScriptBengali    = core.ScriptBengali
 )
 
 var (

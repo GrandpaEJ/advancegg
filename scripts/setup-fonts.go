@@ -36,6 +36,7 @@ func main() {
 			{"/usr/share/fonts/truetype/noto/NotoSansHebrew-Regular.ttf", "NotoSansHebrew-Regular.ttf"},
 			{"/usr/share/fonts/truetype/noto/NotoSansDevanagari-Regular.ttf", "NotoSansDevanagari-Regular.ttf"},
 			{"/usr/share/fonts/truetype/noto/NotoSansThai-Regular.ttf", "NotoSansThai-Regular.ttf"},
+			{"/usr/share/fonts/truetype/noto/NotoSansBengali-Regular.ttf", "NotoSansBengali-Regular.ttf"},
 			{"/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf", "LiberationSans-Regular.ttf"},
 		}
 	case "darwin": // macOS
@@ -142,7 +143,8 @@ func createFontManifest(assetsDir string) {
       "arabic": "NotoSansArabic-Regular.ttf",
       "hebrew": "NotoSansHebrew-Regular.ttf",
       "devanagari": "NotoSansDevanagari-Regular.ttf",
-      "thai": "NotoSansThai-Regular.ttf"
+      "thai": "NotoSansThai-Regular.ttf",
+      "bengali": "NotoSansBengali-Regular.ttf"
     }
   },
   "version": "1.0.0",

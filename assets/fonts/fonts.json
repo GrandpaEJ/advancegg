@@ -17,7 +17,8 @@
       "arabic": "NotoSansArabic-Regular.ttf",
       "hebrew": "NotoSansHebrew-Regular.ttf",
       "devanagari": "NotoSansDevanagari-Regular.ttf",
-      "thai": "NotoSansThai-Regular.ttf"
+      "thai": "NotoSansThai-Regular.ttf",
+      "bengali": "NotoSansBengali-Regular.ttf"
     }
   },
   "version": "1.0.0",

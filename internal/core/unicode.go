@@ -7,11 +7,13 @@ import (
 
 	"bytes"
 
-	"github.com/benoitkugler/textlayout/fonts"
-	tl_truetype "github.com/benoitkugler/textlayout/fonts/truetype"
-	"github.com/benoitkugler/textlayout/harfbuzz"
-	"github.com/benoitkugler/textlayout/language"
+	"github.com/go-text/typesetting/di"
+	gt_font "github.com/go-text/typesetting/font"
+	"github.com/go-text/typesetting/language"
+	"github.com/go-text/typesetting/shaping"
+	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font"
+	"golang.org/x/image/math/fixed"
 )
 
 // Unicode shaping and complex script support with proper HarfBuzz integration
@@ -55,12 +57,25 @@ type TextShaper struct {
 	EnableLigatures bool
 	EnableKerning   bool
 
-	// HarfBuzz integration
-	hbFont   *harfbuzz.Font
-	fontFace fonts.Face
+	// go-text/typesetting integration
+	shaper   *shaping.HarfbuzzShaper
+	fontFace *gt_font.Face
 
 	// Standard Go font face for fallback
 	GoFontFace font.Face
+
+	// Per-script font overrides for multilingual support
+	scriptFonts map[ScriptType]*scriptFont
+
+	// Font size for shaping (matches rendering scale)
+	fontSize float64
+}
+
+// scriptFont holds font data for a specific script
+type scriptFont struct {
+	face     *gt_font.Face
+	fontData []byte
+	ttfFont  *truetype.Font // freetype font for glyph rendering
 }
 
 // NewTextShaper creates a new text shaper
@@ -90,17 +105,25 @@ type ShapedGlyph struct {
 	AdvanceY  float64
 	Cluster   int
 	Character rune
+
+	// Font data for this glyph (nil means use context's default font)
+	font *truetype.Font
 }
 
 // SetFont sets the font for shaping
-func (ts *TextShaper) SetFont(fontFace fonts.Face) error {
+func (ts *TextShaper) SetFont(fontFace *gt_font.Face) error {
 	if fontFace == nil {
 		return fmt.Errorf("font face cannot be nil")
 	}
 
 	ts.fontFace = fontFace
-	ts.hbFont = harfbuzz.NewFont(fontFace)
+	ts.shaper = &shaping.HarfbuzzShaper{}
 	return nil
+}
+
+// SetFontSize sets the font size for shaping (should match rendering scale)
+func (ts *TextShaper) SetFontSize(size float64) {
+	ts.fontSize = size
 }
 
 // SetGoFontFace sets the standard Go font face for fallback shaping
@@ -110,32 +133,59 @@ func (ts *TextShaper) SetGoFontFace(face font.Face) {
 
 // HasFont returns true if a font is loaded for shaping
 func (ts *TextShaper) HasFont() bool {
-	return ts.hbFont != nil
+	return ts.fontFace != nil
 }
 
 // SetFontBytes sets the font for shaping from raw SFNT bytes
 func (ts *TextShaper) SetFontBytes(fontData []byte, points float64) error {
-	f, err := tl_truetype.Parse(bytes.NewReader(fontData))
+	f, err := gt_font.ParseTTF(bytes.NewReader(fontData))
 	if err != nil {
 		return err
 	}
 
 	ts.fontFace = f
-	ts.hbFont = harfbuzz.NewFont(f)
-
-	// Set scale (points * 64 for 26.6 fixed point)
-	scale := int(points * 64)
-	ts.hbFont.XScale = int32(scale)
-	ts.hbFont.YScale = int32(scale)
-	ts.hbFont.XPpem = uint16(points)
-	ts.hbFont.YPpem = uint16(points)
+	ts.shaper = &shaping.HarfbuzzShaper{}
+	ts.fontSize = points * 72 / 96 // Match rendering scale (fontHeight)
 
 	return nil
 }
 
+// SetScriptFontBytes sets a font for a specific script (e.g., Bengali, Arabic)
+func (ts *TextShaper) SetScriptFontBytes(script ScriptType, fontData []byte, points float64) error {
+	f, err := gt_font.ParseTTF(bytes.NewReader(fontData))
+	if err != nil {
+		return err
+	}
+
+	ttfFont, err := truetype.Parse(fontData)
+	if err != nil {
+		return err
+	}
+
+	if ts.scriptFonts == nil {
+		ts.scriptFonts = make(map[ScriptType]*scriptFont)
+	}
+	ts.scriptFonts[script] = &scriptFont{
+		face:     f,
+		fontData: fontData,
+		ttfFont:  ttfFont,
+	}
+	ts.fontSize = points * 72 / 96 // Match rendering scale (fontHeight)
+
+	return nil
+}
+
+// GetScriptFont returns the font for a specific script, or nil if not set
+func (ts *TextShaper) GetScriptFont(script ScriptType) *scriptFont {
+	if ts.scriptFonts == nil {
+		return nil
+	}
+	return ts.scriptFonts[script]
+}
+
 // ShapeText shapes text according to Unicode rules using proper BiDi and HarfBuzz
 func (ts *TextShaper) ShapeText(text string) *ShapedText {
-	if ts.hbFont == nil || ts.fontFace == nil {
+	if ts.shaper == nil || ts.fontFace == nil {
 		// Fallback to simple shaping if no font is set
 		return ts.fallbackShapeText(text)
 	}
@@ -283,88 +333,120 @@ func (ts *TextShaper) detectScript(text string) ScriptType {
 
 // shapeRun shapes a single bidirectional run using HarfBuzz
 func (ts *TextShaper) shapeRun(run BidiRun) *ShapedText {
-	if ts.hbFont == nil {
+	// Use script-specific font if available, otherwise fall back to main font
+	face := ts.fontFace
+	scriptFont := ts.GetScriptFont(run.Script)
+	if scriptFont != nil {
+		face = scriptFont.face
+	}
+
+	if face == nil || ts.shaper == nil {
 		return ts.fallbackShapeRun(run)
 	}
 
-	// Create HarfBuzz buffer
-	buffer := harfbuzz.NewBuffer()
-
-	// Set buffer properties
-	runes := []rune(run.Text)
-	buffer.AddRunes(runes, 0, len(runes))
-
-	// Configure buffer direction
+	// Configure direction
+	direction := di.DirectionLTR
 	if run.Direction == TextDirectionRTL {
-		buffer.Props.Direction = harfbuzz.RightToLeft
-	} else {
-		buffer.Props.Direction = harfbuzz.LeftToRight
+		direction = di.DirectionRTL
 	}
 
 	// Configure script
-	var scriptTag string
+	var script language.Script
 	switch run.Script {
 	case ScriptArabic:
-		scriptTag = "Arab"
+		script = language.Arabic
 	case ScriptHebrew:
-		scriptTag = "Hebr"
+		script = language.Hebrew
 	case ScriptDevanagari:
-		scriptTag = "Deva"
+		script = language.Devanagari
 	case ScriptThai:
-		scriptTag = "Thai"
+		script = language.Thai
 	case ScriptChinese:
-		scriptTag = "Hani" // Or Hans/Hant if we knew
+		script = language.Han
 	case ScriptCyrillic:
-		scriptTag = "Cyrl"
+		script = language.Cyrillic
 	case ScriptGreek:
-		scriptTag = "Grek"
+		script = language.Greek
 	case ScriptBengali:
-		scriptTag = "Beng"
+		script = language.Bengali
 	case ScriptTamil:
-		scriptTag = "Taml"
+		script = language.Tamil
 	case ScriptTelugu:
-		scriptTag = "Telu"
+		script = language.Telugu
 	case ScriptKhmer:
-		scriptTag = "Khmr"
+		script = language.Khmer
 	case ScriptMyanmar:
-		scriptTag = "Mymr"
+		script = language.Myanmar
 	default:
-		scriptTag = "Latn"
+		script = language.Latin
 	}
 
-	scr, _ := language.ParseScript(scriptTag)
-	buffer.Props.Script = scr
+	// Configure language
+	var lang language.Language
+	switch run.Script {
+	case ScriptBengali:
+		lang = language.NewLanguage("BEN")
+	case ScriptArabic:
+		lang = language.NewLanguage("ARA")
+	case ScriptDevanagari:
+		lang = language.NewLanguage("HIN")
+	case ScriptTamil:
+		lang = language.NewLanguage("TAM")
+	case ScriptTelugu:
+		lang = language.NewLanguage("TEL")
+	case ScriptThai:
+		lang = language.NewLanguage("THA")
+	}
 
-	// Set approximate language if we can guess, to help choosing OpenType system?
-	// For now script is most critical.
+	// Create input for shaping
+	runes := []rune(run.Text)
+	shapingSize := fixed.Int26_6(ts.fontSize * 64)
+	if shapingSize == 0 {
+		shapingSize = fixed.I(32) // Default fallback
+	}
+	input := shaping.Input{
+		Text:      runes,
+		RunStart:  0,
+		RunEnd:    len(runes),
+		Direction: direction,
+		Face:      face,
+		Size:      shapingSize,
+		Script:    script,
+		Language:  lang,
+	}
 
 	// Shape the text
-	buffer.Shape(ts.hbFont, nil)
-
-	// Get glyph info and positions
-	glyphInfos := buffer.Info
-	glyphPositions := buffer.Pos
+	output := ts.shaper.Shape(input)
 
 	shaped := &ShapedText{
 		Direction: run.Direction,
-		Glyphs:    make([]ShapedGlyph, len(glyphInfos)),
+		Glyphs:    make([]ShapedGlyph, len(output.Glyphs)),
 	}
 
 	currentX := 0.0
-	for i, info := range glyphInfos {
-		pos := glyphPositions[i]
-
-		shaped.Glyphs[i] = ShapedGlyph{
-			GlyphID:   uint32(info.Glyph),
-			X:         currentX + float64(pos.XOffset)/64.0,
-			Y:         float64(pos.YOffset) / 64.0,
-			AdvanceX:  float64(pos.XAdvance) / 64.0,
-			AdvanceY:  float64(pos.YAdvance) / 64.0,
-			Cluster:   int(info.Cluster),
-			Character: runes[info.Cluster],
+	for i, glyph := range output.Glyphs {
+		glyphFont := (*truetype.Font)(nil)
+		if scriptFont != nil {
+			glyphFont = scriptFont.ttfFont
 		}
 
-		currentX += shaped.Glyphs[i].AdvanceX
+		// Use HarfBuzz GPOS offsets (already scaled to output units)
+		xOffset := float64(glyph.XOffset) / 64.0
+		yOffset := float64(glyph.YOffset) / 64.0
+		advance := float64(glyph.Advance) / 64.0
+
+		shaped.Glyphs[i] = ShapedGlyph{
+			GlyphID:   uint32(glyph.GlyphID),
+			X:         currentX + xOffset,
+			Y:         yOffset,
+			AdvanceX:  advance,
+			AdvanceY:  0,
+			Cluster:   int(glyph.ClusterIndex),
+			Character: runes[glyph.ClusterIndex],
+			font:      glyphFont,
+		}
+
+		currentX += advance
 	}
 
 	shaped.Width = currentX

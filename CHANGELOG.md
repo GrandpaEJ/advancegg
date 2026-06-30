@@ -5,9 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v1.7.0] - Emoji Text Rendering
+## [v1.7.0] - Indic Script Rendering & Emoji Support
 
 ### Features
+- **Bengali GPOS Rendering**: Full glyph positioning for Bengali (and other Indic) scripts
+  - GPOS mark-to-base attachment — matras (া, ি, ী, ু, ূ, ৃ, ে, ৈ, ো, ৌ) now attach to base consonants instead of rendering as separate characters
+  - Pre-base matras (ে, ৈ) correctly rendered before the base consonant via GSUB reordering
+  - Below-base matras (ু, ূ, ৃ) positioned with GPOS offsets
+  - Above-base marks (ং, ঁ, ়) positioned with GPOS Y-offsets
+  - 75+ conjuncts (যুক্তবর্ণ) properly formed via GSUB
+- **Script Font API**: Added `LoadScriptFont()` for per-script font loading (e.g., Bengali text uses NotoSansBengali while Latin text uses the main font)
+- **Font Size Fix**: Shaping now uses the correct font size (`fontHeight`) instead of hardcoded Size=32, eliminating excessive spacing between glyphs
 - **Emoji Rendering**: Full emoji text rendering support with automatic detection
   - Automatic emoji detection and rendering in `DrawString` methods
   - Color emoji font support (Noto Color Emoji, Apple Color Emoji, Segoe UI Emoji)
@@ -17,9 +25,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Performance-optimized emoji caching system
 - **API**: Added `SetEnableAutoEmoji()` and `GetEnableAutoEmoji()` for controlling automatic emoji rendering
 - **API**: Added `SetEmojiSize()` and `GetEmojiSize()` for emoji size control
-- **Examples**: Added `examples/emoji-rendering.go` demonstrating emoji usage
+- **API**: Added `ScriptBengali` to public ScriptType constants
+- **Examples**: Added `examples/text/bengali-demo.go` demonstrating Bengali speech bubbles
+- **Examples**: Added `examples/text/bengali-gpos-test.go` comprehensive GPOS test (all matras, 28 consonant tables, 75+ conjuncts, 30 words, 15 sentences)
 
 ### Implementation
+- Fixed `shapeRun()` in `unicode.go` to use HarfBuzz GPOS `XOffset`/`YOffset`/`Advance` instead of computing positions from glyph extents with incorrect scaling
+- Added `fontSize` field to `TextShaper` to match rendering scale; shaping `Size` now derived from `fontHeight`
+- GPOS data already present in `go-text/typesetting`'s shaping output — the previous code simply ignored `XOffset`/`YOffset`
+- Added `drawGlyphWithFont()` for rendering glyphs from per-script truetype fonts
 - Created `emoji_integration.go` with text/emoji segmentation and mixed rendering
 - Created `emoji_api.go` with public API methods for emoji control
 - Updated `DrawStringAnchored` to use `drawMixedString` for seamless text/emoji rendering

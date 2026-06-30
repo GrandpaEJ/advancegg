@@ -3,6 +3,7 @@ package core
 
 import (
 	"errors"
+	"fmt"
 	"image"
 	"image/color"
 	"image/jpeg"
@@ -1228,6 +1229,20 @@ func (dc *Context) LoadFontFace(path string, points float64) error {
 	return nil
 }
 
+// LoadScriptFont loads a font for a specific script (e.g., Bengali, Arabic).
+// When text of that script is drawn, this font will be used instead of the main font.
+func (dc *Context) LoadScriptFont(script ScriptType, path string, points float64) error {
+	fontBytes, err := LoadFontBytes(path)
+	if err != nil {
+		return err
+	}
+
+	if dc.textShaper != nil {
+		return dc.textShaper.SetScriptFontBytes(script, fontBytes, points)
+	}
+	return fmt.Errorf("text shaper not initialized")
+}
+
 // LoadTTFFace loads a TTF font file and sets it as the current font face.
 func (dc *Context) LoadTTFFace(path string, points float64) error {
 	face, err := LoadTTFFace(path, points)
@@ -1334,12 +1349,14 @@ func (dc *Context) drawString(im *image.RGBA, s string, x, y float64) {
 func (dc *Context) drawShapedString(im *image.RGBA, s string, x, y float64) {
 	shaped := dc.textShaper.ShapeText(s)
 
+
 	// Draw each shaped glyph
-	for _, glyph := range shaped.Glyphs {
+	for i, glyph := range shaped.Glyphs {
 		glyphX := x + glyph.X
 		glyphY := y + glyph.Y
-		// Draw using the specific Glyph ID from HarfBuzz
-		dc.drawGlyph(glyph.GlyphID, glyphX, glyphY)
+		if i == 0 {
+		}
+		dc.drawGlyphWithFont(glyph.GlyphID, glyphX, glyphY, glyph.font)
 	}
 }
 
@@ -1452,6 +1469,78 @@ func (dc *Context) drawGlyph(glyphID uint32, x, y float64) {
 	}
 
 	// Set fill rule? TTF uses NonZero usually.
+	dc.SetFillRule(FillRuleWinding)
+	dc.Fill()
+}
+
+func (dc *Context) drawGlyphWithFont(glyphID uint32, x, y float64, f *truetype.Font) {
+	if f == nil {
+		f = dc.font
+	}
+	if f == nil || dc.glyphBuf == nil {
+		return
+	}
+
+
+	scale := fixed.Int26_6(dc.fontHeight * 64)
+	index := truetype.Index(glyphID)
+
+	err := dc.glyphBuf.Load(f, scale, index, font.HintingNone)
+	if err != nil {
+		return
+	}
+
+	start := 0
+	for _, end := range dc.glyphBuf.Ends {
+		points := dc.glyphBuf.Points[start:end]
+		start = end
+		if len(points) == 0 {
+			continue
+		}
+
+		fp := func(p truetype.Point) (float64, float64) {
+			return x + float64(p.X)/64.0, y - float64(p.Y)/64.0
+		}
+
+		dc.NewSubPath()
+		currX, currY := fp(points[0])
+		dc.MoveTo(currX, currY)
+
+		for i := 1; i < len(points); i++ {
+			p := points[i]
+			if p.Flags&0x01 != 0 {
+				px, py := fp(p)
+				dc.LineTo(px, py)
+			} else {
+				cx, cy := fp(p)
+				var nx, ny float64
+				if i+1 < len(points) {
+					next := points[i+1]
+					if next.Flags&0x01 != 0 {
+						nx, ny = fp(next)
+						i++
+					} else {
+						nx1, ny1 := fp(next)
+						nx = (cx + nx1) / 2
+						ny = (cy + ny1) / 2
+					}
+				} else {
+					nx, ny = fp(points[0])
+				}
+				dc.QuadraticTo(cx, cy, nx, ny)
+			}
+		}
+
+		last := points[len(points)-1]
+		if last.Flags&0x01 == 0 {
+			cx, cy := fp(last)
+			nx, ny := fp(points[0])
+			dc.QuadraticTo(cx, cy, nx, ny)
+		}
+
+		dc.ClosePath()
+	}
+
 	dc.SetFillRule(FillRuleWinding)
 	dc.Fill()
 }
