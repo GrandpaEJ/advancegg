@@ -5,47 +5,86 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.7.1] - Bilingual Text Rendering
+
+### Features
+
+- **Bilingual Text Support** — বাংলা-English mixed text এখন একই line-এ ঠিকমতো render হয়
+  - `segmentBidiRuns()` rewrite করা হয়েছে text-কে script boundary-তে split করার জন্য
+  - নতুন `scriptForRune()` helper — প্রতিটি character-এর script detect করে
+  - Mixed text এখন আলাদা sub-runs এ ভাগ হয় (যেমন "আমি" → Bengali run, "today" → Latin run)
+  - প্রতিটি run নিজের script font ব্যবহার করে render হয়
+
+- **Indic Danda Support** — Bengali/Hindi danda (।) এখন সঠিকভাবে render হয়
+  - `scriptForRune()`-এ danda (U+0964, U+0965) কে Bengali script হিসেবে treat করা হয়
+  - Devanagari font (NotoSansDevanagari) যোগ করা হয়েছে danda rendering-এর জন্য
+  - `drawShapedString()`-এ glyph fallback logic যোগ করা হয়েছে
+
+- **Emoji Rendering Fix (Partial)** — `drawShapedString()`-এ emoji detection যোগ করা হয়েছে
+  - Emoji characters এখন emoji renderer ব্যবহার করে render হয়
+  - Note: Some edge cases still need fixing (see Issue #15)
+
+### Implementation
+
+- `internal/core/unicode.go`:
+  - নতুন `scriptForRune()` function যোগ করা হয়েছে
+  - `segmentBidiRuns()` rewrite করা হয়েছে per-script segmentation-এর জন্য
+  - নতুন `DetectScript()` public wrapper যোগ করা হয়েছে
+
+- `internal/core/context.go`:
+  - `drawShapedString()` update করা হয়েছে emoji detection সহ
+  - Glyph fallback logic যোগ করা হয়েছে script font-এর জন্য
+
+- `assets/fonts/`:
+  - `NotoSansDevanagari-Regular.ttf` যোগ করা হয়েছে danda support-এর জন্য
+
+- `examples/text/bengali-bilingual-demo.go`:
+  - নতুন bilingual demo example যোগ করা হয়েছে
+  - বাংলা-English mixed text examples সহ 4টি card
+
+### Examples
+
+- **Bilingual Demo**: `examples/text/bengali-bilingual-demo.go` — বাংলা-English mixed text rendering demo
+
 ## [v1.7.0] - Indic Script Rendering & Emoji Support
 
 ### Features
-- **Bengali GPOS Rendering**: Full glyph positioning for Bengali (and other Indic) scripts
-  - GPOS mark-to-base attachment — matras (া, ি, ী, ু, ূ, ৃ, ে, ৈ, ো, ৌ) now attach to base consonants instead of rendering as separate characters
-  - Pre-base matras (ে, ৈ) correctly rendered before the base consonant via GSUB reordering
-  - Below-base matras (ু, ূ, ৃ) positioned with GPOS offsets
-  - Above-base marks (ং, ঁ, ়) positioned with GPOS Y-offsets
-  - 75+ conjuncts (যুক্তবর্ণ) properly formed via GSUB
-- **Script Font API**: Added `LoadScriptFont()` for per-script font loading (e.g., Bengali text uses NotoSansBengali while Latin text uses the main font)
-- **Font Size Fix**: Shaping now uses the correct font size (`fontHeight`) instead of hardcoded Size=32, eliminating excessive spacing between glyphs
-- **Emoji Rendering**: Full emoji text rendering support with automatic detection
+
+- **Bengali GPOS Rendering** — বাংলা (ও অন্যান্য Indic) script-এর জন্য complete glyph positioning
+  - GPOS mark-to-base attachment: matras (া, ি, ী, ু, ূ, ৃ, ে, ৈ, ো, ৌ) এখন base consonant-এর সাথে attach হয়, আলাদা character না হয়ে
+  - Pre-base matras (ে, ৈ) GSUB reordering-এর মাধ্যমে base consonant-এর আগে ঠিকঠাক render হয়
+  - Below-base matras (ু, ূ, ৃ) GPOS offsets সহ সঠিক position-এ বসে
+  - Above-base marks (ং, ঁ, ়) GPOS Y-offsets দিয়ে properly positioned
+  - 75+ conjuncts (যুক্তবর্ণ) GSUB-এর মাধ্যমে সঠিকভাবে formed
+
+- **Script Font API** — `LoadScriptFont()` যোগ করা হয়েছে: per-script font loading (যেমন বাংলা text-এর জন্য NotoSansBengali, Latin-এর জন্য main font)
+
+- **Font Size Fix** — Shaping এখন `fontHeight` অনুযায়ী correct font size use করে, আগের hardcoded `Size=32`-এর পরিবর্তে — এতে glyph-গুলোর মাঝে excessive spacing দূর হয়েছে
+
+- **Emoji Rendering** — Full emoji text rendering support, automatic detection সহ
   - Automatic emoji detection and rendering in `DrawString` methods
   - Color emoji font support (Noto Color Emoji, Apple Color Emoji, Segoe UI Emoji)
-  - ZWJ (Zero Width Joiner) sequence handling for complex emojis (families, professions, couples)
+  - ZWJ (Zero Width Joiner) sequence handling: complex emojis (family, profession, couples) ঠিকভাবে render হয়
   - Skin tone modifier support
-  - Emoji fallback rendering with category-based colors
+  - Emoji fallback rendering, category-based colors সহ
   - Performance-optimized emoji caching system
-- **API**: Added `SetEnableAutoEmoji()` and `GetEnableAutoEmoji()` for controlling automatic emoji rendering
-- **API**: Added `SetEmojiSize()` and `GetEmojiSize()` for emoji size control
-- **API**: Added `ScriptBengali` to public ScriptType constants
-- **Examples**: Added `examples/text/bengali-demo.go` demonstrating Bengali speech bubbles
-- **Examples**: Added `examples/text/bengali-gpos-test.go` comprehensive GPOS test (all matras, 28 consonant tables, 75+ conjuncts, 30 words, 15 sentences)
+
+- **API**: `SetEnableAutoEmoji()` এবং `GetEnableAutoEmoji()` যোগ করা হয়েছে — automatic emoji rendering control-এর জন্য
+- **API**: `SetEmojiSize()` এবং `GetEmojiSize()` যোগ করা হয়েছে — emoji size control-এর জন্য
+- **API**: `ScriptBengali` public ScriptType constant হিসেবে যোগ করা হয়েছে
+- **Examples**: যোগ করা হয়েছে `examples/text/bengali-demo.go` — Bengali speech bubble demo
+- **Examples**: যোগ করা হয়েছে `examples/text/bengali-gpos-test.go` — comprehensive GPOS test (all matras, 28 consonant tables, 75+ conjuncts, 30 words, 15 sentences)
 
 ### Implementation
-- Fixed `shapeRun()` in `unicode.go` to use HarfBuzz GPOS `XOffset`/`YOffset`/`Advance` instead of computing positions from glyph extents with incorrect scaling
-- Added `fontSize` field to `TextShaper` to match rendering scale; shaping `Size` now derived from `fontHeight`
-- GPOS data already present in `go-text/typesetting`'s shaping output — the previous code simply ignored `XOffset`/`YOffset`
-- Added `drawGlyphWithFont()` for rendering glyphs from per-script truetype fonts
-- Created `emoji_integration.go` with text/emoji segmentation and mixed rendering
-- Created `emoji_api.go` with public API methods for emoji control
-- Updated `DrawStringAnchored` to use `drawMixedString` for seamless text/emoji rendering
-- Emoji rendering enabled by default in new contexts
 
-# Changelog
-
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
+- Fixed `shapeRun()` in `unicode.go`: এখন HarfBuzz GPOS-এর `XOffset`/`YOffset`/`Advance` use করে, আগের ভুল scaling-এর বদলে
+- `TextShaper`-এ `fontSize` field যোগ করা হয়েছে; shaping-এর `Size` এখন `fontHeight` থেকে derive হয়
+- GPOS data `go-text/typesetting`-এর shaping output-এ আগে থেকেই ছিল — previous code শুধু `XOffset`/`YOffset` ignore করত
+- `drawGlyphWithFont()` যোগ করা হয়েছে — per-script truetype font থেকে glyph render করার জন্য
+- Created `emoji_integration.go`: text/emoji segmentation and mixed rendering
+- Created `emoji_api.go`: public API methods for emoji control
+- `DrawStringAnchored` update করা হয়েছে `drawMixedString` use করার জন্য — seamless text/emoji rendering
+- নতুন context-এ emoji rendering by default enabled
 
 ## [v1.6.0] - Fallback Fixes & Benchmarking Tools
 

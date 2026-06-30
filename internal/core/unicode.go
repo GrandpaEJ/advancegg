@@ -183,6 +183,11 @@ func (ts *TextShaper) GetScriptFont(script ScriptType) *scriptFont {
 	return ts.scriptFonts[script]
 }
 
+// DetectScript returns the ScriptType for a single rune (public wrapper)
+func (ts *TextShaper) DetectScript(r rune) ScriptType {
+	return ts.scriptForRune(r)
+}
+
 // ShapeText shapes text according to Unicode rules using proper BiDi and HarfBuzz
 func (ts *TextShaper) ShapeText(text string) *ShapedText {
 	if ts.shaper == nil || ts.fontFace == nil {
@@ -227,16 +232,44 @@ type BidiRun struct {
 	Level     int
 }
 
-// segmentBidiRuns segments text into bidirectional runs
+// scriptForRune returns the ScriptType for a single rune
+func (ts *TextShaper) scriptForRune(r rune) ScriptType {
+	if unicode.Is(unicode.Arabic, r) {
+		return ScriptArabic
+	} else if unicode.Is(unicode.Hebrew, r) {
+		return ScriptHebrew
+	} else if unicode.In(r, unicode.Devanagari) {
+		return ScriptDevanagari
+	} else if unicode.In(r, unicode.Thai) {
+		return ScriptThai
+	} else if unicode.In(r, unicode.Bengali) {
+		return ScriptBengali
+	} else if unicode.In(r, unicode.Tamil) {
+		return ScriptTamil
+	} else if unicode.In(r, unicode.Telugu) {
+		return ScriptTelugu
+	} else if unicode.In(r, unicode.Khmer) {
+		return ScriptKhmer
+	} else if unicode.In(r, unicode.Myanmar) {
+		return ScriptMyanmar
+	} else if unicode.In(r, unicode.Han) || unicode.In(r, unicode.Hiragana) || unicode.In(r, unicode.Katakana) || unicode.In(r, unicode.Hangul) {
+		return ScriptChinese
+	} else if unicode.In(r, unicode.Cyrillic) {
+		return ScriptCyrillic
+	} else if unicode.In(r, unicode.Greek) {
+		return ScriptGreek
+	}
+	return ScriptLatin
+}
+
+// segmentBidiRuns segments text into bidirectional runs, splitting at script boundaries
 func (ts *TextShaper) segmentBidiRuns(text string) []BidiRun {
-	// For now, use simple segmentation until we properly integrate bidi
-	// The golang.org/x/text/unicode/bidi API is complex and needs proper setup
+	if len(text) == 0 {
+		return nil
+	}
 
-	// Simple fallback: treat entire text as single run
+	// Basic RTL detection for the overall text
 	direction := TextDirectionLTR
-	script := ts.detectScript(text)
-
-	// Basic RTL detection
 	for _, r := range text {
 		if unicode.Is(unicode.Arabic, r) || unicode.Is(unicode.Hebrew, r) {
 			direction = TextDirectionRTL
@@ -244,15 +277,49 @@ func (ts *TextShaper) segmentBidiRuns(text string) []BidiRun {
 		}
 	}
 
-	return []BidiRun{
-		{
-			Text:      text,
+	// Walk through text and split at script boundaries
+	var runs []BidiRun
+	runes := []rune(text)
+	runStart := 0
+	currentScript := ts.scriptForRune(runes[0])
+
+	for i := 1; i < len(runes); i++ {
+		r := runes[i]
+		script := ts.scriptForRune(r)
+
+		// Skip whitespace/script-invisible chars — keep them in current run
+		if unicode.IsSpace(r) || unicode.Is(unicode.Inherited, r) || unicode.Is(unicode.Common, r) {
+			continue
+		}
+
+		if script != currentScript {
+			// Flush current run
+			runText := string(runes[runStart:i])
+			runs = append(runs, BidiRun{
+				Text:      runText,
+				Direction: direction,
+				Script:    currentScript,
+				Language:  ts.Language,
+				Level:     0,
+			})
+			runStart = i
+			currentScript = script
+		}
+	}
+
+	// Flush final run
+	if runStart < len(runes) {
+		runText := string(runes[runStart:])
+		runs = append(runs, BidiRun{
+			Text:      runText,
 			Direction: direction,
-			Script:    script,
+			Script:    currentScript,
 			Language:  ts.Language,
 			Level:     0,
-		},
+		})
 	}
+
+	return runs
 }
 
 // detectScript detects the primary script in a text run

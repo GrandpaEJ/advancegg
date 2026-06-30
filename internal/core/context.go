@@ -1349,14 +1349,38 @@ func (dc *Context) drawString(im *image.RGBA, s string, x, y float64) {
 func (dc *Context) drawShapedString(im *image.RGBA, s string, x, y float64) {
 	shaped := dc.textShaper.ShapeText(s)
 
-
 	// Draw each shaped glyph
 	for i, glyph := range shaped.Glyphs {
 		glyphX := x + glyph.X
 		glyphY := y + glyph.Y
 		if i == 0 {
 		}
-		dc.drawGlyphWithFont(glyph.GlyphID, glyphX, glyphY, glyph.font)
+		// Check if this glyph is an emoji character
+		if dc.enableAutoEmoji && IsEmoji(glyph.Character) {
+			// Render emoji using emoji renderer
+			renderer := dc.GetEmojiRenderer()
+			sequence := EmojiSequence{
+				Runes:    []rune{glyph.Character},
+				Text:     string(glyph.Character),
+				Category: renderer.GetEmojiCategory(glyph.Character),
+			}
+			emojiImg := renderer.RenderEmoji(sequence, dc.fontHeight)
+			if emojiImg != nil {
+				_, offsetY := alignEmojiBaseline(emojiImg, y, dc.fontHeight)
+				dc.drawImageAt(im, emojiImg, int(glyphX), int(y+offsetY))
+			}
+		} else {
+			font := glyph.font
+			// If glyph ID is 0 (notdef) or font is nil, try to get script font
+			if (glyph.GlyphID == 0 || font == nil) && dc.textShaper != nil {
+				script := dc.textShaper.DetectScript(glyph.Character)
+				sf := dc.textShaper.GetScriptFont(script)
+				if sf != nil {
+					font = sf.ttfFont
+				}
+			}
+			dc.drawGlyphWithFont(glyph.GlyphID, glyphX, glyphY, font)
+		}
 	}
 }
 
